@@ -79,6 +79,9 @@ class AutoPublisher:
     def __init__(self):
         """初始化全能猎手"""
         self.intel_list: list[str] = []  # 本次会话情报列表
+        self.article_content: str = ""    # 生成的文章内容
+        self.article_title: str = ""      # 文章标题
+        self.push_status: str = ""        # 推送状态
         self.http = create_http_client(timeout=15.0)
         self._init_ai_client()
         self._init_chromadb()
@@ -248,6 +251,8 @@ Style requirements:
         Returns:
             int: 捕获数量
         """
+        import json
+
         console.print("\n[bold cyan]🐦 [2/2] 扫描 Twitter...[/bold cyan]")
         client = TwitterClient(language='en-US')
         count = 0
@@ -262,7 +267,21 @@ Style requirements:
             return 0
 
         try:
-            client.load_cookies(str(cookies_file))
+            # 加载并转换 cookies 格式
+            with open(cookies_file, 'r', encoding='utf-8') as f:
+                cookies_data = json.load(f)
+
+            # 检查格式并转换
+            if isinstance(cookies_data, list):
+                # Cookie-Editor 数组格式 → 字典格式
+                cookies_dict = {c['name']: c['value'] for c in cookies_data if 'name' in c and 'value' in c}
+                console.print(f"[dim]🔄 已转换 {len(cookies_dict)} 个 cookies 为 twikit 格式[/dim]")
+                client.set_cookies(cookies_dict)
+            elif isinstance(cookies_data, dict):
+                # 已经是字典格式，直接使用
+                client.set_cookies(cookies_data)
+            else:
+                raise ValueError(f"不支持的 cookies 格式: {type(cookies_data)}")
 
             for keyword in daily_keywords:
                 try:
@@ -440,9 +459,18 @@ Style requirements:
         if total > 0:
             raw_intel = "\n".join(self.intel_list)
             article = self.write_article(raw_intel)
+
+            # 保存文章内容和标题到实例属性
+            self.article_content = article
+            if not article.startswith("❌"):
+                first_line = article.split('\n')[0].replace('#', '').strip()
+                self.article_title = first_line[:30] if first_line else f"创意方案_{get_today_str()}"
+
             self.deliver_result(article)
+            self.push_status = "已推送" if settings.push.enabled else "未推送"
         else:
             console.print("[yellow]❌ 今日未发现新痛点，跳过写作[/yellow]")
+            self.push_status = "无内容"
 
         self.http.close()
 

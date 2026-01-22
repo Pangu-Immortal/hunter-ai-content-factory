@@ -354,6 +354,23 @@ Hunter AI 生成内容 → 调用 PushPlus API → PushPlus 服务器 → 推送
 3. 添加封面图（`output/日期/文章标题/*.png`）
 4. 发布
 
+### 关于自动发布到公众号
+
+> ⚠️ **重要提醒**：真正的「自动发布到公众号」需要满足以下条件
+
+| 要求 | 说明 |
+|------|------|
+| **企业认证账号** | 微信公众平台仅对通过企业认证的服务号/订阅号开放发布 API |
+| **微信公众平台 API** | 需要通过 [微信公众平台开发文档](https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Overview.html) 接入 |
+| **AppID + AppSecret** | 企业认证后获取，用于调用公众号 API |
+| **IP 白名单** | 需在公众平台配置服务器 IP 白名单 |
+
+**为什么本项目使用 PushPlus？**
+
+- 个人公众号（未认证）**无法**调用微信发布 API
+- PushPlus 是折中方案：先推送到个人微信，再手动复制发布
+- 如果你有企业认证的公众号，可以自行扩展 `src/intel/utils.py` 中的 `push_to_wechat` 函数，接入微信公众平台 API 实现真正的自动发布
+
 ---
 
 ## 命令参考

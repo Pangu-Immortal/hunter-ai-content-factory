@@ -317,13 +317,14 @@ output/2026-01-22/articles/
 
 **执行流程**：
 ```
-Playwright 采集小红书 → AI 提炼核心内容 → 生成公众号文章 → 保存 + 推送
+httpx + Cookie 采集小红书 → AI 提炼核心内容 → 生成公众号文章 → 保存 + 推送
 ```
 
-**首次使用需要登录**：
-```bash
-uv run hunter xhs-login    # 扫码登录
-```
+**首次使用需要配置 Cookie**：
+
+1. 浏览器登录小红书 (<https://www.xiaohongshu.com>)
+2. F12 打开开发者工具 → Application → Cookies
+3. 复制所有 Cookie 到 `config.yaml` 的 `xiaohongshu.cookies` 字段
 
 ---
 
@@ -397,9 +398,6 @@ uv run hunter validate               # 验证配置
 # 内容检查
 uv run hunter check article.md       # 检查违禁词
 uv run hunter check article.md --fix # 自动修复
-
-# 小红书
-uv run hunter xhs-login              # 扫码登录
 
 # 清理
 uv run hunter clean                  # 清理缓存
@@ -549,10 +547,11 @@ account:
 
 ### Q: 小红书采集失败？
 
-**A**: 首次需要扫码登录：
-```bash
-uv run hunter xhs-login
-```
+**A**: 需要配置 Cookie：
+
+1. 浏览器登录小红书
+2. F12 → Application → Cookies
+3. 复制到 `config.yaml` 的 `xiaohongshu.cookies`
 
 ---
 

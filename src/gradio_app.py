@@ -97,17 +97,17 @@ CUSTOM_CSS = """
     padding: 12px 20px !important;
     font-weight: 600 !important;
     font-size: 15px !important;
-    color: #888 !important;
+    color: #a8b2c1 !important;  /* 柔和的蓝灰色，清晰可见 */
     transition: all 0.2s ease !important;
 }
 
 .tab-nav button:hover {
-    color: #00ffff !important;
-    border-bottom-color: rgba(0, 255, 255, 0.5) !important;
+    color: #e0e6f0 !important;  /* 悬停变亮白 */
+    border-bottom-color: rgba(255, 255, 255, 0.3) !important;
 }
 
 .tab-nav button.selected {
-    color: #00ffff !important;
+    color: #7ee8fa !important;  /* 选中用明亮的青色 */
     border-bottom: 2px solid #00ffff !important;
     background: transparent !important;
 }

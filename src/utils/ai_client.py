@@ -155,48 +155,80 @@ class OpenAICompatibleClient(BaseAIClient):
         self.image_model = settings.gemini.image_model
 
     async def generate(self, prompt: str, **kwargs) -> AIResponse:
-        """调用 OpenAI 兼容 API（异步）"""
-        async with httpx.AsyncClient(timeout=120) as client:
-            response = await client.post(
-                f"{self.base_url}/chat/completions",
-                headers=self.headers,
-                json={
-                    "model": self.model,
-                    "messages": [{"role": "user", "content": prompt}],
-                    "max_tokens": kwargs.get("max_tokens", 4096),
-                    "temperature": kwargs.get("temperature", 0.7),
-                }
-            )
-            response.raise_for_status()
-            data = response.json()
+        """调用 OpenAI 兼容 API（异步，带重试）"""
+        import asyncio
+        max_retries = 3
+        retry_delay = 2
 
-            return AIResponse(
-                text=data["choices"][0]["message"]["content"],
-                model=self.model,
-                usage=data.get("usage")
-            )
+        async with httpx.AsyncClient(timeout=120) as client:
+            for attempt in range(max_retries):
+                response = await client.post(
+                    f"{self.base_url}/chat/completions",
+                    headers=self.headers,
+                    json={
+                        "model": self.model,
+                        "messages": [{"role": "user", "content": prompt}],
+                        "max_tokens": kwargs.get("max_tokens", 4096),
+                        "temperature": kwargs.get("temperature", 0.7),
+                    }
+                )
+
+                # 429 速率限制时重试
+                if response.status_code == 429:
+                    if attempt < max_retries - 1:
+                        wait_time = retry_delay * (2 ** attempt)
+                        print(f"⏳ 速率限制，等待 {wait_time} 秒后重试...")
+                        await asyncio.sleep(wait_time)
+                        continue
+                    else:
+                        response.raise_for_status()
+
+                response.raise_for_status()
+                data = response.json()
+
+                return AIResponse(
+                    text=data["choices"][0]["message"]["content"],
+                    model=self.model,
+                    usage=data.get("usage")
+                )
 
     def generate_sync(self, prompt: str, **kwargs) -> AIResponse:
-        """调用 OpenAI 兼容 API（同步）"""
-        with httpx.Client(timeout=120) as client:
-            response = client.post(
-                f"{self.base_url}/chat/completions",
-                headers=self.headers,
-                json={
-                    "model": self.model,
-                    "messages": [{"role": "user", "content": prompt}],
-                    "max_tokens": kwargs.get("max_tokens", 4096),
-                    "temperature": kwargs.get("temperature", 0.7),
-                }
-            )
-            response.raise_for_status()
-            data = response.json()
+        """调用 OpenAI 兼容 API（同步，带重试）"""
+        import time
+        max_retries = 3
+        retry_delay = 2
 
-            return AIResponse(
-                text=data["choices"][0]["message"]["content"],
-                model=self.model,
-                usage=data.get("usage")
-            )
+        with httpx.Client(timeout=120) as client:
+            for attempt in range(max_retries):
+                response = client.post(
+                    f"{self.base_url}/chat/completions",
+                    headers=self.headers,
+                    json={
+                        "model": self.model,
+                        "messages": [{"role": "user", "content": prompt}],
+                        "max_tokens": kwargs.get("max_tokens", 4096),
+                        "temperature": kwargs.get("temperature", 0.7),
+                    }
+                )
+
+                # 429 速率限制时重试
+                if response.status_code == 429:
+                    if attempt < max_retries - 1:
+                        wait_time = retry_delay * (2 ** attempt)
+                        print(f"⏳ 速率限制，等待 {wait_time} 秒后重试...")
+                        time.sleep(wait_time)
+                        continue
+                    else:
+                        response.raise_for_status()
+
+                response.raise_for_status()
+                data = response.json()
+
+                return AIResponse(
+                    text=data["choices"][0]["message"]["content"],
+                    model=self.model,
+                    usage=data.get("usage")
+                )
 
     def generate_image_sync(self, prompt: str, output_path: Optional[str] = None, **kwargs) -> ImageResponse:
         """

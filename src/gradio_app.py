@@ -27,35 +27,36 @@ console = Console()
 ROOT_DIR = Path(__file__).parent.parent
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 自定义 CSS 样式 - 赛博朋克风格，霓虹机械配色
+# 自定义 CSS 样式 - 赛博朋克风格，高可读性优化版
 # ═══════════════════════════════════════════════════════════════════════════════
 
 CUSTOM_CSS = """
 /* ═══════════════════════════════════════════════════════════════════════════
-   🎮 赛博朋克主题 - Cyberpunk Neon Style
-   配色: 深空黑底 + 霓虹青/品红/紫/黄
+   🎮 赛博朋克主题 - Cyberpunk Neon Style (高可读性优化版)
+
+   设计原则：
+   1. 文字优先使用白色/浅色，确保高对比度
+   2. 霓虹效果仅用于装饰元素（边框、按钮、标题）
+   3. 正文内容不使用发光效果，保持清晰
+   4. 背景适度提亮，减少眼睛疲劳
 ═══════════════════════════════════════════════════════════════════════════ */
 
-/* 全局背景 - 深空渐变 + 扫描线效果 */
+/* ─────────────────────────────────────────────────────────────────────────────
+   全局样式
+───────────────────────────────────────────────────────────────────────────── */
 .gradio-container {
-    background:
-        repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 2px,
-            rgba(0, 255, 255, 0.03) 2px,
-            rgba(0, 255, 255, 0.03) 4px
-        ),
-        linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 30%, #0f1a2e 60%, #0a0f1a 100%) !important;
-    font-family: "JetBrains Mono", "SF Mono", "Monaco", "Consolas", "Fira Code", monospace !important;
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%) !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif !important;
     font-size: 14px !important;
-    line-height: 1.6 !important;
+    line-height: 1.7 !important;
     max-width: 1400px !important;
     margin: 0 auto !important;
-    color: #e0e0e0 !important;
+    color: #e6edf3 !important;
 }
 
-/* 移除图片组件的边框和容器样式 */
+/* ─────────────────────────────────────────────────────────────────────────────
+   图片组件
+───────────────────────────────────────────────────────────────────────────── */
 .gradio-image {
     border: none !important;
     background: transparent !important;
@@ -71,16 +72,16 @@ CUSTOM_CSS = """
 
 .gradio-image img {
     border-radius: 8px !important;
-    border: 1px solid #00ffff40 !important;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2) !important;
+    border: 1px solid rgba(0, 255, 255, 0.3) !important;
 }
 
-/* 隐藏图片组件的下载按钮等工具栏 */
 .gradio-image .icon-buttons {
     display: none !important;
 }
 
-/* 标题区域 - 霓虹发光效果 */
+/* ─────────────────────────────────────────────────────────────────────────────
+   标题区域
+───────────────────────────────────────────────────────────────────────────── */
 .header-section {
     text-align: center;
     padding: 30px 20px;
@@ -88,259 +89,387 @@ CUSTOM_CSS = """
     margin-bottom: 20px;
 }
 
-/* 功能卡片区域 - 深色玻璃态 + 霓虹边框 */
+/* ─────────────────────────────────────────────────────────────────────────────
+   功能卡片
+───────────────────────────────────────────────────────────────────────────── */
 .function-card {
-    background: rgba(10, 15, 30, 0.85) !important;
-    backdrop-filter: blur(10px) !important;
+    background: rgba(22, 27, 34, 0.95) !important;
     border-radius: 12px !important;
-    border: 1px solid rgba(0, 255, 255, 0.3) !important;
+    border: 1px solid rgba(0, 255, 255, 0.25) !important;
     padding: 20px !important;
-    box-shadow:
-        0 0 20px rgba(0, 255, 255, 0.1),
-        inset 0 0 30px rgba(0, 255, 255, 0.05) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
     transition: all 0.3s ease !important;
 }
 
 .function-card:hover {
-    transform: translateY(-2px) !important;
-    border-color: rgba(0, 255, 255, 0.6) !important;
-    box-shadow:
-        0 0 30px rgba(0, 255, 255, 0.2),
-        0 0 60px rgba(255, 0, 255, 0.1),
-        inset 0 0 30px rgba(0, 255, 255, 0.08) !important;
+    border-color: rgba(0, 255, 255, 0.5) !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 255, 255, 0.1) !important;
 }
 
-/* Tab 按钮样式 - 霓虹按钮 */
+/* ─────────────────────────────────────────────────────────────────────────────
+   Tab 标签页按钮
+───────────────────────────────────────────────────────────────────────────── */
 .tab-nav button {
-    background: linear-gradient(180deg, rgba(20, 30, 50, 0.9) 0%, rgba(10, 15, 30, 0.95) 100%) !important;
-    border: 1px solid rgba(0, 255, 255, 0.4) !important;
+    background: rgba(22, 27, 34, 0.9) !important;
+    border: 1px solid rgba(0, 255, 255, 0.3) !important;
     border-radius: 8px !important;
     margin: 3px !important;
-    padding: 10px 20px !important;
+    padding: 12px 24px !important;
     font-weight: 600 !important;
-    color: #00ffff !important;
-    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5) !important;
-    transition: all 0.3s ease !important;
-    font-family: "JetBrains Mono", monospace !important;
+    font-size: 14px !important;
+    color: #7ee8fa !important;
+    transition: all 0.2s ease !important;
 }
 
 .tab-nav button:hover {
-    background: linear-gradient(180deg, rgba(0, 255, 255, 0.2) 0%, rgba(0, 255, 255, 0.1) 100%) !important;
+    background: rgba(0, 255, 255, 0.1) !important;
     border-color: #00ffff !important;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4) !important;
     color: #ffffff !important;
 }
 
 .tab-nav button.selected {
-    background: linear-gradient(180deg, rgba(255, 0, 255, 0.3) 0%, rgba(139, 0, 139, 0.4) 100%) !important;
-    border-color: #ff00ff !important;
-    color: #ff00ff !important;
-    text-shadow: 0 0 15px rgba(255, 0, 255, 0.8) !important;
-    box-shadow:
-        0 0 25px rgba(255, 0, 255, 0.4),
-        inset 0 0 20px rgba(255, 0, 255, 0.1) !important;
+    background: linear-gradient(135deg, rgba(255, 0, 255, 0.2) 0%, rgba(0, 255, 255, 0.2) 100%) !important;
+    border: 2px solid #ff00ff !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.3) !important;
 }
 
-/* 主按钮样式 - 霓虹品红 */
+/* ─────────────────────────────────────────────────────────────────────────────
+   主按钮
+───────────────────────────────────────────────────────────────────────────── */
 .primary {
-    background: linear-gradient(135deg, #ff00ff 0%, #8b008b 50%, #ff1493 100%) !important;
+    background: linear-gradient(135deg, #ff00ff 0%, #00ffff 100%) !important;
     border: none !important;
     border-radius: 8px !important;
-    font-weight: bold !important;
-    color: white !important;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
-    box-shadow:
-        0 0 20px rgba(255, 0, 255, 0.4),
-        0 0 40px rgba(255, 0, 255, 0.2) !important;
-    transition: all 0.3s ease !important;
-    padding: 12px 30px !important;
-    font-family: "JetBrains Mono", monospace !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    color: #000000 !important;
+    padding: 14px 32px !important;
+    transition: all 0.2s ease !important;
     text-transform: uppercase !important;
-    letter-spacing: 2px !important;
+    letter-spacing: 1px !important;
 }
 
 .primary:hover {
-    transform: translateY(-2px) scale(1.02) !important;
-    box-shadow:
-        0 0 30px rgba(255, 0, 255, 0.6),
-        0 0 60px rgba(255, 0, 255, 0.3),
-        0 0 90px rgba(0, 255, 255, 0.2) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(255, 0, 255, 0.4), 0 0 30px rgba(0, 255, 255, 0.3) !important;
 }
 
-/* 分隔线 - 霓虹扫描线 */
+/* ─────────────────────────────────────────────────────────────────────────────
+   分隔线
+───────────────────────────────────────────────────────────────────────────── */
 .section-divider {
     height: 2px;
-    background: linear-gradient(90deg,
-        transparent 0%,
-        #00ffff 20%,
-        #ff00ff 50%,
-        #00ffff 80%,
-        transparent 100%);
+    background: linear-gradient(90deg, transparent, #00ffff, #ff00ff, #00ffff, transparent);
     margin: 30px 0;
     border-radius: 2px;
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-    animation: scanline 3s ease-in-out infinite;
+    opacity: 0.6;
 }
 
-@keyframes scanline {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
-}
-
-/* 介绍卡片样式 - 深色玻璃态 */
+/* ─────────────────────────────────────────────────────────────────────────────
+   介绍卡片
+───────────────────────────────────────────────────────────────────────────── */
 .intro-card {
-    background: rgba(15, 20, 35, 0.9) !important;
+    background: rgba(22, 27, 34, 0.95) !important;
     border-radius: 12px !important;
     overflow: hidden !important;
     border: 1px solid rgba(0, 255, 255, 0.2) !important;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
     transition: all 0.3s ease !important;
 }
 
 .intro-card:hover {
     transform: translateY(-4px) !important;
-    border-color: rgba(255, 0, 255, 0.5) !important;
-    box-shadow:
-        0 8px 40px rgba(0, 0, 0, 0.5),
-        0 0 30px rgba(255, 0, 255, 0.2) !important;
+    border-color: rgba(255, 0, 255, 0.4) !important;
 }
 
 .intro-card img {
     width: 100%;
     height: 200px;
     object-fit: cover;
-    filter: saturate(1.2) contrast(1.1);
 }
 
-/* 输入框样式 - 霓虹边框 */
+/* ─────────────────────────────────────────────────────────────────────────────
+   输入框 - 高对比度白色文字
+───────────────────────────────────────────────────────────────────────────── */
 textarea, input[type="text"], input[type="number"], input[type="password"] {
-    background: rgba(10, 15, 30, 0.9) !important;
+    background: rgba(13, 17, 23, 0.95) !important;
     border: 1px solid rgba(0, 255, 255, 0.3) !important;
     border-radius: 8px !important;
     padding: 12px !important;
-    color: #00ffff !important;
-    font-family: "JetBrains Mono", monospace !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
 }
 
 textarea:focus, input[type="text"]:focus, input[type="number"]:focus, input[type="password"]:focus {
     border-color: #00ffff !important;
-    box-shadow:
-        0 0 15px rgba(0, 255, 255, 0.3),
-        inset 0 0 10px rgba(0, 255, 255, 0.1) !important;
+    box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.15) !important;
     outline: none !important;
 }
 
 textarea::placeholder, input::placeholder {
-    color: rgba(0, 255, 255, 0.4) !important;
+    color: rgba(230, 237, 243, 0.5) !important;
 }
 
-/* 代码和等宽字体 */
-input, textarea, code, pre {
-    font-family: "JetBrains Mono", "SF Mono", "Monaco", "Consolas", monospace !important;
-}
-
-/* 页脚样式 */
+/* ─────────────────────────────────────────────────────────────────────────────
+   页脚
+───────────────────────────────────────────────────────────────────────────── */
 .footer {
     text-align: center;
     padding: 20px;
     margin-top: 30px;
-    border-top: 1px solid rgba(0, 255, 255, 0.3);
-    color: rgba(0, 255, 255, 0.6);
-    text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+    border-top: 1px solid rgba(0, 255, 255, 0.2);
+    color: rgba(230, 237, 243, 0.6);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   额外赛博朋克效果
+   Gradio 组件样式覆盖 - 确保所有文字清晰可读
 ═══════════════════════════════════════════════════════════════════════════ */
 
-/* 标签文字 - 霓虹发光 */
-label {
-    color: #00ffff !important;
-    text-shadow: 0 0 8px rgba(0, 255, 255, 0.4) !important;
+/* 标签 - 使用亮白色 */
+label, .label-wrap, span.svelte-1gfkn6j {
+    color: #ffffff !important;
     font-weight: 500 !important;
-    letter-spacing: 0.5px !important;
+    font-size: 14px !important;
 }
 
-/* 滑块样式 */
+/* 信息提示文字 */
+.info, .svelte-1gfkn6j.info {
+    color: rgba(230, 237, 243, 0.7) !important;
+}
+
+/* 滑块 */
 input[type="range"] {
     accent-color: #ff00ff !important;
 }
 
-/* 复选框样式 */
+/* 滑块数值显示 */
+.range-value, input[type="number"] {
+    color: #ffffff !important;
+    background: rgba(13, 17, 23, 0.95) !important;
+}
+
+/* 复选框 */
 input[type="checkbox"] {
     accent-color: #00ffff !important;
 }
 
-/* Markdown 文本 */
-.markdown-text, .prose {
-    color: #c0c0c0 !important;
+/* 复选框标签 */
+.checkbox-label, .gr-check-radio {
+    color: #e6edf3 !important;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   Markdown 内容 - 高可读性
+───────────────────────────────────────────────────────────────────────────── */
+.markdown-text, .prose, .md, div[class*="markdown"] {
+    color: #e6edf3 !important;
+    line-height: 1.8 !important;
+}
+
+/* 标题 - 霓虹青色，适度发光 */
 .markdown-text h1, .markdown-text h2, .markdown-text h3,
-.prose h1, .prose h2, .prose h3 {
-    color: #00ffff !important;
-    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3) !important;
+.prose h1, .prose h2, .prose h3,
+h1, h2, h3 {
+    color: #7ee8fa !important;
+    font-weight: 600 !important;
+    margin-top: 1.5em !important;
+    margin-bottom: 0.8em !important;
 }
 
-.markdown-text strong, .prose strong {
-    color: #ff00ff !important;
+/* 加粗文字 - 亮白色 */
+.markdown-text strong, .prose strong, strong {
+    color: #ffffff !important;
+    font-weight: 600 !important;
 }
 
-.markdown-text code, .prose code {
+/* 段落文字 */
+.markdown-text p, .prose p, p {
+    color: #e6edf3 !important;
+    margin-bottom: 1em !important;
+}
+
+/* 列表项 */
+.markdown-text li, .prose li, li {
+    color: #e6edf3 !important;
+    margin-bottom: 0.5em !important;
+}
+
+/* 行内代码 */
+.markdown-text code, .prose code, code {
     background: rgba(0, 255, 255, 0.1) !important;
-    color: #00ff88 !important;
-    padding: 2px 6px !important;
+    color: #7ee8fa !important;
+    padding: 2px 8px !important;
     border-radius: 4px !important;
-    border: 1px solid rgba(0, 255, 255, 0.2) !important;
+    font-family: "SF Mono", "Monaco", "Consolas", monospace !important;
+    font-size: 13px !important;
 }
 
-/* 下拉选择框 */
-select, .dropdown {
-    background: rgba(10, 15, 30, 0.9) !important;
+/* 代码块 */
+pre {
+    background: rgba(13, 17, 23, 0.95) !important;
+    border: 1px solid rgba(0, 255, 255, 0.2) !important;
+    border-radius: 8px !important;
+    padding: 16px !important;
+}
+
+pre code {
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+/* 链接 */
+a {
+    color: #7ee8fa !important;
+}
+
+a:hover {
+    color: #ffffff !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   下拉选择框
+───────────────────────────────────────────────────────────────────────────── */
+select, .dropdown, .svelte-1g805gc {
+    background: rgba(13, 17, 23, 0.95) !important;
     border: 1px solid rgba(0, 255, 255, 0.3) !important;
-    color: #00ffff !important;
+    color: #ffffff !important;
     border-radius: 8px !important;
 }
 
-/* Accordion 折叠面板 */
-.accordion {
-    background: rgba(10, 15, 30, 0.8) !important;
+select option {
+    background: #161b22 !important;
+    color: #ffffff !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Accordion 折叠面板
+───────────────────────────────────────────────────────────────────────────── */
+.accordion, details {
+    background: rgba(22, 27, 34, 0.9) !important;
     border: 1px solid rgba(0, 255, 255, 0.2) !important;
     border-radius: 8px !important;
 }
 
-/* 提示框样式覆盖 */
-div[style*="background: #fff3cd"] {
-    background: rgba(255, 200, 0, 0.15) !important;
+.accordion summary, details summary {
+    color: #ffffff !important;
+    font-weight: 500 !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   提示框 - Tips 样式
+───────────────────────────────────────────────────────────────────────────── */
+/* 黄色警告提示 */
+div[style*="rgba(255, 200, 0"] {
+    background: rgba(255, 200, 0, 0.12) !important;
     border: 1px solid rgba(255, 200, 0, 0.4) !important;
-    color: #ffd700 !important;
+    color: #ffd866 !important;
 }
 
-div[style*="background: #d1ecf1"] {
-    background: rgba(0, 255, 255, 0.1) !important;
+div[style*="rgba(255, 200, 0"] b {
+    color: #ffe066 !important;
+}
+
+/* 青色信息提示 */
+div[style*="rgba(0, 255, 255"] {
+    background: rgba(0, 255, 255, 0.08) !important;
     border: 1px solid rgba(0, 255, 255, 0.3) !important;
-    color: #00ffff !important;
+    color: #7ee8fa !important;
 }
 
-/* 霓虹发光文字效果类 */
-.neon-cyan { color: #00ffff; text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; }
-.neon-pink { color: #ff00ff; text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; }
-.neon-yellow { color: #ffff00; text-shadow: 0 0 10px #ffff00, 0 0 20px #ffff00; }
-.neon-green { color: #00ff88; text-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88; }
+div[style*="rgba(0, 255, 255"] b {
+    color: #a5f3fc !important;
+}
 
-/* 面板和容器的通用样式 */
-.panel, .block, .form {
-    background: rgba(10, 15, 30, 0.85) !important;
+/* ─────────────────────────────────────────────────────────────────────────────
+   表格样式
+───────────────────────────────────────────────────────────────────────────── */
+table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+}
+
+th {
+    background: rgba(0, 255, 255, 0.1) !important;
+    color: #7ee8fa !important;
+    font-weight: 600 !important;
+    padding: 12px !important;
     border: 1px solid rgba(0, 255, 255, 0.2) !important;
+}
+
+td {
+    color: #e6edf3 !important;
+    padding: 10px 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+tr:hover {
+    background: rgba(0, 255, 255, 0.05) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   块引用
+───────────────────────────────────────────────────────────────────────────── */
+blockquote {
+    border-left: 3px solid #ff00ff !important;
+    background: rgba(255, 0, 255, 0.05) !important;
+    padding: 12px 20px !important;
+    margin: 16px 0 !important;
+    color: #e6edf3 !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   通用面板和容器
+───────────────────────────────────────────────────────────────────────────── */
+.panel, .block, .form, .gr-box, .gr-panel {
+    background: rgba(22, 27, 34, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 8px !important;
 }
 
-/* 网格背景效果 */
-.grid-bg {
-    background-image:
-        linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
-    background-size: 20px 20px;
+/* ─────────────────────────────────────────────────────────────────────────────
+   工具栏和按钮组
+───────────────────────────────────────────────────────────────────────────── */
+.toolbar button, .btn-group button {
+    color: #e6edf3 !important;
+    background: rgba(22, 27, 34, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.toolbar button:hover, .btn-group button:hover {
+    background: rgba(0, 255, 255, 0.1) !important;
+    border-color: rgba(0, 255, 255, 0.3) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Textbox 输出区域 - 确保长文本可读
+───────────────────────────────────────────────────────────────────────────── */
+.output-textbox textarea, .gr-textbox textarea {
+    color: #e6edf3 !important;
+    background: rgba(13, 17, 23, 0.95) !important;
+    font-size: 14px !important;
+    line-height: 1.7 !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   状态指示
+───────────────────────────────────────────────────────────────────────────── */
+.success { color: #4ade80 !important; }
+.error { color: #f87171 !important; }
+.warning { color: #fbbf24 !important; }
+.info { color: #7ee8fa !important; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   霓虹装饰类（可选用于特殊效果）
+───────────────────────────────────────────────────────────────────────────── */
+.neon-border {
+    border: 1px solid rgba(0, 255, 255, 0.5) !important;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2) !important;
+}
+
+.neon-text {
+    color: #7ee8fa !important;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3) !important;
 }
 """
 

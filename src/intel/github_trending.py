@@ -464,7 +464,7 @@ class GitHubTrendingHunter:
             console.print(f"[cyan]🔄 已过滤 {total_skipped} 个项目 (历史记录: {skipped_history}, 语义相似: {skipped_similar})[/cyan]")
 
         if len(filtered_projects) < 3:
-            raise ValueError(f"可选项目数量不足，需要至少 3 个，当前 {len(filtered_projects)} 个（已过滤 {skipped_count} 个重复）")
+            raise ValueError(f"可选项目数量不足，需要至少 3 个，当前 {len(filtered_projects)} 个（已过滤 {total_skipped} 个重复）")
 
         # 按今日 star 增长排序
         sorted_by_growth = sorted(filtered_projects, key=lambda x: x.today_stars, reverse=True)

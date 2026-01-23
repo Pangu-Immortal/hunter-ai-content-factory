@@ -36,13 +36,22 @@ class GitHubTemplate(BaseTemplate):
     description = "GitHub 开源推荐 - 每日热门 AI 项目推荐"
     requires_intel = True
 
+    def __init__(self, keyword: str = "AI"):
+        """初始化模板
+
+        Args:
+            keyword: 搜索关键词
+        """
+        super().__init__()
+        self.keyword = keyword
+
     async def run(self) -> TemplateResult:
         """执行 GitHub 开源推荐流程"""
         self.print_header()
 
         try:
-            # 创建猎手并执行
-            hunter = GitHubTrendingHunter()
+            # 创建猎手并执行（传递关键词）
+            hunter = GitHubTrendingHunter(keyword=self.keyword)
             article = await hunter.run()
 
             if article:

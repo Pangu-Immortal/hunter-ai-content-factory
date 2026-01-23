@@ -95,8 +95,32 @@ class GitHubTrendingHunter:
         "automation", "workflow", "copilot", "assistant"
     ]
 
-    def __init__(self):
-        """初始化 GitHub Trending 猎手"""
+    # 关键词扩展映射 - 当项目不足时自动尝试相近关键词
+    KEYWORD_EXPANSION = {
+        "ai": ["artificial intelligence", "machine learning", "deep learning", "neural network"],
+        "llm": ["large language model", "gpt", "chatbot", "nlp", "transformer"],
+        "agent": ["ai agent", "autonomous agent", "llm agent", "multi-agent"],
+        "rag": ["retrieval augmented", "vector database", "embedding", "semantic search"],
+        "ml": ["machine learning", "deep learning", "tensorflow", "pytorch"],
+        "chatbot": ["conversational ai", "chat assistant", "llm chat", "dialogue"],
+        "automation": ["workflow automation", "ai automation", "auto", "pipeline"],
+        "langchain": ["llm framework", "ai chain", "agent framework", "llm toolkit"],
+        "vector": ["vector database", "embedding", "similarity search", "semantic"],
+        "diffusion": ["stable diffusion", "image generation", "text to image", "generative"],
+        "mcp": ["model context protocol", "claude mcp", "anthropic mcp"],
+        "claude": ["anthropic", "claude ai", "sonnet", "opus"],
+        "openai": ["gpt", "chatgpt", "openai api", "gpt-4"],
+        "gemini": ["google ai", "palm", "bard", "vertex ai"],
+    }
+
+    def __init__(self, keyword: str = "AI"):
+        """初始化 GitHub Trending 猎手
+
+        Args:
+            keyword: 搜索关键词，用于筛选项目类型
+        """
+        self.keyword = keyword.strip().lower() if keyword else "ai"
+        self.tried_keywords = [self.keyword]  # 已尝试的关键词列表
         self.http = create_http_client(timeout=30.0)
         self._init_ai_client()
         self._init_chromadb()  # 初始化 ChromaDB 向量数据库
@@ -350,18 +374,19 @@ class GitHubTrendingHunter:
         else:  # monthly
             date_filter = (datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d")
 
-        # 多样化搜索关键词，覆盖更多 AI 项目
+        # 基于用户关键词构建搜索查询
+        base_keyword = self.keyword
         queries = [
-            "llm agent",
-            "ai automation",
-            "rag pipeline",
-            "ai assistant",
-            "langchain",
-            "vector database",
-            "machine learning framework",
-            "deep learning",
+            base_keyword,
+            f"{base_keyword} tool",
+            f"{base_keyword} framework",
+            f"{base_keyword} api",
         ]
+        # 添加扩展关键词
+        if base_keyword in self.KEYWORD_EXPANSION:
+            queries.extend(self.KEYWORD_EXPANSION[base_keyword][:3])
         projects = []
+        console.print(f"[cyan]🔑 搜索关键词组: {queries[:4]}...[/cyan]")
 
         for query in queries:
             # 构建搜索 URL
@@ -783,26 +808,53 @@ pip install xxx
             ArticleContent: 生成的文章内容
         """
         console.print("[bold magenta]🚀 GitHub 开源推荐 启动[/bold magenta]\n")
+        console.print(f"[cyan]🔑 初始关键词: {self.keyword}[/cyan]")
 
         try:
-            # 1. 获取 Trending 项目
+            # 1. 获取 Trending 项目（带自动关键词扩展重试）
             with Progress(
                 SpinnerColumn(),
                 TextColumn("[progress.description]{task.description}"),
                 console=console,
             ) as progress:
                 task1 = progress.add_task("[1/4] 采集热门项目...", total=None)
-                self.projects = await self.fetch_trending(since="daily")
-                progress.update(task1, completed=True)
 
-                if len(self.projects) < 3:
-                    console.print("[yellow]⚠️ 项目数量不足，尝试周榜...[/yellow]")
-                    self.projects = await self.fetch_trending(since="weekly")
+                # 尝试获取项目，如果不足则自动切换关键词
+                brief_projects = None
+                deep_dive_project = None
+                max_retries = 4  # 最多尝试 4 次不同的关键词
 
-                # 2. 选择项目
-                task2 = progress.add_task("[2/4] 选择推荐项目...", total=None)
-                brief_projects, deep_dive_project = await self.select_projects(self.projects)
-                progress.update(task2, completed=True)
+                for retry in range(max_retries):
+                    self.projects = await self.fetch_trending(since="daily")
+
+                    if len(self.projects) < 3:
+                        console.print("[yellow]⚠️ 日榜项目不足，尝试周榜...[/yellow]")
+                        self.projects = await self.fetch_trending(since="weekly")
+
+                    progress.update(task1, completed=True)
+
+                    # 2. 选择项目
+                    task2 = progress.add_task("[2/4] 选择推荐项目...", total=None)
+                    try:
+                        brief_projects, deep_dive_project = await self.select_projects(self.projects)
+                        progress.update(task2, completed=True)
+                        break  # 成功，退出重试循环
+                    except ValueError as e:
+                        progress.update(task2, completed=True)
+                        if "可选项目数量不足" in str(e) and retry < max_retries - 1:
+                            # 尝试切换到相近关键词
+                            next_keyword = self._get_next_keyword()
+                            if next_keyword:
+                                console.print(f"[yellow]⚠️ {e}[/yellow]")
+                                console.print(f"[cyan]🔄 自动切换关键词: {self.keyword} → {next_keyword}[/cyan]")
+                                self.keyword = next_keyword
+                                self.tried_keywords.append(next_keyword)
+                                task1 = progress.add_task(f"[1/4] 重新采集({next_keyword})...", total=None)
+                                continue
+                        raise  # 没有更多关键词或其他错误，抛出异常
+
+                if brief_projects is None:
+                    raise ValueError("所有关键词都已尝试，仍无法获取足够项目")
 
                 # 3. 生成文章
                 task3 = progress.add_task("[3/4] AI 生成文章...", total=None)
@@ -824,6 +876,29 @@ pip install xxx
 
         finally:
             self.http.close()
+
+    def _get_next_keyword(self) -> Optional[str]:
+        """
+        获取下一个要尝试的关键词
+
+        优先从当前关键词的扩展列表中选择，然后尝试其他常用关键词
+
+        Returns:
+            str: 下一个关键词，如果没有则返回 None
+        """
+        # 1. 先尝试当前关键词的扩展列表
+        if self.keyword in self.KEYWORD_EXPANSION:
+            for kw in self.KEYWORD_EXPANSION[self.keyword]:
+                if kw.lower() not in [k.lower() for k in self.tried_keywords]:
+                    return kw
+
+        # 2. 尝试其他常用 AI 关键词
+        fallback_keywords = ["llm", "agent", "rag", "automation", "langchain", "ml", "chatbot"]
+        for kw in fallback_keywords:
+            if kw.lower() not in [k.lower() for k in self.tried_keywords]:
+                return kw
+
+        return None
 
     async def _save_and_push(self, article: ArticleContent, selected_projects: list[TrendingProject], article_dir: Path):
         """

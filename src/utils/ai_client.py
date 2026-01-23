@@ -23,11 +23,19 @@ Hunter AI 内容工厂 - 统一 AI 客户端
 
 import httpx
 import base64
+import asyncio
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Optional
+from rich.console import Console
 
 from src.config import get_settings
+
+console = Console()
+
+# AI 请求超时配置（秒）
+AI_TIMEOUT = 300  # 5 分钟，生成长文章需要较长时间
+AI_MAX_RETRIES = 3  # 最大重试次数
 
 
 @dataclass
@@ -155,48 +163,91 @@ class OpenAICompatibleClient(BaseAIClient):
         self.image_model = settings.gemini.image_model
 
     async def generate(self, prompt: str, **kwargs) -> AIResponse:
-        """调用 OpenAI 兼容 API（异步）"""
-        async with httpx.AsyncClient(timeout=120) as client:
-            response = await client.post(
-                f"{self.base_url}/chat/completions",
-                headers=self.headers,
-                json={
-                    "model": self.model,
-                    "messages": [{"role": "user", "content": prompt}],
-                    "max_tokens": kwargs.get("max_tokens", 4096),
-                    "temperature": kwargs.get("temperature", 0.7),
-                }
-            )
-            response.raise_for_status()
-            data = response.json()
+        """调用 OpenAI 兼容 API（异步，带重试）"""
+        last_error = None
 
-            return AIResponse(
-                text=data["choices"][0]["message"]["content"],
-                model=self.model,
-                usage=data.get("usage")
-            )
+        for attempt in range(AI_MAX_RETRIES):
+            try:
+                async with httpx.AsyncClient(timeout=AI_TIMEOUT) as client:
+                    response = await client.post(
+                        f"{self.base_url}/chat/completions",
+                        headers=self.headers,
+                        json={
+                            "model": self.model,
+                            "messages": [{"role": "user", "content": prompt}],
+                            "max_tokens": kwargs.get("max_tokens", 4096),
+                            "temperature": kwargs.get("temperature", 0.7),
+                        }
+                    )
+                    response.raise_for_status()
+                    data = response.json()
+
+                    return AIResponse(
+                        text=data["choices"][0]["message"]["content"],
+                        model=self.model,
+                        usage=data.get("usage")
+                    )
+            except (httpx.TimeoutException, httpx.ReadTimeout) as e:
+                last_error = e
+                if attempt < AI_MAX_RETRIES - 1:
+                    wait_time = (attempt + 1) * 10  # 递增等待：10s, 20s, 30s
+                    console.print(f"[yellow]⏱️ AI 请求超时，{wait_time}秒后重试 ({attempt + 1}/{AI_MAX_RETRIES})...[/yellow]")
+                    await asyncio.sleep(wait_time)
+                else:
+                    console.print(f"[red]❌ AI 请求超时，已重试 {AI_MAX_RETRIES} 次[/red]")
+            except Exception as e:
+                last_error = e
+                if attempt < AI_MAX_RETRIES - 1:
+                    console.print(f"[yellow]⚠️ AI 请求失败: {e}，重试中...[/yellow]")
+                    await asyncio.sleep(5)
+                else:
+                    raise
+
+        raise last_error or RuntimeError("AI 请求失败")
 
     def generate_sync(self, prompt: str, **kwargs) -> AIResponse:
-        """调用 OpenAI 兼容 API（同步）"""
-        with httpx.Client(timeout=120) as client:
-            response = client.post(
-                f"{self.base_url}/chat/completions",
-                headers=self.headers,
-                json={
-                    "model": self.model,
-                    "messages": [{"role": "user", "content": prompt}],
-                    "max_tokens": kwargs.get("max_tokens", 4096),
-                    "temperature": kwargs.get("temperature", 0.7),
-                }
-            )
-            response.raise_for_status()
-            data = response.json()
+        """调用 OpenAI 兼容 API（同步，带重试）"""
+        import time
+        last_error = None
 
-            return AIResponse(
-                text=data["choices"][0]["message"]["content"],
-                model=self.model,
-                usage=data.get("usage")
-            )
+        for attempt in range(AI_MAX_RETRIES):
+            try:
+                with httpx.Client(timeout=AI_TIMEOUT) as client:
+                    response = client.post(
+                        f"{self.base_url}/chat/completions",
+                        headers=self.headers,
+                        json={
+                            "model": self.model,
+                            "messages": [{"role": "user", "content": prompt}],
+                            "max_tokens": kwargs.get("max_tokens", 4096),
+                            "temperature": kwargs.get("temperature", 0.7),
+                        }
+                    )
+                    response.raise_for_status()
+                    data = response.json()
+
+                    return AIResponse(
+                        text=data["choices"][0]["message"]["content"],
+                        model=self.model,
+                        usage=data.get("usage")
+                    )
+            except (httpx.TimeoutException, httpx.ReadTimeout) as e:
+                last_error = e
+                if attempt < AI_MAX_RETRIES - 1:
+                    wait_time = (attempt + 1) * 10
+                    console.print(f"[yellow]⏱️ AI 请求超时，{wait_time}秒后重试 ({attempt + 1}/{AI_MAX_RETRIES})...[/yellow]")
+                    time.sleep(wait_time)
+                else:
+                    console.print(f"[red]❌ AI 请求超时，已重试 {AI_MAX_RETRIES} 次[/red]")
+            except Exception as e:
+                last_error = e
+                if attempt < AI_MAX_RETRIES - 1:
+                    console.print(f"[yellow]⚠️ AI 请求失败: {e}，重试中...[/yellow]")
+                    time.sleep(5)
+                else:
+                    raise
+
+        raise last_error or RuntimeError("AI 请求失败")
 
     def generate_image_sync(self, prompt: str, output_path: Optional[str] = None, **kwargs) -> ImageResponse:
         """
@@ -212,7 +263,7 @@ class OpenAICompatibleClient(BaseAIClient):
         Returns:
             ImageResponse: 图片响应
         """
-        with httpx.Client(timeout=120) as client:
+        with httpx.Client(timeout=AI_TIMEOUT) as client:
             response = client.post(
                 f"{self.base_url}/images/generations",
                 headers=self.headers,

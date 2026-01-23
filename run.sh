@@ -259,7 +259,7 @@ echo ""
 } &) 2>/dev/null
 
 # 启动 Gradio（使用 uv 管理的 Python）
-"$UV_EXE" run --python-preference only-managed python -m src.gradio_app
+"$UV_EXE" run --python-preference only-managed python -m src.gradio_launcher
 
 echo ""
 echo "════════════════════════════════════════════════════════════════"

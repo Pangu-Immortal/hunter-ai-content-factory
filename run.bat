@@ -206,8 +206,8 @@ echo.
 :: 延迟打开浏览器（等待服务启动）
 start "" cmd /c "timeout /t 5 /nobreak >nul && start http://localhost:7860"
 
-:: 启动 Gradio（使用 uv 管理的 Python）
-"%UV_EXE%" run --python-preference only-managed python -m src.gradio_app
+:: 启动 Gradio（使用模块化 UI）
+"%UV_EXE%" run --python-preference only-managed python -m src.gradio_launcher
 
 :: 如果异常退出
 echo.

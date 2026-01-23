@@ -41,6 +41,8 @@ CUSTOM_CSS = load_custom_css()
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # 6-Skill 数据定义
+# 颜色字段对应 CSS 变量: --skill-{id}
+# 例如 topic 对应 var(--skill-topic)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 SKILLS_INFO = [
@@ -52,7 +54,8 @@ SKILLS_INFO = [
         "image": "hunter_intro_02.png",
         "description": "从海量信息中找到值得写的爆款选题，分析热点趋势，确定最佳切入角度。",
         "outputs": ["选定主题", "切入角度", "目标读者", "标题候选"],
-        "color": "#ff6b6b"
+        "color": "var(--skill-topic, #ff6b6b)",
+        "color_hex": "#ff6b6b"
     },
     {
         "id": "research",
@@ -62,7 +65,8 @@ SKILLS_INFO = [
         "image": "hunter_intro_04.png",
         "description": "根据选题搜索相关资料，提取核心观点和数据，验证信息可靠性。",
         "outputs": ["核心洞察", "事实数据", "来源列表", "详细笔记"],
-        "color": "#4ecdc4"
+        "color": "var(--skill-research, #4ecdc4)",
+        "color_hex": "#4ecdc4"
     },
     {
         "id": "structure",
@@ -72,7 +76,8 @@ SKILLS_INFO = [
         "image": "hunter_intro_06.png",
         "description": "设计文章骨架和阅读节奏，规划引人入胜的开篇钩子和有力的结尾。",
         "outputs": ["开篇钩子", "章节大纲", "结尾设计", "预估字数"],
-        "color": "#45b7d1"
+        "color": "var(--skill-structure, #45b7d1)",
+        "color_hex": "#45b7d1"
     },
     {
         "id": "write",
@@ -82,7 +87,8 @@ SKILLS_INFO = [
         "image": "hunter_intro_08.png",
         "description": "根据大纲撰写完整文章，融入研究素材，自动过滤 AI 痕迹词。",
         "outputs": ["完整初稿", "实际字数", "可读性评分"],
-        "color": "#96ceb4"
+        "color": "var(--skill-write, #96ceb4)",
+        "color_hex": "#96ceb4"
     },
     {
         "id": "package",
@@ -92,7 +98,8 @@ SKILLS_INFO = [
         "image": "hunter_intro_10.png",
         "description": "为文章打造吸睛外包装，生成标题选项、精炼摘要、封面图 Prompt。",
         "outputs": ["最终标题", "备选标题", "文章摘要", "封面提示词"],
-        "color": "#ffeaa7"
+        "color": "var(--skill-package, #ffeaa7)",
+        "color_hex": "#ffeaa7"
     },
     {
         "id": "publish",
@@ -102,7 +109,8 @@ SKILLS_INFO = [
         "image": "hunter_intro_12.png",
         "description": "最终违禁词检查，格式化推送内容，通过 PushPlus 一键推送到微信。",
         "outputs": ["推送状态", "推送时间", "消息 ID"],
-        "color": "#dfe6e9"
+        "color": "var(--skill-publish, #dfe6e9)",
+        "color_hex": "#dfe6e9"
     }
 ]
 
@@ -862,59 +870,14 @@ def create_app():
         # ═══════════════════════════════════════════════════════════════════
         gr.HTML("""
         <!-- 顶部标题 -->
-        <div style="text-align: center; padding: 25px 20px 10px 20px;">
-            <h1 style="font-size: 2.5em; margin: 0; color: #e91e63; text-shadow: 2px 2px 4px rgba(233,30,99,0.2);">
+        <div style="text-align: center; padding: 25px 20px 20px 20px;">
+            <h1 style="font-size: 2.5em; margin: 0; color: var(--brand-primary, #e91e63); text-shadow: 2px 2px 4px var(--brand-shadow, rgba(233,30,99,0.2));">
                 🦅 Hunter AI 内容工厂
             </h1>
             <p style="font-size: 1.1em; color: var(--text-muted, #666); margin: 10px 0 0 0;">
                 一键生成高质量公众号文章的 AI 工作流
             </p>
         </div>
-
-        <!-- 太极风格主题切换 -->
-        <div class="theme-switch-wrapper">
-            <span class="theme-switch-label">☀️</span>
-            <label class="theme-switch">
-                <input type="checkbox" id="theme-checkbox" onchange="handleThemeToggle(this)">
-                <span class="theme-slider"></span>
-            </label>
-            <span class="theme-switch-label">🌙</span>
-        </div>
-
-        <!-- 主题切换脚本 -->
-        <script>
-            // 切换主题
-            function handleThemeToggle(checkbox) {
-                const newTheme = checkbox.checked ? 'dark' : 'light';
-                document.documentElement.setAttribute('data-theme', newTheme);
-                localStorage.setItem('hunter-theme', newTheme);
-                console.log('Theme switched to:', newTheme);
-            }
-
-            // 初始化主题
-            function initTheme() {
-                const savedTheme = localStorage.getItem('hunter-theme') || 'light';
-                document.documentElement.setAttribute('data-theme', savedTheme);
-
-                const checkbox = document.getElementById('theme-checkbox');
-                if (checkbox) {
-                    checkbox.checked = savedTheme === 'dark';
-                    console.log('Theme initialized:', savedTheme);
-                }
-            }
-
-            // 立即初始化
-            initTheme();
-
-            // DOM 加载后再次初始化（确保 checkbox 存在）
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initTheme);
-            }
-
-            // Gradio 延迟加载备用
-            setTimeout(initTheme, 100);
-            setTimeout(initTheme, 500);
-        </script>
         """)
 
         # ═══════════════════════════════════════════════════════════════════
@@ -942,7 +905,7 @@ def create_app():
                             info="筛选 GitHub 项目的品类/功能/技术方向"
                         )
                         gr.Markdown("""
-                        <div style="background: rgba(255, 200, 0, 0.15); padding: 8px 12px; border-radius: 6px; margin: 5px 0; font-size: 12px; border: 1px solid rgba(255, 200, 0, 0.4); color: #ffd700;">
+                        <div style="background: var(--tip-yellow-bg, rgba(255, 200, 0, 0.15)); padding: 8px 12px; border-radius: 6px; margin: 5px 0; font-size: 12px; border: 1px solid var(--tip-yellow-border, rgba(255, 200, 0, 0.4)); color: var(--tip-yellow-text, #ffd700);">
                         💡 <b>Tips</b>: 关键词决定搜索的项目类型<br/>
                         • <b>AI</b> - 人工智能相关项目<br/>
                         • <b>LLM/Agent</b> - 大模型/智能体项目<br/>
@@ -975,7 +938,7 @@ def create_app():
                             info="生成文章的最低字数要求"
                         )
                         gr.Markdown("""
-                        <div style="background: rgba(0, 255, 255, 0.1); padding: 8px 12px; border-radius: 6px; margin: 5px 0; font-size: 12px; border: 1px solid rgba(0, 255, 255, 0.3); color: #00ffff;">
+                        <div style="background: var(--tip-cyan-bg, rgba(0, 255, 255, 0.1)); padding: 8px 12px; border-radius: 6px; margin: 5px 0; font-size: 12px; border: 1px solid var(--tip-cyan-border, rgba(0, 255, 255, 0.3)); color: var(--tip-cyan-text, #00ffff);">
                         💡 <b>推荐组合</b>:<br/>
                         • <b>快速版</b>: 3简介 + 0深度 ≈ 1500字<br/>
                         • <b>标准版</b>: 2简介 + 1深度 ≈ 3000字<br/>
@@ -1525,7 +1488,7 @@ def create_app():
         # 分隔线
         # ═══════════════════════════════════════════════════════════════════
         gr.HTML("""
-        <div style="height: 3px; background: linear-gradient(90deg, transparent, #ffb6c1, transparent); margin: 30px 0; border-radius: 3px;"></div>
+        <div style="height: 3px; background: linear-gradient(90deg, transparent, var(--brand-secondary, #ffb6c1), transparent); margin: 30px 0; border-radius: 3px;"></div>
         """)
 
         # ═══════════════════════════════════════════════════════════════════
@@ -1533,8 +1496,8 @@ def create_app():
         # ═══════════════════════════════════════════════════════════════════
         gr.Markdown("""
         <div style="text-align: center; margin-bottom: 20px;">
-            <h2 style="color: #e91e63;">📚 6-Skill 工作流介绍</h2>
-            <p style="color: #666;">像流水线一样高效协作，从选题到发布一气呵成</p>
+            <h2 style="color: var(--brand-primary, #e91e63);">📚 6-Skill 工作流介绍</h2>
+            <p style="color: var(--text-muted, #666);">像流水线一样高效协作，从选题到发布一气呵成</p>
         </div>
         """)
 
@@ -1608,53 +1571,13 @@ def create_app():
         # 页脚
         # ═══════════════════════════════════════════════════════════════════
         gr.HTML("""
-        <div style="text-align: center; padding: 20px; margin-top: 30px; border-top: 2px solid #ffb6c1;">
-            <p style="color: #999; margin: 0;">Made with 💖 by Pangu-Immortal</p>
-            <p style="color: #ccc; font-size: 0.9em; margin: 5px 0 0 0;">
+        <div style="text-align: center; padding: 20px; margin-top: 30px; border-top: 2px solid var(--brand-secondary, #ffb6c1);">
+            <p style="color: var(--text-muted, #999); margin: 0;">Made with 💖 by Pangu-Immortal</p>
+            <p style="color: var(--text-hint, #ccc); font-size: 0.9em; margin: 5px 0 0 0;">
                 Hunter AI 内容工厂 v3.0 |
-                <a href="https://github.com/Pangu-Immortal/hunter-ai-content-factory" style="color: #ff69b4;">GitHub</a>
+                <a href="https://github.com/Pangu-Immortal/hunter-ai-content-factory" style="color: var(--brand-link, #ff69b4);">GitHub</a>
             </p>
         </div>
         """)
 
     return app
-
-
-def main():
-    """启动 Gradio 应用"""
-    console.print("[bold magenta]🦅 启动 Hunter AI Web UI...[/bold magenta]\n")
-
-    app = create_app()
-
-    # 获取局域网IP地址
-    import socket
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        local_ip = s.getsockname()[0]
-        s.close()
-    except Exception:
-        local_ip = "127.0.0.1"
-
-    console.print("[cyan]本地访问: http://127.0.0.1:7860[/cyan]")
-    console.print(f"[cyan]局域网访问: http://{local_ip}:7860[/cyan]")
-    console.print("[cyan]外网分享: 启动后显示公网链接[/cyan]\n")
-
-    # 设置环境变量避免代理干扰
-    import os
-    os.environ['NO_PROXY'] = 'localhost,127.0.0.1,0.0.0.0'
-    os.environ['no_proxy'] = 'localhost,127.0.0.1,0.0.0.0'
-
-    app.launch(
-        server_name="0.0.0.0",
-        server_port=7860,
-        share=True,
-        show_error=True,
-        inbrowser=False,
-        css=CUSTOM_CSS,
-        theme=gr.themes.Soft(primary_hue="pink", secondary_hue="rose", neutral_hue="slate"),
-    )
-
-
-if __name__ == "__main__":
-    main()

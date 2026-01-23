@@ -45,9 +45,6 @@ from src.intel.utils import push_to_wechat, get_output_path, get_today_str
 # 终端输出美化
 console = Console()
 
-# 检查点目录
-CHECKPOINTS_DIR = ROOT_DIR / "data" / "checkpoints"
-
 
 class SkillExecutor:
     """
@@ -138,7 +135,7 @@ class WorkflowExecutor:
         """初始化工作流执行器"""
         self.skill_executor = SkillExecutor()
         self.workflow = ContentWorkflow()
-        self.checkpoint_dir = CHECKPOINTS_DIR
+        self.checkpoint_dir = settings.storage.checkpoints_path  # 使用配置的路径
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
     async def run(

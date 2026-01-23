@@ -861,40 +861,6 @@ def create_app():
         # 顶部标题 + 主题切换
         # ═══════════════════════════════════════════════════════════════════
         gr.HTML("""
-        <!-- 主题切换脚本 -->
-        <script>
-            // 初始化主题和同步 checkbox
-            (function() {
-                const savedTheme = localStorage.getItem('hunter-theme') || 'light';
-                document.documentElement.setAttribute('data-theme', savedTheme);
-
-                // 页面加载后同步 checkbox 状态
-                document.addEventListener('DOMContentLoaded', function() {
-                    const checkbox = document.querySelector('.theme-switch input');
-                    if (checkbox) {
-                        checkbox.checked = savedTheme === 'dark';
-                    }
-                });
-
-                // Gradio 可能延迟加载，增加备用检查
-                setTimeout(function() {
-                    const checkbox = document.querySelector('.theme-switch input');
-                    if (checkbox) {
-                        checkbox.checked = localStorage.getItem('hunter-theme') === 'dark';
-                    }
-                }, 500);
-            })();
-
-            // 切换主题
-            function toggleTheme() {
-                const html = document.documentElement;
-                const currentTheme = html.getAttribute('data-theme') || 'light';
-                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                html.setAttribute('data-theme', newTheme);
-                localStorage.setItem('hunter-theme', newTheme);
-            }
-        </script>
-
         <!-- 顶部标题 -->
         <div style="text-align: center; padding: 25px 20px 10px 20px;">
             <h1 style="font-size: 2.5em; margin: 0; color: #e91e63; text-shadow: 2px 2px 4px rgba(233,30,99,0.2);">
@@ -909,11 +875,46 @@ def create_app():
         <div class="theme-switch-wrapper">
             <span class="theme-switch-label">☀️</span>
             <label class="theme-switch">
-                <input type="checkbox" onclick="toggleTheme()">
+                <input type="checkbox" id="theme-checkbox" onchange="handleThemeToggle(this)">
                 <span class="theme-slider"></span>
             </label>
             <span class="theme-switch-label">🌙</span>
         </div>
+
+        <!-- 主题切换脚本 -->
+        <script>
+            // 切换主题
+            function handleThemeToggle(checkbox) {
+                const newTheme = checkbox.checked ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('hunter-theme', newTheme);
+                console.log('Theme switched to:', newTheme);
+            }
+
+            // 初始化主题
+            function initTheme() {
+                const savedTheme = localStorage.getItem('hunter-theme') || 'light';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+
+                const checkbox = document.getElementById('theme-checkbox');
+                if (checkbox) {
+                    checkbox.checked = savedTheme === 'dark';
+                    console.log('Theme initialized:', savedTheme);
+                }
+            }
+
+            // 立即初始化
+            initTheme();
+
+            // DOM 加载后再次初始化（确保 checkbox 存在）
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initTheme);
+            }
+
+            // Gradio 延迟加载备用
+            setTimeout(initTheme, 100);
+            setTimeout(initTheme, 500);
+        </script>
         """)
 
         # ═══════════════════════════════════════════════════════════════════

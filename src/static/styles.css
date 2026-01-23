@@ -96,6 +96,7 @@
 /* 滑动开关轨道 */
 .theme-switch {
     position: relative;
+    display: inline-block;
     width: 60px;
     height: 30px;
     cursor: pointer;
@@ -105,9 +106,10 @@
     opacity: 0;
     width: 0;
     height: 0;
+    position: absolute;
 }
 
-/* 轨道背景 - 太极配色 */
+/* 轨道背景 - 浅色模式 */
 .theme-slider {
     position: absolute;
     top: 0;
@@ -120,7 +122,7 @@
     transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-/* 滑块圆点 */
+/* 滑块圆点 - 浅色模式 */
 .theme-slider::before {
     content: "";
     position: absolute;
@@ -134,13 +136,13 @@
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
-/* 深色模式 - 轨道变黑，滑块变白 */
-[data-theme="dark"] .theme-slider {
+/* 深色模式 - 通过 checkbox :checked 控制滑块 */
+.theme-switch input:checked + .theme-slider {
     background: linear-gradient(90deg, #2d3748 0%, #1a1f2e 100%);
     border-color: #f0f0f0;
 }
 
-[data-theme="dark"] .theme-slider::before {
+.theme-switch input:checked + .theme-slider::before {
     transform: translateX(30px);
     background: #f5f5f5;
 }

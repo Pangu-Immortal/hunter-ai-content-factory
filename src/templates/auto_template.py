@@ -13,6 +13,9 @@ Hunter AI 内容工厂 - 自动创作模板
 
 命令行：
     uv run hunter run -t auto
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 import asyncio

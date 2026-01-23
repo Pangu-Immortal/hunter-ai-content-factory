@@ -10,6 +10,9 @@ Hunter AI 内容工厂 - 资讯快报模板
     from src.templates import get_template
     template = get_template("news")
     result = await template.run()
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 from src.templates import BaseTemplate, TemplateResult, register_template

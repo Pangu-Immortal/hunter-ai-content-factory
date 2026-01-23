@@ -7,6 +7,9 @@ Hunter AI 内容工厂 - 内容工厂工作流引擎
 - 支持单步执行和全流程执行
 
 工作流：Topic → Research → Structure → Write → Package → Publish
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 import json

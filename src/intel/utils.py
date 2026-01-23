@@ -17,6 +17,9 @@ Hunter AI 内容工厂 - 情报模块公共工具
     @retry_async(max_attempts=5, min_wait=1, max_wait=30)
     async def my_async_function():
         ...
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 import hashlib

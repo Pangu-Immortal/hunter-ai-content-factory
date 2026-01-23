@@ -17,6 +17,9 @@ Hunter AI 内容工厂 - 痛点数据存储模块
     store = PainStore()
     store.add_pain(content="...", source="twitter", ...)
     similar = store.find_similar("...")
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 import json

@@ -11,6 +11,9 @@ Hunter AI 内容工厂 - 环境自检与自动安装模块
 使用方法：
     python -m src.bootstrap          # 运行环境检查
     python -m src.bootstrap --fix    # 自动修复环境问题
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 import os

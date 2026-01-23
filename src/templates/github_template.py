@@ -10,6 +10,9 @@ Hunter AI 内容工厂 - GitHub 开源推荐模板
     from src.templates import get_template
     template = get_template("github")
     result = await template.run()
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 from src.templates import BaseTemplate, TemplateResult, register_template

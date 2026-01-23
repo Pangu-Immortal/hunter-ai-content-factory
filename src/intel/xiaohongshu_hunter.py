@@ -18,6 +18,9 @@ Cookie 获取方法：
     1. 浏览器登录小红书 (https://www.xiaohongshu.com)
     2. F12 打开开发者工具 → Application → Cookies
     3. 复制所有 Cookie 到 config.yaml 的 xiaohongshu.cookies 字段
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 import json

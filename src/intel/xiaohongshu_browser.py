@@ -11,6 +11,9 @@ Hunter AI 内容工厂 - 小红书浏览器采集模块
 
     browser = XiaohongshuBrowser()
     notes = await browser.search("AI工具")
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 import asyncio

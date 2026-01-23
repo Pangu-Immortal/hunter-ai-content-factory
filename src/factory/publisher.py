@@ -5,6 +5,9 @@ Hunter AI 内容工厂 - 文章推送模块
 - 通过 PushPlus 推送文章到微信
 - 支持 Markdown 格式
 - 自动生成推送标题和摘要
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 import datetime

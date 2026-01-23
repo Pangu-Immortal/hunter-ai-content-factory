@@ -9,6 +9,9 @@ Hunter AI 内容工厂 - GitHub 猎手模块
 
 使用方法：
     uv run python -m src.intel.github_hunter
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 import datetime

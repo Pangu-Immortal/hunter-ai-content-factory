@@ -10,6 +10,9 @@ Hunter AI 内容工厂 - 全能猎手模块
 
 使用方法：
     uv run python -m src.intel.auto_publisher
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 import asyncio

@@ -12,6 +12,9 @@ Hunter AI 内容工厂 - CLI 主入口
     uv run hunter run --type news  # 运行资讯模板
     uv run hunter run --type auto  # 运行自动创作模式
     uv run hunter --help           # 查看帮助
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 import asyncio
@@ -128,6 +131,46 @@ def templates():
         table.add_row(name, desc, f"uv run hunter run -t {name}")
 
     console.print(table)
+
+
+@cli.command()
+@click.option('--port', '-p', default=7860, help='Web UI 端口（默认 7860）')
+@click.option('--share', '-s', is_flag=True, help='开启外链分享')
+@click.option('--no-browser', is_flag=True, help='不自动打开浏览器')
+def web(port, share, no_browser):
+    """
+    🌐 启动 Web UI - 可视化操作界面
+
+    \b
+    功能说明：
+      - 可视化的 6-Skill 工作流操作
+      - 多平台情报采集
+      - 内容违禁词检查
+      - 配置管理
+
+    \b
+    示例：
+      uv run hunter web              # 默认启动
+      uv run hunter web -p 8080      # 指定端口
+      uv run hunter web --share      # 开启外链分享
+      uv run hunter web --no-browser # 不自动打开浏览器
+    """
+    console.print(Panel.fit(
+        "[bold cyan]🌐 Hunter AI Web UI[/bold cyan]\n"
+        f"[dim]端口: {port} | 分享: {'启用' if share else '禁用'}[/dim]",
+        border_style="cyan"
+    ))
+
+    from src.gradio_app import create_app
+
+    app = create_app()
+    app.launch(
+        server_name="0.0.0.0",
+        server_port=port,
+        share=share,
+        show_error=True,
+        inbrowser=not no_browser,
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

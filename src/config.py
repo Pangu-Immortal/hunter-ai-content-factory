@@ -11,6 +11,9 @@ Hunter AI 内容工厂 - 统一配置管理模块
 1. config.yaml（推荐，可读性好）
 2. .env（向下兼容旧配置）
 3. 默认值
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 import yaml
@@ -364,6 +367,55 @@ def get_settings() -> Settings:
     return Settings(config_source="默认配置")
 
 
+def _is_valid_key(value: str, min_length: int = 10) -> bool:
+    """
+    检查配置值是否为有效的 Key（非占位符）
+
+    Args:
+        value: 配置值
+        min_length: 最小有效长度
+
+    Returns:
+        bool: 是否为有效配置
+    """
+    if not value or not isinstance(value, str):
+        return False
+
+    value_lower = value.lower().strip()
+
+    # 检查常见占位符模式
+    placeholder_patterns = [
+        'your_',           # your_api_key_here, your_token_here
+        'xxx',             # xxx, xxxxxx
+        'placeholder',     # placeholder
+        'example',         # example_key
+        'test_',           # test_key
+        'demo_',           # demo_key
+        'fill_',           # fill_in_here
+        'replace_',        # replace_with_your_key
+        '<',               # <your_key>
+        '[',               # [your_key]
+        '{',               # {your_key}
+        'todo',            # TODO
+        'fixme',           # FIXME
+        'change_me',       # change_me
+        'insert_',         # insert_your_key
+        'put_',            # put_your_key_here
+        'api_key_here',    # api_key_here
+        'token_here',      # token_here
+    ]
+
+    for pattern in placeholder_patterns:
+        if pattern in value_lower:
+            return False
+
+    # 长度检查（有效的 API Key 通常较长）
+    if len(value.strip()) < min_length:
+        return False
+
+    return True
+
+
 def get_config_status() -> dict:
     """
     获取配置状态信息（用于 CLI 显示）
@@ -378,10 +430,10 @@ def get_config_status() -> dict:
         'config_file': str(CONFIG_YAML) if CONFIG_YAML.exists() else (str(ENV_FILE) if ENV_FILE.exists() else '无'),
         'gemini': {
             'model': s.gemini.model,
-            'api_key_configured': bool(s.gemini.api_key and s.gemini.api_key != 'your_gemini_api_key_here'),
+            'api_key_configured': _is_valid_key(s.gemini.api_key, min_length=20),  # Gemini Key 较长
         },
         'github': {
-            'token_configured': bool(s.github.token and not s.github.token.startswith('ghp_your')),
+            'token_configured': _is_valid_key(s.github.token, min_length=30),  # GitHub Token 较长
             'min_stars': s.github.min_stars,
         },
         'twitter': {
@@ -389,7 +441,7 @@ def get_config_status() -> dict:
             'cookies_exists': s.twitter.cookies_file.exists(),
         },
         'pushplus': {
-            'token_configured': bool(s.push.token and s.push.token != 'your_pushplus_token_here'),
+            'token_configured': _is_valid_key(s.push.token, min_length=10),  # PushPlus Token 较短
             'enabled': s.push.enabled,
         },
         'account': {

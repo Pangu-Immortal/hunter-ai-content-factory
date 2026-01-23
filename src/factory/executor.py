@@ -12,6 +12,9 @@ Hunter AI 内容工厂 - 工作流执行器
 
     executor = WorkflowExecutor()
     result = await executor.run(niche="AI技术", trends=["Agent", "MCP"])
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 import json

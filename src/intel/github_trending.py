@@ -11,6 +11,9 @@ Hunter AI 内容工厂 - GitHub Trending 采集模块
     from src.intel.github_trending import GitHubTrendingHunter
     hunter = GitHubTrendingHunter()
     await hunter.run()
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 import asyncio

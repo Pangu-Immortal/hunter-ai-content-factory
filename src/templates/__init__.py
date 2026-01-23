@@ -22,6 +22,9 @@ Hunter AI 内容工厂 - 模板系统
     # 获取指定模板
     template = get_template("github")
     await template.run()
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 from abc import ABC, abstractmethod

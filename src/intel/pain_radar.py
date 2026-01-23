@@ -10,6 +10,9 @@ Hunter AI 内容工厂 - 痛点雷达模块
 
 使用方法：
     uv run python -m src.intel.pain_radar
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 import asyncio

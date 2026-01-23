@@ -11,6 +11,9 @@ Hunter AI 内容工厂 - Reddit 采集模块
     from src.intel.reddit_hunter import RedditHunter
     hunter = RedditHunter()
     posts = await hunter.run()
+
+GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
+Author: Pangu-Immortal
 """
 
 import asyncio

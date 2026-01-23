@@ -97,14 +97,15 @@ async def run_github_template(
         logs.append(f"- ⭐ 筛选条件: Stars ≥ {min_stars}\n")
         logs.append(f"- 📂 搜索范围: {search_keyword} 相关项目\n")
 
-        from src.templates import get_template
+        from src.templates.github_template import GitHubTemplate
 
         logs.append("\n### 🔍 Step 2: 抓取热门项目\n")
         logs.append(f"- 正在查询 GitHub 「{search_keyword}」 热门项目...\n")
         logs.append(f"- 需要抓取: **{brief_count + deep_count}** 个项目\n")
+        logs.append(f"- 🔄 支持自动关键词切换（项目不足时尝试相近关键词）\n")
 
-        # 使用正确的模板API
-        template = get_template("github")
+        # 使用 GitHubTemplate 并传递关键词
+        template = GitHubTemplate(keyword=search_keyword)
         result = await template.run()
 
         logs.append("- ✅ 项目抓取完成\n")

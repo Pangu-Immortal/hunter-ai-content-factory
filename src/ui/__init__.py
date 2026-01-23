@@ -1,5 +1,5 @@
 """
-Hunter AI 内容工厂 - 模块化 UI 包
+摆渡人AI系统 - 模块化 UI 包
 
 目录结构：
 - constants.py: 常量定义（SKILLS_INFO、CSS 加载）

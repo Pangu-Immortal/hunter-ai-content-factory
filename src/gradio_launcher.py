@@ -1,5 +1,5 @@
 """
-Hunter AI 内容工厂 - Gradio Web UI 启动器
+摆渡人AI系统 - Gradio Web UI 启动器
 
 功能：
 - 统一的 Web UI 启动入口
@@ -62,7 +62,7 @@ function applyTheme() {
         removeDarkStyles();
     }
 
-    console.log('[Hunter AI] 主题切换:', isDark ? '深色模式' : '浅色模式');
+    console.log('[摆渡人AI] 主题切换:', isDark ? '深色模式' : '浅色模式');
 }
 
 // 强制应用深色样式（作为 CSS 的后备方案）
@@ -257,7 +257,7 @@ setInterval(removeTabOverflowButtons, 1000);
 
 def main():
     """启动 Gradio 应用（模块化版本）"""
-    console.print("[bold magenta]🦅 启动 Hunter AI Web UI...[/bold magenta]\n")
+    console.print("[bold magenta]🦅 启动摆渡人AI系统 Web UI...[/bold magenta]\n")
 
     # 使用模块化 UI（独立于 gradio_app.py）
     from src.ui import create_app

@@ -1,5 +1,5 @@
 """
-Hunter AI 内容工厂 - 常量定义
+摆渡人AI系统 - 常量定义
 
 包含：
 - SKILLS_INFO: 6-Skill 工作流数据定义

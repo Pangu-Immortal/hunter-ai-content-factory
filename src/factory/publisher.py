@@ -6,6 +6,10 @@ Hunter AI 内容工厂 - 文章推送模块
 - 支持 Markdown 格式
 - 自动生成推送标题和摘要
 
+注意：
+- 核心推送逻辑在 intel/utils.py 的 push_to_wechat 函数
+- 本模块提供更丰富的包装（格式化、返回详情）
+
 GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
 Author: Pangu-Immortal
 """
@@ -16,7 +20,7 @@ from pathlib import Path
 from rich.console import Console
 
 from src.config import settings
-from src.intel.utils import create_http_client
+from src.intel.utils import push_to_wechat
 
 # 终端输出美化
 console = Console()
@@ -29,7 +33,9 @@ def push_article_to_wechat(
     template: str = "markdown"
 ) -> dict:
     """
-    推送文章到微信
+    推送文章到微信（封装版，返回详细结果）
+
+    内部调用 intel/utils.push_to_wechat 进行实际推送
 
     Args:
         title: 文章标题
@@ -38,14 +44,14 @@ def push_article_to_wechat(
         template: 模板类型
 
     Returns:
-        dict: 推送结果
+        dict: 推送结果，包含 push_status, push_time, message_id, error_message
     """
-    token = settings.push.token
-
-    if not token:
+    if not settings.push.token:
         console.print("[yellow]⚠️ PushPlus Token 未配置，跳过推送[/yellow]")
         return {
             "push_status": "skipped",
+            "push_time": datetime.datetime.now().isoformat(),
+            "message_id": "",
             "error_message": "Token 未配置"
         }
 
@@ -57,35 +63,31 @@ def push_article_to_wechat(
         formatted_content += f"**摘要**: {summary}\n\n---\n\n"
     formatted_content += content
 
-    try:
-        with create_http_client(timeout=15.0) as client:
-            response = client.post(
-                'https://www.pushplus.plus/send',
-                json={
-                    "token": token,
-                    "title": f"【成稿】{title[:30]}",
-                    "content": formatted_content,
-                    "template": template
-                }
-            )
-            result = response.json()
+    # 格式化标题
+    formatted_title = f"【成稿】{title[:30]}"
 
-            if result.get('code') == 200:
-                console.print(f"[green]✅ 推送成功！消息ID: {result.get('data')}[/green]")
-                return {
-                    "push_status": "success",
-                    "push_time": datetime.datetime.now().isoformat(),
-                    "message_id": str(result.get('data', '')),
-                    "error_message": ""
-                }
-            else:
-                console.print(f"[red]❌ 推送失败: {result.get('msg')}[/red]")
-                return {
-                    "push_status": "failed",
-                    "push_time": datetime.datetime.now().isoformat(),
-                    "message_id": "",
-                    "error_message": result.get('msg', '未知错误')
-                }
+    # 调用核心推送函数
+    try:
+        success = push_to_wechat(
+            title=formatted_title,
+            content=formatted_content,
+            template=template
+        )
+
+        if success:
+            return {
+                "push_status": "success",
+                "push_time": datetime.datetime.now().isoformat(),
+                "message_id": "",  # push_to_wechat 不返回 message_id
+                "error_message": ""
+            }
+        else:
+            return {
+                "push_status": "failed",
+                "push_time": datetime.datetime.now().isoformat(),
+                "message_id": "",
+                "error_message": "推送返回失败"
+            }
 
     except Exception as e:
         console.print(f"[red]❌ 推送出错: {e}[/red]")

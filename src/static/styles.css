@@ -1,64 +1,126 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    Hunter AI 内容工厂 - 主题样式文件
-   支持深色/浅色主题切换
+   自动跟随系统深色/浅色主题
 ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   🎨 主题变量定义 - 支持深浅切换
+   🎨 主题变量定义 - 自动跟随系统主题
 ═══════════════════════════════════════════════════════════════════════════ */
 
 /* 浅色主题（默认） */
-:root, [data-theme="light"] {
+:root {
+    /* ─────────────── 基础背景色 ─────────────── */
     --bg-primary: #ffffff;
     --bg-secondary: #f8f9fa;
     --bg-tertiary: #f0f0f0;
+
+    /* ─────────────── 文字颜色 ─────────────── */
     --text-primary: #1a1a2e;
     --text-secondary: #333333;
     --text-muted: #666666;
     --text-hint: #999999;
+
+    /* ─────────────── 边框颜色 ─────────────── */
     --border-color: #dddddd;
     --border-light: #eeeeee;
+
+    /* ─────────────── 强调色 ─────────────── */
     --accent-color: #0066cc;
     --accent-hover: #004499;
     --accent-light: #e6f7ff;
+
+    /* ─────────────── 状态色 ─────────────── */
     --success: #22c55e;
     --error: #ef4444;
     --warning: #f59e0b;
+
+    /* ─────────────── 品牌色 (Hunter AI 粉色系) ─────────────── */
+    --brand-primary: #e91e63;           /* 主品牌色 - 标题 */
+    --brand-secondary: #ffb6c1;         /* 浅粉色 - 边框/分隔线 */
+    --brand-link: #ff69b4;              /* 亮粉色 - 链接 */
+    --brand-shadow: rgba(233, 30, 99, 0.2);  /* 品牌色阴影 */
+
+    /* ─────────────── Skill 卡片颜色 ─────────────── */
+    --skill-topic: #ff6b6b;             /* 🎯 Topic 选题 - 红色 */
+    --skill-research: #4ecdc4;          /* 🔬 Research 研究 - 青色 */
+    --skill-structure: #45b7d1;         /* 🏗️ Structure 结构 - 蓝色 */
+    --skill-write: #96ceb4;             /* ✍️ Write 写作 - 绿色 */
+    --skill-package: #ffeaa7;           /* 🎁 Package 封装 - 黄色 */
+    --skill-publish: #dfe6e9;           /* 🚀 Publish 发布 - 灰色 */
+
+    /* ─────────────── 提示框颜色 ─────────────── */
     --tip-yellow-bg: #fff8e6;
     --tip-yellow-border: #ffd866;
     --tip-yellow-text: #996600;
+    --tip-cyan-bg: rgba(0, 255, 255, 0.08);
+    --tip-cyan-border: rgba(0, 255, 255, 0.3);
+    --tip-cyan-text: #00cccc;
     --tip-blue-bg: #e6f7ff;
     --tip-blue-border: #69c0ff;
     --tip-blue-text: #0066cc;
+
+    /* ─────────────── 其他 ─────────────── */
     --code-bg: #f0f0f0;
     --shadow: rgba(0, 0, 0, 0.1);
 }
 
-/* 深色主题 */
-[data-theme="dark"] {
-    --bg-primary: #1a1f2e;
-    --bg-secondary: #242d3d;
-    --bg-tertiary: #2d3748;
-    --text-primary: #f0f0f0;
-    --text-secondary: #e0e0e0;
-    --text-muted: #a0aec0;
-    --text-hint: #718096;
-    --border-color: #3d4a5c;
-    --border-light: #2d3748;
-    --accent-color: #00d4ff;
-    --accent-hover: #00b8e6;
-    --accent-light: rgba(0, 212, 255, 0.1);
-    --success: #4ade80;
-    --error: #f87171;
-    --warning: #fbbf24;
-    --tip-yellow-bg: rgba(255, 200, 0, 0.15);
-    --tip-yellow-border: rgba(255, 200, 0, 0.4);
-    --tip-yellow-text: #ffd866;
-    --tip-blue-bg: rgba(0, 212, 255, 0.1);
-    --tip-blue-border: rgba(0, 212, 255, 0.3);
-    --tip-blue-text: #00d4ff;
-    --code-bg: #2d3748;
-    --shadow: rgba(0, 0, 0, 0.3);
+/* 深色主题 - 参考 IDE 暗夜模式配色 */
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* ─────────────── 基础背景色 ─────────────── */
+        --bg-primary: #1e2430;
+        --bg-secondary: #252b37;
+        --bg-tertiary: #2a3142;
+
+        /* ─────────────── 文字颜色 ─────────────── */
+        --text-primary: #d4dae5;
+        --text-secondary: #a8b5c8;
+        --text-muted: #8b9bb4;
+        --text-hint: #6b7a8f;
+
+        /* ─────────────── 边框颜色 ─────────────── */
+        --border-color: #3a4555;
+        --border-light: #2d3544;
+
+        /* ─────────────── 强调色 ─────────────── */
+        --accent-color: #5cb3cc;
+        --accent-hover: #6ec4dd;
+        --accent-light: rgba(92, 179, 204, 0.12);
+
+        /* ─────────────── 状态色 ─────────────── */
+        --success: #73c991;
+        --error: #e06c75;
+        --warning: #ddb06c;
+
+        /* ─────────────── 品牌色 (Hunter AI 粉色系 - 深色模式适配) ─────────────── */
+        --brand-primary: #f06292;           /* 主品牌色 - 亮度提升 */
+        --brand-secondary: #4a3540;         /* 浅粉色 - 深色适配 */
+        --brand-link: #ff80ab;              /* 亮粉色 - 深色适配 */
+        --brand-shadow: rgba(240, 98, 146, 0.3);  /* 品牌色阴影 */
+
+        /* ─────────────── Skill 卡片颜色 (深色模式适配) ─────────────── */
+        --skill-topic: #ff8a80;             /* 🎯 Topic 选题 */
+        --skill-research: #64d8cb;          /* 🔬 Research 研究 */
+        --skill-structure: #5bc0de;         /* 🏗️ Structure 结构 */
+        --skill-write: #a8d5ba;             /* ✍️ Write 写作 */
+        --skill-package: #ffe4a0;           /* 🎁 Package 封装 */
+        --skill-publish: #b0bec5;           /* 🚀 Publish 发布 */
+
+        /* ─────────────── 提示框颜色 ─────────────── */
+        --tip-yellow-bg: rgba(221, 176, 108, 0.12);
+        --tip-yellow-border: rgba(221, 176, 108, 0.35);
+        --tip-yellow-text: #ddb06c;
+        --tip-cyan-bg: rgba(0, 255, 255, 0.08);
+        --tip-cyan-border: rgba(0, 255, 255, 0.25);
+        --tip-cyan-text: #4dd0e1;
+        --tip-blue-bg: rgba(92, 179, 204, 0.1);
+        --tip-blue-border: rgba(92, 179, 204, 0.3);
+        --tip-blue-text: #6eb4d1;
+
+        /* ─────────────── 其他 ─────────────── */
+        --code-bg: #2a3142;
+        --shadow: rgba(0, 0, 0, 0.4);
+    }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -74,82 +136,6 @@
     margin: 0 auto !important;
     color: var(--text-primary) !important;
     transition: background 0.3s ease, color 0.3s ease !important;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   主题切换按钮 - 太极滑动式
-═══════════════════════════════════════════════════════════════════════════ */
-
-.theme-switch-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 0 20px 0;
-}
-
-.theme-switch-label {
-    font-size: 20px;
-    line-height: 1;
-}
-
-/* 滑动开关轨道 */
-.theme-switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 30px;
-    cursor: pointer;
-}
-
-.theme-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-    position: absolute;
-}
-
-/* 轨道背景 - 浅色模式 */
-.theme-slider {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, #f5f5f5 0%, #e0e0e0 100%);
-    border: 2px solid #333;
-    border-radius: 30px;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-/* 滑块圆点 - 浅色模式 */
-.theme-slider::before {
-    content: "";
-    position: absolute;
-    width: 22px;
-    height: 22px;
-    left: 2px;
-    bottom: 2px;
-    background: #1a1a2e;
-    border-radius: 50%;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-}
-
-/* 深色模式 - 通过 checkbox :checked 控制滑块 */
-.theme-switch input:checked + .theme-slider {
-    background: linear-gradient(90deg, #2d3748 0%, #1a1f2e 100%);
-    border-color: #f0f0f0;
-}
-
-.theme-switch input:checked + .theme-slider::before {
-    transform: translateX(30px);
-    background: #f5f5f5;
-}
-
-/* 悬停效果 */
-.theme-switch:hover .theme-slider::before {
-    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -195,51 +181,227 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Tab 标签页
+   Tab 标签页 - 胶囊式导航（参考 Antigravity Tools 风格）
 ═══════════════════════════════════════════════════════════════════════════ */
 
-.tab-nav button {
+/* Tab 容器 - 浅灰背景包裹 */
+.tab-nav, div[role="tablist"] {
+    display: inline-flex !important;
+    background: var(--bg-secondary, #f0f0f0) !important;
+    border-radius: 12px !important;
+    padding: 4px !important;
+    gap: 4px !important;
+    border: none !important;
+    border-bottom: none !important;
+    margin: 0 auto 20px auto !important;
+}
+
+/* Tab 按钮 - 胶囊形状 */
+.tab-nav button, [role="tab"], button[role="tab"] {
     background: transparent !important;
     border: none !important;
-    border-bottom: 2px solid transparent !important;
-    border-radius: 0 !important;
-    margin: 0 8px !important;
-    padding: 12px 20px !important;
-    font-weight: 600 !important;
-    font-size: 15px !important;
-    color: var(--text-muted) !important;
+    border-bottom: none !important;
+    border-radius: 8px !important;
+    margin: 0 !important;
+    padding: 10px 20px !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    color: var(--text-muted, #666) !important;
     transition: all 0.2s ease !important;
+    white-space: nowrap !important;
 }
 
-.tab-nav button:hover {
-    color: var(--text-secondary) !important;
-    border-bottom-color: var(--border-color) !important;
+/* Tab 悬停状态 */
+.tab-nav button:hover, [role="tab"]:hover {
+    color: var(--text-secondary, #333) !important;
+    background: rgba(0, 0, 0, 0.05) !important;
+    border-bottom: none !important;
 }
 
-.tab-nav button.selected {
-    color: var(--accent-color) !important;
-    border-bottom: 2px solid var(--accent-color) !important;
-    background: transparent !important;
+/* Tab 选中状态 - 深色背景填充 */
+.tab-nav button.selected,
+[role="tab"][aria-selected="true"],
+button[role="tab"].selected {
+    background: var(--accent-color, #0066cc) !important;
+    color: #ffffff !important;
+    border-bottom: none !important;
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.25) !important;
+}
+
+/* 选中状态悬停 */
+.tab-nav button.selected:hover,
+[role="tab"][aria-selected="true"]:hover {
+    background: var(--accent-hover, #004499) !important;
+    color: #ffffff !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   主按钮
+   🎨 渐变彩色按钮系统 - 浅色主题
+   设计理念：所有按钮都采用渐变色，视觉上更现代、更有点击欲
 ═══════════════════════════════════════════════════════════════════════════ */
 
-.primary {
-    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%) !important;
+/* ─────────────── 按钮基础样式 ─────────────── */
+button, .gr-button, [class*="button"] {
     border: none !important;
-    border-radius: 6px !important;
-    font-weight: 700 !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
     font-size: 14px !important;
-    color: #fff !important;
-    padding: 12px 28px !important;
-    transition: all 0.2s ease !important;
+    padding: 10px 20px !important;
+    cursor: pointer !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
-.primary:hover {
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 20px var(--shadow) !important;
+/* 按钮点击波纹效果 */
+button::after, .gr-button::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    transition: width 0.3s, height 0.3s !important;
+}
+
+button:active::after, .gr-button:active::after {
+    width: 200px !important;
+    height: 200px !important;
+}
+
+/* ─────────────── Primary 主按钮 - 品牌粉色渐变 ─────────────── */
+button.primary, .primary, [class*="primary"]:not(.text-primary) {
+    background: linear-gradient(135deg, #e91e63 0%, #c2185b 50%, #ad1457 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.35) !important;
+}
+
+button.primary:hover, .primary:hover {
+    background: linear-gradient(135deg, #f06292 0%, #e91e63 50%, #c2185b 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 25px rgba(233, 30, 99, 0.45) !important;
+}
+
+button.primary:active, .primary:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 10px rgba(233, 30, 99, 0.3) !important;
+}
+
+/* ─────────────── Secondary 次要按钮 - 蓝紫渐变 ─────────────── */
+button.secondary, .secondary, .gr-button:not(.primary) {
+    background: linear-gradient(135deg, #667eea 0%, #5a67d8 50%, #4c51bf 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+}
+
+button.secondary:hover, .secondary:hover, .gr-button:not(.primary):hover {
+    background: linear-gradient(135deg, #7c8ff8 0%, #667eea 50%, #5a67d8 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+}
+
+button.secondary:active, .secondary:active, .gr-button:not(.primary):active {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.25) !important;
+}
+
+/* ─────────────── Success 成功按钮 - 绿色渐变 ─────────────── */
+button.success, .btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
+}
+
+button.success:hover, .btn-success:hover {
+    background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* ─────────────── Warning 警告按钮 - 橙色渐变 ─────────────── */
+button.warning, .btn-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3) !important;
+}
+
+button.warning:hover, .btn-warning:hover {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4) !important;
+}
+
+/* ─────────────── Danger 危险按钮 - 红色渐变 ─────────────── */
+button.danger, .btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3) !important;
+}
+
+button.danger:hover, .btn-danger:hover {
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 50%, #dc2626 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* ─────────────── Info 信息按钮 - 青色渐变 ─────────────── */
+button.info, .btn-info {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 50%, #0e7490 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3) !important;
+}
+
+button.info:hover, .btn-info:hover {
+    background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 50%, #0891b2 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4) !important;
+}
+
+/* ─────────────── Outline 轮廓按钮 - 透明渐变边框 ─────────────── */
+button.outline, .btn-outline {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(90, 103, 216, 0.12) 100%) !important;
+    color: #667eea !important;
+    border: 2px solid #667eea !important;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15) !important;
+}
+
+button.outline:hover, .btn-outline:hover {
+    background: linear-gradient(135deg, #667eea 0%, #5a67d8 100%) !important;
+    color: #ffffff !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.35) !important;
+}
+
+/* ─────────────── 禁用状态 ─────────────── */
+button:disabled, button[disabled], .gr-button:disabled {
+    background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%) !important;
+    color: #6b7280 !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+    transform: none !important;
+    opacity: 0.7 !important;
+}
+
+/* ─────────────── Tab 按钮特殊处理（保持胶囊式） ─────────────── */
+.tab-nav button, [role="tab"], button[role="tab"] {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 10px 20px !important;
+}
+
+.tab-nav button:hover, [role="tab"]:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.tab-nav button.selected, [role="tab"][aria-selected="true"] {
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.25) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -460,4 +622,625 @@ blockquote {
     padding: 20px;
     margin-top: 30px;
     color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Gradio 组件深色模式增强
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* 下拉选择框 */
+.gr-dropdown,
+.gr-dropdown > div,
+.gr-dropdown input,
+.gr-dropdown ul,
+.gr-dropdown li,
+[data-testid="dropdown"] {
+    background: var(--bg-secondary) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-color) !important;
+}
+
+.gr-dropdown ul li:hover,
+.gr-dropdown li[aria-selected="true"] {
+    background: var(--bg-tertiary) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Gradio 输入组件 */
+.gr-input, .gr-text-input, .gr-number-input {
+    background: var(--bg-secondary) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Gradio 滑块 */
+.gr-slider input[type="range"] {
+    background: var(--bg-tertiary) !important;
+}
+
+.gr-slider .range-value {
+    color: var(--text-secondary) !important;
+    background: var(--bg-secondary) !important;
+}
+
+/* Gradio 复选框 */
+.gr-checkbox label,
+.gr-checkbox span {
+    color: var(--text-secondary) !important;
+}
+
+/* Gradio 按钮 - 由渐变按钮系统统一管理 */
+/* 见「渐变彩色按钮系统」部分 */
+
+/* Gradio 文本区域 */
+.gr-textarea textarea {
+    background: var(--bg-secondary) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Gradio 容器和块 */
+.gr-block, .gr-box, .gr-form {
+    background: var(--bg-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Gradio 标签 */
+.gr-label, .gr-input-label {
+    color: var(--text-secondary) !important;
+}
+
+/* Gradio 信息提示 */
+.gr-info {
+    color: var(--text-muted) !important;
+}
+
+/* Gradio 选项组 */
+.gr-radio label,
+.gr-radio span,
+.gr-checkbox-group label {
+    color: var(--text-secondary) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   深色模式 - 强制覆盖所有 Gradio 默认样式
+   使用直接颜色值 + !important 确保覆盖优先级
+
+   支持两种触发方式：
+   1. @media (prefers-color-scheme: dark) - 系统主题自动检测
+   2. [data-theme="dark"] - JavaScript 手动设置 (备用)
+═══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-color-scheme: dark) {
+
+    /* ─────────────── 根元素强制深色 ─────────────── */
+    :root {
+        color-scheme: dark !important;
+    }
+
+    html, body {
+        background: #1e2430 !important;
+        color: #d4dae5 !important;
+    }
+
+    /* ─────────────── Gradio 容器 - 最高优先级覆盖 ─────────────── */
+    .gradio-container {
+        background: #1e2430 !important;
+        color: #d4dae5 !important;
+    }
+
+    .gradio-container *:not(svg):not(path) {
+        color-scheme: dark !important;
+    }
+
+    /* ─────────────── 主体区域 ─────────────── */
+    .main, .contain, .container, #component-0 {
+        background: #1e2430 !important;
+    }
+
+    /* ─────────────── 所有面板和块 ─────────────── */
+    .panel, .block, .form, .gr-box, .gr-panel, .gr-form, .gr-block,
+    [class*="block"], [class*="panel"], [class*="container"] {
+        background: #1e2430 !important;
+        border-color: #3a4555 !important;
+    }
+
+    /* ─────────────── Tab 区域 - 深色胶囊式 ─────────────── */
+    .tabs, .tabitem, .tab-content, [class*="tabs"], [class*="tabitem"] {
+        background: #1e2430 !important;
+    }
+
+    /* Tab 容器 - 深色背景包裹 */
+    .tab-nav, [class*="tab-nav"], div[role="tablist"] {
+        background: #252b37 !important;
+        border-radius: 12px !important;
+        padding: 4px !important;
+        border: none !important;
+        border-bottom: none !important;
+    }
+
+    /* Tab 按钮 - 深色胶囊 */
+    .tab-nav button, [role="tab"], button[role="tab"] {
+        background: transparent !important;
+        color: #b8c4d6 !important;
+        border: none !important;
+        border-bottom: none !important;
+        border-radius: 8px !important;
+    }
+
+    .tab-nav button:hover, [role="tab"]:hover {
+        color: #e0e6ef !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        border-bottom: none !important;
+    }
+
+    /* Tab 选中 - 深色模式强调色背景 */
+    .tab-nav button.selected, [role="tab"][aria-selected="true"],
+    button[role="tab"].selected {
+        color: #ffffff !important;
+        background: #5cb3cc !important;
+        border-bottom: none !important;
+        box-shadow: 0 2px 8px rgba(92, 179, 204, 0.3) !important;
+    }
+
+    .tab-nav button.selected:hover, [role="tab"][aria-selected="true"]:hover {
+        background: #6ec4dd !important;
+    }
+
+    /* ─────────────── 输入框 ─────────────── */
+    input, textarea, select {
+        background: #252b37 !important;
+        color: #a8b5c8 !important;
+        border: 1px solid #3a4555 !important;
+    }
+
+    input:focus, textarea:focus, select:focus {
+        background: #1e2430 !important;
+        border-color: #5cb3cc !important;
+        outline: none !important;
+    }
+
+    input::placeholder, textarea::placeholder {
+        color: #6b7a8f !important;
+        opacity: 1 !important;
+    }
+
+    /* Gradio 特定输入组件 */
+    .gr-input, .gr-text-input, .gr-number-input, .gr-textbox,
+    [class*="textbox"], [class*="input"] {
+        background: #252b37 !important;
+        color: #a8b5c8 !important;
+        border-color: #3a4555 !important;
+    }
+
+    .gr-textbox textarea, [class*="textbox"] textarea {
+        background: #252b37 !important;
+        color: #a8b5c8 !important;
+    }
+
+    /* ─────────────── 下拉选择框 ─────────────── */
+    .gr-dropdown, [class*="dropdown"], select,
+    [data-testid="dropdown"] {
+        background: #252b37 !important;
+        color: #a8b5c8 !important;
+        border-color: #3a4555 !important;
+    }
+
+    .gr-dropdown > div, .gr-dropdown input, .gr-dropdown span {
+        background: #252b37 !important;
+        color: #a8b5c8 !important;
+    }
+
+    /* 下拉菜单弹出层 */
+    .gr-dropdown ul, [data-testid="dropdown"] ul,
+    .dropdown-menu, .options-list, ul[role="listbox"] {
+        background: #252b37 !important;
+        border: 1px solid #3a4555 !important;
+    }
+
+    .gr-dropdown li, [data-testid="dropdown"] li,
+    .dropdown-item, .option-item, li[role="option"] {
+        color: #a8b5c8 !important;
+        background: transparent !important;
+    }
+
+    .gr-dropdown li:hover, [data-testid="dropdown"] li:hover,
+    li[role="option"]:hover, li[aria-selected="true"] {
+        background: #2a3142 !important;
+        color: #d4dae5 !important;
+    }
+
+    /* ─────────────── 渐变彩色按钮 - 深色主题 ─────────────── */
+    /* 按钮基础样式 */
+    button, .gr-button, [class*="button"] {
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    /* Primary 主按钮 - 深色主题粉色渐变（亮度提升） */
+    button.primary, .primary, [class*="primary"]:not(.text-primary):not(.bg-primary) {
+        background: linear-gradient(135deg, #f06292 0%, #ec407a 50%, #e91e63 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        box-shadow: 0 4px 20px rgba(240, 98, 146, 0.4) !important;
+    }
+
+    button.primary:hover, .primary:hover {
+        background: linear-gradient(135deg, #f48fb1 0%, #f06292 50%, #ec407a 100%) !important;
+        box-shadow: 0 6px 30px rgba(240, 98, 146, 0.5) !important;
+    }
+
+    /* Secondary 次要按钮 - 深色主题蓝紫渐变 */
+    button.secondary, .secondary, .gr-button:not(.primary):not([role="tab"]) {
+        background: linear-gradient(135deg, #7c8ff8 0%, #667eea 50%, #5a67d8 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        box-shadow: 0 4px 20px rgba(124, 143, 248, 0.35) !important;
+    }
+
+    button.secondary:hover, .secondary:hover, .gr-button:not(.primary):not([role="tab"]):hover {
+        background: linear-gradient(135deg, #a3b1ff 0%, #7c8ff8 50%, #667eea 100%) !important;
+        box-shadow: 0 6px 25px rgba(124, 143, 248, 0.45) !important;
+    }
+
+    /* Success 成功按钮 - 深色主题 */
+    button.success, .btn-success {
+        background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%) !important;
+        box-shadow: 0 4px 20px rgba(52, 211, 153, 0.35) !important;
+    }
+
+    /* Warning 警告按钮 - 深色主题 */
+    button.warning, .btn-warning {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%) !important;
+        box-shadow: 0 4px 20px rgba(251, 191, 36, 0.35) !important;
+    }
+
+    /* Danger 危险按钮 - 深色主题 */
+    button.danger, .btn-danger {
+        background: linear-gradient(135deg, #f87171 0%, #ef4444 50%, #dc2626 100%) !important;
+        box-shadow: 0 4px 20px rgba(248, 113, 113, 0.35) !important;
+    }
+
+    /* Info 信息按钮 - 深色主题 */
+    button.info, .btn-info {
+        background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 50%, #0891b2 100%) !important;
+        box-shadow: 0 4px 20px rgba(34, 211, 238, 0.35) !important;
+    }
+
+    /* Outline 轮廓按钮 - 深色主题 */
+    button.outline, .btn-outline {
+        background: linear-gradient(135deg, rgba(124, 143, 248, 0.12) 0%, rgba(102, 126, 234, 0.18) 100%) !important;
+        color: #a3b1ff !important;
+        border: 2px solid #7c8ff8 !important;
+    }
+
+    button.outline:hover, .btn-outline:hover {
+        background: linear-gradient(135deg, #7c8ff8 0%, #667eea 100%) !important;
+        color: #ffffff !important;
+    }
+
+    /* 禁用状态 - 深色主题 */
+    button:disabled, button[disabled], .gr-button:disabled {
+        background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
+        color: #718096 !important;
+        box-shadow: none !important;
+    }
+
+    /* Tab 按钮保持原有样式 */
+    .tab-nav button, [role="tab"], button[role="tab"] {
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .tab-nav button.selected, [role="tab"][aria-selected="true"] {
+        background: #5cb3cc !important;
+        box-shadow: 0 2px 12px rgba(92, 179, 204, 0.4) !important;
+    }
+
+    /* ─────────────── 文字颜色 ─────────────── */
+    p, span, div, label, .label-wrap {
+        color: #a8b5c8 !important;
+    }
+
+    h1, h2, h3, h4, h5, h6, strong, b {
+        color: #d4dae5 !important;
+    }
+
+    .info, .gr-info, [class*="info"] {
+        color: #8b9bb4 !important;
+    }
+
+    /* Markdown 文字 */
+    .markdown-text, .prose, .md, [class*="markdown"] {
+        color: #a8b5c8 !important;
+    }
+
+    .markdown-text h1, .markdown-text h2, .markdown-text h3,
+    .prose h1, .prose h2, .prose h3 {
+        color: #d4dae5 !important;
+    }
+
+    /* 代码块 */
+    code, pre, .code {
+        background: #2a3142 !important;
+        color: #5cb3cc !important;
+    }
+
+    /* 链接 */
+    a, a:link, a:visited {
+        color: #5cb3cc !important;
+    }
+
+    a:hover {
+        color: #6ec4dd !important;
+    }
+
+    /* 列表 */
+    li, ul, ol {
+        color: #a8b5c8 !important;
+    }
+
+    /* ─────────────── 表格 ─────────────── */
+    table {
+        border-color: #3a4555 !important;
+    }
+
+    th {
+        background: #252b37 !important;
+        color: #d4dae5 !important;
+        border-color: #3a4555 !important;
+    }
+
+    td {
+        color: #a8b5c8 !important;
+        border-color: #2d3544 !important;
+        background: transparent !important;
+    }
+
+    tr:hover {
+        background: rgba(92, 179, 204, 0.08) !important;
+    }
+
+    /* ─────────────── 其他组件 ─────────────── */
+    /* 手风琴/折叠 */
+    .accordion, details, summary {
+        background: #252b37 !important;
+        color: #a8b5c8 !important;
+        border-color: #3a4555 !important;
+    }
+
+    details summary {
+        color: #d4dae5 !important;
+    }
+
+    /* 引用块 */
+    blockquote {
+        background: rgba(92, 179, 204, 0.08) !important;
+        border-left: 3px solid #5cb3cc !important;
+        color: #a8b5c8 !important;
+    }
+
+    /* 复选框/单选框 */
+    .gr-checkbox label, .gr-checkbox span,
+    .gr-radio label, .gr-radio span,
+    .checkbox-label, [class*="checkbox"], [class*="radio"] {
+        color: #a8b5c8 !important;
+    }
+
+    input[type="checkbox"], input[type="radio"] {
+        accent-color: #5cb3cc !important;
+    }
+
+    /* 滑块 */
+    .gr-slider, [class*="slider"] {
+        background: transparent !important;
+    }
+
+    .gr-slider input[type="range"] {
+        accent-color: #5cb3cc !important;
+    }
+
+    .range-value {
+        color: #a8b5c8 !important;
+        background: #252b37 !important;
+    }
+
+    /* 图片组件 */
+    .gradio-image, .gr-image, [class*="image"] {
+        background: transparent !important;
+        border-color: #3a4555 !important;
+    }
+
+    /* SVG 图标 */
+    svg, svg path, svg circle, svg rect {
+        fill: #8b9bb4 !important;
+    }
+
+    button svg, .icon svg, [class*="icon"] svg {
+        fill: #8b9bb4 !important;
+        stroke: #8b9bb4 !important;
+    }
+
+    /* ─────────────── 滚动条 ─────────────── */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #252b37;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #3a4555;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #4a5565;
+    }
+
+    /* ─────────────── 分隔线 ─────────────── */
+    hr, .divider, [class*="divider"] {
+        border-color: #3a4555 !important;
+        background: #3a4555 !important;
+    }
+
+    /* ─────────────── 工具提示 ─────────────── */
+    .tooltip, [class*="tooltip"] {
+        background: #2a3142 !important;
+        color: #d4dae5 !important;
+        border: 1px solid #3a4555 !important;
+    }
+
+    /* ─────────────── 模态框/弹窗 ─────────────── */
+    .modal, [class*="modal"], .popup, [class*="popup"] {
+        background: #1e2430 !important;
+        border: 1px solid #3a4555 !important;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   [data-theme="dark"] 备用选择器 - JavaScript 手动触发深色模式
+   当 @media 检测失效时，JavaScript 会设置 data-theme 属性作为备用
+═══════════════════════════════════════════════════════════════════════════ */
+html[data-theme="dark"],
+[data-theme="dark"] {
+
+    /* 覆盖 CSS 变量 */
+    --bg-primary: #1e2430 !important;
+    --bg-secondary: #252b37 !important;
+    --bg-tertiary: #2a3142 !important;
+    --text-primary: #d4dae5 !important;
+    --text-secondary: #a8b5c8 !important;
+    --text-muted: #8b9bb4 !important;
+    --text-hint: #6b7a8f !important;
+    --border-color: #3a4555 !important;
+    --border-light: #2d3544 !important;
+    --accent-color: #5cb3cc !important;
+    --accent-hover: #6ec4dd !important;
+    --code-bg: #2a3142 !important;
+}
+
+html[data-theme="dark"] body,
+[data-theme="dark"] body {
+    background: #1e2430 !important;
+    color: #d4dae5 !important;
+}
+
+html[data-theme="dark"] .gradio-container,
+[data-theme="dark"] .gradio-container {
+    background: #1e2430 !important;
+    color: #d4dae5 !important;
+}
+
+/* Tab 容器 - 胶囊式深色 */
+html[data-theme="dark"] .tab-nav,
+html[data-theme="dark"] div[role="tablist"],
+[data-theme="dark"] .tab-nav,
+[data-theme="dark"] div[role="tablist"] {
+    background: #252b37 !important;
+    border-radius: 12px !important;
+    padding: 4px !important;
+    border: none !important;
+}
+
+/* Tab 按钮 - 胶囊式深色 */
+html[data-theme="dark"] .tab-nav button,
+[data-theme="dark"] .tab-nav button {
+    color: #b8c4d6 !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 8px !important;
+}
+
+/* Tab 选中 - 强调色背景 */
+html[data-theme="dark"] .tab-nav button.selected,
+html[data-theme="dark"] [role="tab"][aria-selected="true"],
+[data-theme="dark"] .tab-nav button.selected,
+[data-theme="dark"] [role="tab"][aria-selected="true"] {
+    color: #ffffff !important;
+    background: #5cb3cc !important;
+    border: none !important;
+}
+
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select,
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+    background: #252b37 !important;
+    color: #a8b5c8 !important;
+    border-color: #3a4555 !important;
+}
+
+html[data-theme="dark"] button:not(.primary):not([role="tab"]),
+[data-theme="dark"] button:not(.primary):not([role="tab"]) {
+    background: linear-gradient(135deg, #7c8ff8 0%, #667eea 50%, #5a67d8 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 4px 20px rgba(124, 143, 248, 0.35) !important;
+}
+
+html[data-theme="dark"] button:not(.primary):not([role="tab"]):hover,
+[data-theme="dark"] button:not(.primary):not([role="tab"]):hover {
+    background: linear-gradient(135deg, #a3b1ff 0%, #7c8ff8 50%, #667eea 100%) !important;
+    box-shadow: 0 6px 25px rgba(124, 143, 248, 0.45) !important;
+}
+
+html[data-theme="dark"] button.primary,
+html[data-theme="dark"] .primary,
+[data-theme="dark"] button.primary,
+[data-theme="dark"] .primary {
+    background: linear-gradient(135deg, #f06292 0%, #ec407a 50%, #e91e63 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 20px rgba(240, 98, 146, 0.4) !important;
+}
+
+html[data-theme="dark"] p,
+html[data-theme="dark"] span,
+html[data-theme="dark"] div,
+html[data-theme="dark"] label,
+[data-theme="dark"] p,
+[data-theme="dark"] span,
+[data-theme="dark"] div,
+[data-theme="dark"] label {
+    color: #a8b5c8 !important;
+}
+
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] strong,
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] strong {
+    color: #d4dae5 !important;
+}
+
+html[data-theme="dark"] a,
+[data-theme="dark"] a {
+    color: #5cb3cc !important;
+}
+
+html[data-theme="dark"] code,
+[data-theme="dark"] code {
+    background: #2a3142 !important;
+    color: #5cb3cc !important;
+}
+
+html[data-theme="dark"] th,
+[data-theme="dark"] th {
+    background: #252b37 !important;
+    color: #d4dae5 !important;
+    border-color: #3a4555 !important;
+}
+
+html[data-theme="dark"] td,
+[data-theme="dark"] td {
+    color: #a8b5c8 !important;
+    border-color: #2d3544 !important;
 }

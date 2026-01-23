@@ -162,6 +162,7 @@ class StorageConfig:
     """数据存储配置"""
     chromadb_path: str = "data/chromadb"  # ChromaDB 路径
     output_dir: str = "output"  # 输出目录
+    checkpoints_dir: str = "data/checkpoints"  # Checkpoint 目录
 
     @property
     def chromadb_dir(self) -> Path:
@@ -172,6 +173,11 @@ class StorageConfig:
     def output_path(self) -> Path:
         """获取输出目录完整路径"""
         return ROOT_DIR / self.output_dir
+
+    @property
+    def checkpoints_path(self) -> Path:
+        """获取 Checkpoint 目录完整路径"""
+        return ROOT_DIR / self.checkpoints_dir
 
 
 @dataclass

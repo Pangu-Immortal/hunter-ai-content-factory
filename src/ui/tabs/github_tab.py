@@ -1,5 +1,5 @@
 """
-Hunter AI - GitHub 爆款 Tab
+摆渡人AI系统 - GitHub 爆款 Tab
 
 自动抓取 GitHub 热门项目，AI 生成深度技术解读文章
 """

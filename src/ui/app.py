@@ -1,5 +1,5 @@
 """
-Hunter AI 内容工厂 - 主应用组装
+摆渡人AI系统 - 主应用组装
 
 组装所有组件和 Tab，创建完整的 Gradio 应用
 """
@@ -29,7 +29,7 @@ def create_app():
     """
 
     # Gradio 6.x: CSS 必须在 gr.Blocks() 中传递才能生效
-    with gr.Blocks(title="Hunter AI 内容工厂", css=CUSTOM_CSS) as app:
+    with gr.Blocks(title="摆渡人AI系统", css=CUSTOM_CSS) as app:
 
         # ═══════════════════════════════════════════════════════════════════
         # 顶部标题

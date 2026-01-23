@@ -32,19 +32,19 @@ ROOT_DIR = Path(__file__).parent.parent
 
 CUSTOM_CSS = """
 /* ═══════════════════════════════════════════════════════════════════════════
-   🎮 赛博朋克主题 - 简洁清爽版
-   特点：无边框卡片、干净背景、高对比度文字
+   🎮 简洁清爽白色主题
+   特点：白色背景、无边框卡片、高对比度文字
 ═══════════════════════════════════════════════════════════════════════════ */
 
 /* 全局样式 */
 .gradio-container {
-    background: linear-gradient(180deg, #1e2433 0%, #2a3344 100%) !important;
+    background: #ffffff !important;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif !important;
     font-size: 14px !important;
     line-height: 1.7 !important;
     max-width: 1400px !important;
     margin: 0 auto !important;
-    color: #f0f0f0 !important;
+    color: #1a1a2e !important;
 }
 
 /* 图片 - 无边框 */
@@ -97,63 +97,63 @@ CUSTOM_CSS = """
     padding: 12px 20px !important;
     font-weight: 600 !important;
     font-size: 15px !important;
-    color: #d0d8e4 !important;  /* 浅灰白色，确保可见 */
+    color: #666666 !important;  /* 深灰色 */
     transition: all 0.2s ease !important;
 }
 
 .tab-nav button:hover {
-    color: #ffffff !important;  /* 悬停纯白 */
-    border-bottom-color: rgba(255, 255, 255, 0.4) !important;
+    color: #333333 !important;  /* 悬停更深 */
+    border-bottom-color: rgba(0, 0, 0, 0.2) !important;
 }
 
 .tab-nav button.selected {
-    color: #00ffff !important;  /* 选中用亮青色 */
-    border-bottom: 2px solid #00ffff !important;
+    color: #0066cc !important;  /* 选中用蓝色 */
+    border-bottom: 2px solid #0066cc !important;
     background: transparent !important;
 }
 
-/* 主按钮 - 霓虹渐变 */
+/* 主按钮 - 蓝色渐变 */
 .primary {
-    background: linear-gradient(135deg, #ff00ff 0%, #00ffff 100%) !important;
+    background: linear-gradient(135deg, #0066cc 0%, #0099ff 100%) !important;
     border: none !important;
     border-radius: 6px !important;
     font-weight: 700 !important;
     font-size: 14px !important;
-    color: #000 !important;
+    color: #fff !important;
     padding: 12px 28px !important;
     transition: all 0.2s ease !important;
 }
 
 .primary:hover {
     transform: translateY(-1px) !important;
-    box-shadow: 0 4px 20px rgba(255, 0, 255, 0.4) !important;
+    box-shadow: 0 4px 20px rgba(0, 102, 204, 0.4) !important;
 }
 
 /* 分隔线 */
 .section-divider {
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
     margin: 25px 0;
 }
 
 /* 输入框 */
 textarea, input[type="text"], input[type="number"], input[type="password"] {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    background: #f8f9fa !important;
+    border: 1px solid #ddd !important;
     border-radius: 6px !important;
     padding: 10px 12px !important;
-    color: #fff !important;
+    color: #333 !important;
     font-size: 14px !important;
 }
 
 textarea:focus, input:focus {
-    border-color: #00ffff !important;
+    border-color: #0066cc !important;
     outline: none !important;
-    background: rgba(255, 255, 255, 0.08) !important;
+    background: #fff !important;
 }
 
 textarea::placeholder, input::placeholder {
-    color: rgba(255, 255, 255, 0.4) !important;
+    color: #999 !important;
 }
 
 /* 页脚 */
@@ -170,46 +170,46 @@ textarea::placeholder, input::placeholder {
 
 /* 标签 */
 label, .label-wrap {
-    color: #ccc !important;
+    color: #333 !important;
     font-weight: 500 !important;
     font-size: 13px !important;
 }
 
 /* 信息提示 */
 .info {
-    color: #888 !important;
+    color: #666 !important;
     font-size: 12px !important;
 }
 
 /* Markdown */
 .markdown-text, .prose, .md, p {
-    color: #e0e0e0 !important;
+    color: #333 !important;
 }
 
 h1, h2, h3 {
-    color: #fff !important;
+    color: #1a1a2e !important;
     font-weight: 600 !important;
 }
 
 strong, b {
-    color: #fff !important;
+    color: #1a1a2e !important;
 }
 
 code {
-    background: rgba(0, 255, 255, 0.1) !important;
-    color: #7ee8fa !important;
+    background: #f0f0f0 !important;
+    color: #0066cc !important;
     padding: 2px 6px !important;
     border-radius: 3px !important;
     font-size: 13px !important;
 }
 
 a {
-    color: #00ffff !important;
+    color: #0066cc !important;
 }
 
 /* 列表 */
 li {
-    color: #e0e0e0 !important;
+    color: #333 !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -218,66 +218,66 @@ li {
 
 /* 滑块 */
 input[type="range"] {
-    accent-color: #ff00ff !important;
+    accent-color: #0066cc !important;
 }
 
 /* 复选框 */
 input[type="checkbox"] {
-    accent-color: #00ffff !important;
+    accent-color: #0066cc !important;
 }
 
 /* 下拉框 */
 select, .dropdown {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    color: #fff !important;
+    background: #f8f9fa !important;
+    border: 1px solid #ddd !important;
+    color: #333 !important;
     border-radius: 6px !important;
 }
 
 /* 折叠面板 */
 .accordion, details {
     background: transparent !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid #ddd !important;
     border-radius: 6px !important;
 }
 
 details summary {
-    color: #fff !important;
+    color: #333 !important;
 }
 
 /* Tips 提示框 */
 div[style*="rgba(255, 200, 0"] {
-    background: rgba(255, 200, 0, 0.1) !important;
-    border: 1px solid rgba(255, 200, 0, 0.3) !important;
-    color: #ffd866 !important;
+    background: #fff8e6 !important;
+    border: 1px solid #ffd866 !important;
+    color: #996600 !important;
 }
 
 div[style*="rgba(0, 255, 255"] {
-    background: rgba(0, 255, 255, 0.08) !important;
-    border: 1px solid rgba(0, 255, 255, 0.25) !important;
-    color: #7ee8fa !important;
+    background: #e6f7ff !important;
+    border: 1px solid #69c0ff !important;
+    color: #0066cc !important;
 }
 
 /* 表格 */
 th {
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: #00ffff !important;
+    background: #f5f5f5 !important;
+    color: #333 !important;
     padding: 10px !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid #ddd !important;
 }
 
 td {
-    color: #e0e0e0 !important;
+    color: #333 !important;
     padding: 8px 10px !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid #eee !important;
 }
 
 /* 引用块 */
 blockquote {
-    border-left: 3px solid #ff00ff !important;
-    background: rgba(255, 0, 255, 0.05) !important;
+    border-left: 3px solid #0066cc !important;
+    background: #f5f9ff !important;
     padding: 10px 16px !important;
-    color: #e0e0e0 !important;
+    color: #333 !important;
 }
 
 /* 通用面板 - 无边框 */
@@ -288,77 +288,72 @@ blockquote {
 
 /* 输出文本区 */
 .output-textbox textarea, .gr-textbox textarea {
-    color: #e0e0e0 !important;
-    background: rgba(255, 255, 255, 0.03) !important;
+    color: #333 !important;
+    background: #f8f9fa !important;
 }
 
 /* 状态色 */
-.success { color: #4ade80 !important; }
-.error { color: #f87171 !important; }
-.warning { color: #fbbf24 !important; }
-.info { color: #7ee8fa !important; }
-
-/* 滑块 */
-input[type="range"] {
-    accent-color: #ff00ff !important;
-}
+.success { color: #22c55e !important; }
+.error { color: #ef4444 !important; }
+.warning { color: #f59e0b !important; }
+.info { color: #0066cc !important; }
 
 /* 滑块数值显示 */
 .range-value, input[type="number"] {
-    color: #ffffff !important;
-    background: rgba(13, 17, 23, 0.95) !important;
+    color: #333 !important;
+    background: #f8f9fa !important;
 }
 
 /* 复选框 */
 input[type="checkbox"] {
-    accent-color: #00ffff !important;
+    accent-color: #0066cc !important;
 }
 
 /* 复选框标签 */
 .checkbox-label, .gr-check-radio {
-    color: #e6edf3 !important;
+    color: #333 !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Markdown 内容 - 高可读性
 ───────────────────────────────────────────────────────────────────────────── */
 .markdown-text, .prose, .md, div[class*="markdown"] {
-    color: #e6edf3 !important;
+    color: #333 !important;
     line-height: 1.8 !important;
 }
 
-/* 标题 - 霓虹青色，适度发光 */
+/* 标题 */
 .markdown-text h1, .markdown-text h2, .markdown-text h3,
 .prose h1, .prose h2, .prose h3,
 h1, h2, h3 {
-    color: #7ee8fa !important;
+    color: #1a1a2e !important;
     font-weight: 600 !important;
     margin-top: 1.5em !important;
     margin-bottom: 0.8em !important;
 }
 
-/* 加粗文字 - 亮白色 */
+/* 加粗文字 */
 .markdown-text strong, .prose strong, strong {
-    color: #ffffff !important;
+    color: #1a1a2e !important;
     font-weight: 600 !important;
 }
 
 /* 段落文字 */
 .markdown-text p, .prose p, p {
-    color: #e6edf3 !important;
+    color: #333 !important;
     margin-bottom: 1em !important;
 }
 
 /* 列表项 */
 .markdown-text li, .prose li, li {
-    color: #e6edf3 !important;
+    color: #333 !important;
     margin-bottom: 0.5em !important;
 }
 
 /* 行内代码 */
 .markdown-text code, .prose code, code {
-    background: rgba(0, 255, 255, 0.1) !important;
-    color: #7ee8fa !important;
+    background: #f0f0f0 !important;
+    color: #0066cc !important;
     padding: 2px 8px !important;
     border-radius: 4px !important;
     font-family: "SF Mono", "Monaco", "Consolas", monospace !important;
@@ -367,8 +362,8 @@ h1, h2, h3 {
 
 /* 代码块 */
 pre {
-    background: rgba(13, 17, 23, 0.95) !important;
-    border: 1px solid rgba(0, 255, 255, 0.2) !important;
+    background: #f5f5f5 !important;
+    border: 1px solid #ddd !important;
     border-radius: 8px !important;
     padding: 16px !important;
 }
@@ -376,43 +371,44 @@ pre {
 pre code {
     background: transparent !important;
     padding: 0 !important;
+    color: #333 !important;
 }
 
 /* 链接 */
 a {
-    color: #7ee8fa !important;
+    color: #0066cc !important;
 }
 
 a:hover {
-    color: #ffffff !important;
+    color: #004499 !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    下拉选择框
 ───────────────────────────────────────────────────────────────────────────── */
 select, .dropdown, .svelte-1g805gc {
-    background: rgba(13, 17, 23, 0.95) !important;
-    border: 1px solid rgba(0, 255, 255, 0.3) !important;
-    color: #ffffff !important;
+    background: #f8f9fa !important;
+    border: 1px solid #ddd !important;
+    color: #333 !important;
     border-radius: 8px !important;
 }
 
 select option {
-    background: #161b22 !important;
-    color: #ffffff !important;
+    background: #fff !important;
+    color: #333 !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Accordion 折叠面板
 ───────────────────────────────────────────────────────────────────────────── */
 .accordion, details {
-    background: rgba(22, 27, 34, 0.9) !important;
-    border: 1px solid rgba(0, 255, 255, 0.2) !important;
+    background: #f8f9fa !important;
+    border: 1px solid #ddd !important;
     border-radius: 8px !important;
 }
 
 .accordion summary, details summary {
-    color: #ffffff !important;
+    color: #333 !important;
     font-weight: 500 !important;
 }
 
@@ -421,24 +417,24 @@ select option {
 ───────────────────────────────────────────────────────────────────────────── */
 /* 黄色警告提示 */
 div[style*="rgba(255, 200, 0"] {
-    background: rgba(255, 200, 0, 0.12) !important;
-    border: 1px solid rgba(255, 200, 0, 0.4) !important;
-    color: #ffd866 !important;
+    background: #fff8e6 !important;
+    border: 1px solid #ffd866 !important;
+    color: #996600 !important;
 }
 
 div[style*="rgba(255, 200, 0"] b {
-    color: #ffe066 !important;
+    color: #885500 !important;
 }
 
 /* 青色信息提示 */
 div[style*="rgba(0, 255, 255"] {
-    background: rgba(0, 255, 255, 0.08) !important;
-    border: 1px solid rgba(0, 255, 255, 0.3) !important;
-    color: #7ee8fa !important;
+    background: #e6f7ff !important;
+    border: 1px solid #69c0ff !important;
+    color: #0066cc !important;
 }
 
 div[style*="rgba(0, 255, 255"] b {
-    color: #a5f3fc !important;
+    color: #004499 !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -450,59 +446,46 @@ table {
 }
 
 th {
-    background: rgba(0, 255, 255, 0.1) !important;
-    color: #7ee8fa !important;
+    background: #f5f5f5 !important;
+    color: #333 !important;
     font-weight: 600 !important;
     padding: 12px !important;
-    border: 1px solid rgba(0, 255, 255, 0.2) !important;
+    border: 1px solid #ddd !important;
 }
 
 td {
-    color: #e6edf3 !important;
+    color: #333 !important;
     padding: 10px 12px !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid #eee !important;
 }
 
 tr:hover {
-    background: rgba(0, 255, 255, 0.05) !important;
+    background: #f5f9ff !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    块引用
 ───────────────────────────────────────────────────────────────────────────── */
 blockquote {
-    border-left: 3px solid #ff00ff !important;
-    background: rgba(255, 0, 255, 0.05) !important;
+    border-left: 3px solid #0066cc !important;
+    background: #f5f9ff !important;
     padding: 12px 20px !important;
     margin: 16px 0 !important;
-    color: #e6edf3 !important;
+    color: #333 !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    工具栏和按钮组
 ───────────────────────────────────────────────────────────────────────────── */
 .toolbar button, .btn-group button {
-    color: #e6edf3 !important;
-    background: rgba(22, 27, 34, 0.9) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #333 !important;
+    background: #f8f9fa !important;
+    border: 1px solid #ddd !important;
 }
 
 .toolbar button:hover, .btn-group button:hover {
-    background: rgba(0, 255, 255, 0.1) !important;
-    border-color: rgba(0, 255, 255, 0.3) !important;
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   霓虹装饰类（可选用于特殊效果）
-───────────────────────────────────────────────────────────────────────────── */
-.neon-border {
-    border: 1px solid rgba(0, 255, 255, 0.5) !important;
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2) !important;
-}
-
-.neon-text {
-    color: #7ee8fa !important;
-    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3) !important;
+    background: #e9ecef !important;
+    border-color: #ccc !important;
 }
 """
 

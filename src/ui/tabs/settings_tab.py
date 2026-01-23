@@ -140,11 +140,15 @@ def create_settings_tab():
                     1. 用 Chrome 浏览器登录 [小红书](https://www.xiaohongshu.com)
                     2. 按 `F12` 打开开发者工具
                     3. 切换到「**Console（控制台）**」标签
-                    4. 输入以下命令并按回车：
+                    4. **首次使用需解除粘贴限制**：
+                       - Chrome 默认禁止在控制台粘贴代码
+                       - 先输入 `allow pasting` 然后按回车
+                       - 看到提示后，即可正常粘贴
+                    5. 输入以下命令并按回车：
                     ```
                     document.cookie
                     ```
-                    5. 复制输出的**整个字符串**到下方「Cookie」输入框
+                    6. 复制输出的**整个字符串**到下方「Cookie」输入框
 
                     **备选方式（获取更多 Cookie）：**
                     1. F12 → Application → Cookies → xiaohongshu.com

@@ -47,13 +47,13 @@ def create_github_tab():
                 gr.Markdown("### 📝 文章结构")
                 github_brief_count = gr.Slider(
                     label="📋 项目简介数量",
-                    minimum=0, maximum=10, value=2, step=1,
-                    info="快速介绍的项目数量（每个约300-500字）"
+                    minimum=2, maximum=10, value=2, step=1,
+                    info="快速介绍的项目数量（最少2个，每个约300-500字）"
                 )
                 github_deep_count = gr.Slider(
                     label="🔬 深度解读数量",
                     minimum=1, maximum=5, value=1, step=1,
-                    info="详细分析的项目数量（每个约1500-2000字）"
+                    info="详细分析的项目数量（最少1个，每个约1500-2000字）"
                 )
                 github_min_words = gr.Slider(
                     label="📏 文章最小字数",
@@ -62,10 +62,10 @@ def create_github_tab():
                 )
                 gr.Markdown("""
                 <div style="background: var(--tip-cyan-bg, rgba(0, 255, 255, 0.1)); padding: 8px 12px; border-radius: 6px; margin: 5px 0; font-size: 12px; border: 1px solid var(--tip-cyan-border, rgba(0, 255, 255, 0.3)); color: var(--tip-cyan-text, #00ffff);">
-                💡 <b>推荐组合</b>:<br/>
-                • <b>快速版</b>: 3简介 + 0深度 ≈ 1500字<br/>
+                💡 <b>推荐组合</b>（最少需要 3 个项目：2简介+1深度）:<br/>
                 • <b>标准版</b>: 2简介 + 1深度 ≈ 3000字<br/>
-                • <b>深度版</b>: 1简介 + 2深度 ≈ 4500字<br/>
+                • <b>丰富版</b>: 3简介 + 1深度 ≈ 3500字<br/>
+                • <b>深度版</b>: 2简介 + 2深度 ≈ 4500字<br/>
                 • <b>长文版</b>: 3简介 + 2深度 ≈ 6000字
                 </div>
                 """)

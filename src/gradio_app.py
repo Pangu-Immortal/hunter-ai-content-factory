@@ -858,21 +858,31 @@ def create_app():
     with gr.Blocks(title="Hunter AI 内容工厂") as app:
 
         # ═══════════════════════════════════════════════════════════════════
-        # 主题切换按钮 + 顶部标题
+        # 顶部标题 + 主题切换
         # ═══════════════════════════════════════════════════════════════════
         gr.HTML("""
-        <!-- 主题切换按钮 -->
-        <button class="theme-toggle" onclick="toggleTheme()" title="切换深色/浅色主题">
-            <span class="icon-sun">☀️</span>
-            <span class="icon-moon">🌙</span>
-        </button>
-
         <!-- 主题切换脚本 -->
         <script>
-            // 初始化主题
+            // 初始化主题和同步 checkbox
             (function() {
                 const savedTheme = localStorage.getItem('hunter-theme') || 'light';
                 document.documentElement.setAttribute('data-theme', savedTheme);
+
+                // 页面加载后同步 checkbox 状态
+                document.addEventListener('DOMContentLoaded', function() {
+                    const checkbox = document.querySelector('.theme-switch input');
+                    if (checkbox) {
+                        checkbox.checked = savedTheme === 'dark';
+                    }
+                });
+
+                // Gradio 可能延迟加载，增加备用检查
+                setTimeout(function() {
+                    const checkbox = document.querySelector('.theme-switch input');
+                    if (checkbox) {
+                        checkbox.checked = localStorage.getItem('hunter-theme') === 'dark';
+                    }
+                }, 500);
             })();
 
             // 切换主题
@@ -886,13 +896,23 @@ def create_app():
         </script>
 
         <!-- 顶部标题 -->
-        <div style="text-align: center; padding: 25px 20px;">
+        <div style="text-align: center; padding: 25px 20px 10px 20px;">
             <h1 style="font-size: 2.5em; margin: 0; color: #e91e63; text-shadow: 2px 2px 4px rgba(233,30,99,0.2);">
                 🦅 Hunter AI 内容工厂
             </h1>
             <p style="font-size: 1.1em; color: var(--text-muted, #666); margin: 10px 0 0 0;">
                 一键生成高质量公众号文章的 AI 工作流
             </p>
+        </div>
+
+        <!-- 太极风格主题切换 -->
+        <div class="theme-switch-wrapper">
+            <span class="theme-switch-label">☀️</span>
+            <label class="theme-switch">
+                <input type="checkbox" onclick="toggleTheme()">
+                <span class="theme-slider"></span>
+            </label>
+            <span class="theme-switch-label">🌙</span>
         </div>
         """)
 

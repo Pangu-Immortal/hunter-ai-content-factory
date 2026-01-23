@@ -77,59 +77,77 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   主题切换按钮
+   主题切换按钮 - 太极滑动式
 ═══════════════════════════════════════════════════════════════════════════ */
 
-.theme-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 9999;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    cursor: pointer;
-    font-size: 20px;
+.theme-switch-wrapper {
     display: flex;
-    align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px var(--shadow);
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0 20px 0;
 }
 
-.theme-toggle:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px var(--shadow);
+.theme-switch-label {
+    font-size: 20px;
+    line-height: 1;
 }
 
-.theme-toggle .icon-sun,
-.theme-toggle .icon-moon {
+/* 滑动开关轨道 */
+.theme-switch {
+    position: relative;
+    width: 60px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* 轨道背景 - 太极配色 */
+.theme-slider {
     position: absolute;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, #f5f5f5 0%, #e0e0e0 100%);
+    border: 2px solid #333;
+    border-radius: 30px;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-/* 浅色主题：显示月亮图标（点击切换到深色） */
-[data-theme="light"] .theme-toggle .icon-sun {
-    opacity: 0;
-    transform: rotate(-90deg) scale(0);
+/* 滑块圆点 */
+.theme-slider::before {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    left: 2px;
+    bottom: 2px;
+    background: #1a1a2e;
+    border-radius: 50%;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
-[data-theme="light"] .theme-toggle .icon-moon {
-    opacity: 1;
-    transform: rotate(0) scale(1);
+/* 深色模式 - 轨道变黑，滑块变白 */
+[data-theme="dark"] .theme-slider {
+    background: linear-gradient(90deg, #2d3748 0%, #1a1f2e 100%);
+    border-color: #f0f0f0;
 }
 
-/* 深色主题：显示太阳图标（点击切换到浅色） */
-[data-theme="dark"] .theme-toggle .icon-sun {
-    opacity: 1;
-    transform: rotate(0) scale(1);
+[data-theme="dark"] .theme-slider::before {
+    transform: translateX(30px);
+    background: #f5f5f5;
 }
 
-[data-theme="dark"] .theme-toggle .icon-moon {
-    opacity: 0;
-    transform: rotate(90deg) scale(0);
+/* 悬停效果 */
+.theme-switch:hover .theme-slider::before {
+    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

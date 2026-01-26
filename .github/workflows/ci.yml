@@ -35,7 +35,7 @@ jobs:
         run: uv python install 3.12
 
       - name: 安装依赖
-        run: uv sync --python 3.12
+        run: uv sync --python 3.12 --extra dev
 
       - name: Ruff 代码检查
         run: uv run ruff check . --output-format=github

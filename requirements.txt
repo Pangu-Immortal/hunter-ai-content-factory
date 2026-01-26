@@ -1,0 +1,26 @@
+# Hunter AI 内容工厂 - Hugging Face Spaces 依赖
+# 注意：此文件仅用于 HF Spaces 部署，本地开发请使用 uv sync
+
+# Web UI
+gradio>=5.0.0
+
+# AI 模型
+google-genai>=1.0.0
+
+# HTTP 客户端
+httpx>=0.27.0
+
+# 数据存储
+chromadb>=0.5.0
+sqlalchemy>=2.0.0
+
+# 配置和工具
+pyyaml>=6.0.0
+click>=8.1.0
+rich>=13.0.0
+pydantic>=2.0.0
+tenacity>=8.2.0
+
+# 数据采集（可选，HF Spaces 上可能受限）
+twikit>=2.0.0
+playwright>=1.57.0

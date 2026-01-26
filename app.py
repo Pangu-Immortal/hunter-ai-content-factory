@@ -1,0 +1,43 @@
+"""
+Hunter AI 内容工厂 - Hugging Face Spaces 入口
+
+此文件用于 Hugging Face Spaces 部署
+"""
+
+import os
+import sys
+from pathlib import Path
+
+# 添加项目根目录到 Python 路径
+sys.path.insert(0, str(Path(__file__).parent))
+
+# 设置环境变量
+os.environ['NO_PROXY'] = 'localhost,127.0.0.1,0.0.0.0'
+os.environ['no_proxy'] = 'localhost,127.0.0.1,0.0.0.0'
+
+# 导入 Gradio 应用
+from src.ui import create_app
+
+# 自定义 JavaScript（深浅主题切换）
+CUSTOM_JS = """
+function applyTheme() {
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+}
+applyTheme();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+"""
+
+# 创建 Gradio 应用
+demo = create_app()
+
+# Hugging Face Spaces 入口
+if __name__ == "__main__":
+    demo.launch(
+        server_name="0.0.0.0",
+        server_port=7860,
+        share=False,  # HF Spaces 自动提供公网访问
+        show_error=True,
+        js=CUSTOM_JS,
+    )

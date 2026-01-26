@@ -8,8 +8,11 @@
 
 [![Stars](https://img.shields.io/github/stars/Pangu-Immortal/hunter-ai-content-factory?style=flat-square&logo=github&color=pink)](https://github.com/Pangu-Immortal/hunter-ai-content-factory)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/Pangu-Immortal/hunter-ai-content-factory/ci.yml?style=flat-square&label=CI)](https://github.com/Pangu-Immortal/hunter-ai-content-factory/actions)
 [![QQ群](https://img.shields.io/badge/QQ群-794834282-12B7F5?style=flat-square&logo=tencentqq)](https://qm.qq.com/q/794834282)
 [![访问量](https://visitor-badge.laobi.icu/badge?page_id=Pangu-Immortal.hunter-ai-content-factory&left_color=%23e91e63&right_color=%23f48fb1)](https://github.com/Pangu-Immortal/hunter-ai-content-factory)
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Pangu-Immortal/hunter-ai-content-factory?quickstart=1)
 
 ![萌萌计数器](https://moe-counter.glitch.me/get/@hunter-ai-qq?theme=rule34)
 

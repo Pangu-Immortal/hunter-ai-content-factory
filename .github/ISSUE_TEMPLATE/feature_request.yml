@@ -1,0 +1,55 @@
+name: ✨ 功能请求
+description: 建议一个新功能或改进
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢您的建议！我们很乐意听取您的想法。
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 问题/需求
+      description: 您想解决什么问题？或者有什么需求？
+      placeholder: 我希望能够...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 建议方案
+      description: 您希望如何实现这个功能？
+      placeholder: |
+        1. 添加一个新的按钮
+        2. 点击后...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 替代方案
+      description: 是否考虑过其他实现方式？
+      placeholder: 也可以通过配置文件实现...
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 优先级
+      description: 您认为这个功能有多重要？
+      options:
+        - 🔴 紧急（影响正常使用）
+        - 🟡 重要（显著提升体验）
+        - 🟢 一般（锦上添花）
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: 贡献意愿
+      options:
+        - label: 我愿意提交 PR 来实现这个功能

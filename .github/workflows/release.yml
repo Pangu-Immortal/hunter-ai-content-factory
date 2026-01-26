@@ -1,0 +1,65 @@
+# Hunter AI 内容工厂 - 自动发布工作流
+#
+# 功能：
+# - 当推送 v* 标签时自动创建 GitHub Release
+# - 生成更新日志
+#
+# 使用方法：
+# git tag v1.0.0
+# git push origin v1.0.0
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: 创建发布
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 生成更新日志
+        id: changelog
+        uses: orhun/git-cliff-action@v3
+        with:
+          config: cliff.toml
+          args: --latest --strip header
+        continue-on-error: true
+
+      - name: 创建 GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body: |
+            ## 🦅 Hunter AI 内容工厂 ${{ github.ref_name }}
+
+            ### 更新内容
+            ${{ steps.changelog.outputs.content || '请查看 commit 历史获取详细更新内容' }}
+
+            ### 快速开始
+            ```bash
+            # Mac / Linux
+            bash run.sh
+
+            # Windows
+            run.bat
+            ```
+
+            ### 相关链接
+            - 📖 [使用文档](README.md)
+            - 🐛 [问题反馈](https://github.com/Pangu-Immortal/hunter-ai-content-factory/issues)
+            - 💬 [QQ 群：794834282](https://qm.qq.com/q/794834282)
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

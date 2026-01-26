@@ -1,0 +1,43 @@
+{
+  "name": "Hunter AI 内容工厂",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {},
+    "ghcr.io/devcontainers-contrib/features/curl-apt-get:1": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "charliermarsh.ruff",
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "editor.formatOnSave": true,
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff"
+        }
+      }
+    }
+  },
+
+  "postCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh && source $HOME/.local/bin/env && uv sync --python 3.12",
+
+  "forwardPorts": [7860],
+
+  "portsAttributes": {
+    "7860": {
+      "label": "Hunter AI Web UI",
+      "onAutoForward": "openBrowser"
+    }
+  },
+
+  "containerEnv": {
+    "GRADIO_SERVER_NAME": "0.0.0.0"
+  },
+
+  "remoteUser": "vscode"
+}

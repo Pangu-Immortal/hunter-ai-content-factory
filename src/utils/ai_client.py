@@ -163,7 +163,12 @@ class OpenAICompatibleClient(BaseAIClient):
         self.image_model = settings.gemini.image_model
 
     async def generate(self, prompt: str, **kwargs) -> AIResponse:
-        """调用 OpenAI 兼容 API（异步，带重试）"""
+        """调用 OpenAI 兼容 API（异步，带重试）
+
+        重试策略：
+        - 429 速率限制：2/4/8 秒指数退避
+        - 超时错误：10/20/30 秒递增等待
+        """
         last_error = None
 
         for attempt in range(AI_MAX_RETRIES):
@@ -179,6 +184,17 @@ class OpenAICompatibleClient(BaseAIClient):
                             "temperature": kwargs.get("temperature", 0.7),
                         }
                     )
+
+                    # 429 速率限制：指数退避重试
+                    if response.status_code == 429:
+                        if attempt < AI_MAX_RETRIES - 1:
+                            wait_time = 2 * (2 ** attempt)  # 2s, 4s, 8s
+                            console.print(f"[yellow]⏳ 速率限制(429)，{wait_time}秒后重试 ({attempt + 1}/{AI_MAX_RETRIES})...[/yellow]")
+                            await asyncio.sleep(wait_time)
+                            continue
+                        else:
+                            response.raise_for_status()
+
                     response.raise_for_status()
                     data = response.json()
 
@@ -206,7 +222,12 @@ class OpenAICompatibleClient(BaseAIClient):
         raise last_error or RuntimeError("AI 请求失败")
 
     def generate_sync(self, prompt: str, **kwargs) -> AIResponse:
-        """调用 OpenAI 兼容 API（同步，带重试）"""
+        """调用 OpenAI 兼容 API（同步，带重试）
+
+        重试策略：
+        - 429 速率限制：2/4/8 秒指数退避
+        - 超时错误：10/20/30 秒递增等待
+        """
         import time
         last_error = None
 
@@ -223,6 +244,17 @@ class OpenAICompatibleClient(BaseAIClient):
                             "temperature": kwargs.get("temperature", 0.7),
                         }
                     )
+
+                    # 429 速率限制：指数退避重试
+                    if response.status_code == 429:
+                        if attempt < AI_MAX_RETRIES - 1:
+                            wait_time = 2 * (2 ** attempt)  # 2s, 4s, 8s
+                            console.print(f"[yellow]⏳ 速率限制(429)，{wait_time}秒后重试 ({attempt + 1}/{AI_MAX_RETRIES})...[/yellow]")
+                            time.sleep(wait_time)
+                            continue
+                        else:
+                            response.raise_for_status()
+
                     response.raise_for_status()
                     data = response.json()
 

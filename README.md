@@ -65,7 +65,28 @@
 
 ## ⚡ 快速开始
 
-### 零配置启动（推荐）
+### 🌐 在线体验（无需安装）
+
+<table>
+<tr>
+<td align="center" width="50%">
+
+[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-立即体验-blue?style=for-the-badge)](https://huggingface.co/spaces/yugu88/hunter-ai-content-factory)
+
+**一键打开，直接使用**
+
+</td>
+<td align="center" width="50%">
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Pangu-Immortal/hunter-ai-content-factory?quickstart=1)
+
+**在线开发环境，可修改代码**
+
+</td>
+</tr>
+</table>
+
+### 💻 本地部署
 
 **空白电脑双击即可运行，自动下载 Python + 所有依赖！**
 

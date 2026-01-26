@@ -153,11 +153,11 @@ if not exist "config.yaml" (
 echo.
 echo [4/6] 安装项目依赖...
 
-:: 使用 uv 同步依赖（强制使用 uv 管理的 Python）
-"%UV_EXE%" sync --python-preference only-managed --quiet 2>nul
+:: 使用 uv 同步依赖（强制使用 Python 3.12）
+"%UV_EXE%" sync --python 3.12 --python-preference only-managed --quiet 2>nul
 if %errorlevel% neq 0 (
     echo    ⏳ 首次安装依赖，请稍候...
-    "%UV_EXE%" sync --python-preference only-managed
+    "%UV_EXE%" sync --python 3.12 --python-preference only-managed
     if %errorlevel% neq 0 (
         echo.
         echo ❌ 依赖安装失败！
@@ -176,7 +176,7 @@ echo.
 echo [5/6] 检查浏览器驱动...
 
 :: 检查是否已安装 Playwright 浏览器（静默安装）
-"%UV_EXE%" run --python-preference only-managed playwright install chromium >nul 2>&1
+"%UV_EXE%" run --python 3.12 --python-preference only-managed playwright install chromium >nul 2>&1
 echo    ✅ 浏览器驱动就绪
 
 :: ─────────────────────────────────────────────────────────────────────────────
@@ -206,8 +206,8 @@ echo.
 :: 延迟打开浏览器（等待服务启动）
 start "" cmd /c "timeout /t 5 /nobreak >nul && start http://localhost:7860"
 
-:: 启动 Gradio（使用模块化 UI）
-"%UV_EXE%" run --python-preference only-managed python -m src.gradio_launcher
+:: 启动 Gradio（使用 Python 3.12）
+"%UV_EXE%" run --python 3.12 --python-preference only-managed python -m src.gradio_launcher
 
 :: 如果异常退出
 echo.

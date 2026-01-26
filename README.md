@@ -15,7 +15,7 @@
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Pangu-Immortal/hunter-ai-content-factory?quickstart=1)
 [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/yugu88/hunter-ai-content-factory)
 
-![萌萌计数器](https://moe-counter.glitch.me/get/@hunter-ai-qq?theme=rule34)
+![萌萌计数器](https://count.getloli.com/get/@hunter-ai-content-factory?theme=rule34)
 
 **🎯 内容生产也可以像写代码一样，有输入、有输出、有质量保证**
 

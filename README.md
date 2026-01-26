@@ -9,6 +9,9 @@
 [![Stars](https://img.shields.io/github/stars/Pangu-Immortal/hunter-ai-content-factory?style=flat-square&logo=github&color=pink)](https://github.com/Pangu-Immortal/hunter-ai-content-factory)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![QQ群](https://img.shields.io/badge/QQ群-794834282-12B7F5?style=flat-square&logo=tencentqq)](https://qm.qq.com/q/794834282)
+[![访问量](https://visitor-badge.laobi.icu/badge?page_id=Pangu-Immortal.hunter-ai-content-factory&left_color=%23e91e63&right_color=%23f48fb1)](https://github.com/Pangu-Immortal/hunter-ai-content-factory)
+
+![萌萌计数器](https://moe-counter.glitch.me/get/@hunter-ai-qq?theme=rule34)
 
 **🎯 内容生产也可以像写代码一样，有输入、有输出、有质量保证**
 

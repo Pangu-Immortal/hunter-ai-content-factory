@@ -18,17 +18,6 @@ os.environ["no_proxy"] = "localhost,127.0.0.1,0.0.0.0"
 # 导入 Gradio 应用
 from src.ui import create_app
 
-# 自定义 JavaScript（深浅主题切换）
-CUSTOM_JS = """
-function applyTheme() {
-    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-    document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
-}
-applyTheme();
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
-"""
-
 # 创建 Gradio 应用
 demo = create_app()
 
@@ -39,5 +28,4 @@ if __name__ == "__main__":
         server_port=7860,
         share=False,  # HF Spaces 自动提供公网访问
         show_error=True,
-        js=CUSTOM_JS,
     )

@@ -1,0 +1,66 @@
+# Hunter AI 内容工厂 - CI 工作流
+#
+# 功能：
+# - 代码质量检查（Ruff lint）
+# - 依赖安装验证
+# - 基础语法检查
+#
+# 触发条件：
+# - Push 到 main 分支
+# - 所有 Pull Request
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: 代码质量检查
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: 设置 Python 3.12
+        run: uv python install 3.12
+
+      - name: 安装依赖
+        run: uv sync --python 3.12
+
+      - name: Ruff 代码检查
+        run: uv run ruff check . --output-format=github
+
+      - name: Ruff 格式检查
+        run: uv run ruff format --check .
+
+  syntax-check:
+    name: 语法检查
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: 设置 Python 3.12
+        run: uv python install 3.12
+
+      - name: 安装依赖
+        run: uv sync --python 3.12
+
+      - name: Python 语法检查
+        run: uv run python -m py_compile src/**/*.py

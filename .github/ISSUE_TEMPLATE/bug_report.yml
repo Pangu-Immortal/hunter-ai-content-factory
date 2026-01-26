@@ -1,0 +1,76 @@
+name: 🐛 Bug 报告
+description: 报告一个问题或错误
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢您花时间报告问题！请尽量填写以下信息，帮助我们快速定位和修复。
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述
+      description: 清晰简洁地描述遇到的问题
+      placeholder: 运行 GitHub 模板时报错...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 如何复现这个问题？
+      placeholder: |
+        1. 启动 Web UI
+        2. 选择 GitHub 模板
+        3. 点击运行
+        4. 出现错误
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望行为
+      description: 你期望发生什么？
+      placeholder: 正常生成文章并推送
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 错误日志
+      description: 如果有错误日志，请粘贴在这里
+      render: shell
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: 操作系统
+      options:
+        - Windows 11
+        - Windows 10
+        - macOS (Apple Silicon)
+        - macOS (Intel)
+        - Linux (Ubuntu/Debian)
+        - Linux (其他)
+    validations:
+      required: true
+
+  - type: input
+    id: python
+    attributes:
+      label: Python 版本
+      description: 运行 `python --version` 查看
+      placeholder: "3.12.0"
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 检查清单
+      options:
+        - label: 我已搜索过 Issues，没有找到相同的问题
+          required: true
+        - label: 我已阅读 README 和常见问题
+          required: true

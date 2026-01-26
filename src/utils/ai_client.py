@@ -21,12 +21,12 @@ Hunter AI 内容工厂 - 统一 AI 客户端
     image_path = await generate_image("一只可爱的猫咪", output_path="cat.png")
 """
 
-import httpx
-import base64
 import asyncio
-from pathlib import Path
+import base64
 from dataclasses import dataclass
-from typing import Optional
+from pathlib import Path
+
+import httpx
 from rich.console import Console
 
 from src.config import get_settings
@@ -41,17 +41,19 @@ AI_MAX_RETRIES = 3  # 最大重试次数
 @dataclass
 class AIResponse:
     """AI 响应结构"""
-    text: str                          # 生成的文本
-    model: str                         # 使用的模型
-    usage: Optional[dict] = None       # Token 使用情况
+
+    text: str  # 生成的文本
+    model: str  # 使用的模型
+    usage: dict | None = None  # Token 使用情况
 
 
 @dataclass
 class ImageResponse:
     """图片生成响应结构"""
-    image_bytes: bytes                 # 图片二进制数据
-    model: str                         # 使用的模型
-    saved_path: Optional[str] = None   # 保存路径（如果已保存）
+
+    image_bytes: bytes  # 图片二进制数据
+    model: str  # 使用的模型
+    saved_path: str | None = None  # 保存路径（如果已保存）
 
 
 class BaseAIClient:
@@ -72,37 +74,26 @@ class OfficialGeminiClient(BaseAIClient):
     def __init__(self, settings):
         super().__init__(settings)
         from google import genai
+
         self.client = genai.Client(api_key=settings.gemini.api_key)
         # 图片模型从配置读取（必须配置才能使用图片生成）
         self.image_model = settings.gemini.image_model
 
     async def generate(self, prompt: str, **kwargs) -> AIResponse:
         """调用官方 Gemini API"""
-        response = self.client.models.generate_content(
-            model=self.model,
-            contents=prompt,
-            **kwargs
-        )
+        response = self.client.models.generate_content(model=self.model, contents=prompt, **kwargs)
         return AIResponse(
             text=response.text,
             model=self.model,
-            usage=None  # 官方 SDK 返回格式不同
+            usage=None,  # 官方 SDK 返回格式不同
         )
 
     def generate_sync(self, prompt: str, **kwargs) -> AIResponse:
         """同步调用官方 Gemini API"""
-        response = self.client.models.generate_content(
-            model=self.model,
-            contents=prompt,
-            **kwargs
-        )
-        return AIResponse(
-            text=response.text,
-            model=self.model,
-            usage=None
-        )
+        response = self.client.models.generate_content(model=self.model, contents=prompt, **kwargs)
+        return AIResponse(text=response.text, model=self.model, usage=None)
 
-    def generate_image_sync(self, prompt: str, output_path: Optional[str] = None, **kwargs) -> ImageResponse:
+    def generate_image_sync(self, prompt: str, output_path: str | None = None, **kwargs) -> ImageResponse:
         """
         使用 Imagen 模型生成图片（同步）
 
@@ -139,11 +130,7 @@ class OfficialGeminiClient(BaseAIClient):
                 Path(output_path).write_bytes(image_data)
                 saved_path = output_path
 
-            return ImageResponse(
-                image_bytes=image_data,
-                model=self.image_model,
-                saved_path=saved_path
-            )
+            return ImageResponse(image_bytes=image_data, model=self.image_model, saved_path=saved_path)
         else:
             raise RuntimeError("图片生成失败：未返回任何图片")
 
@@ -153,12 +140,9 @@ class OpenAICompatibleClient(BaseAIClient):
 
     def __init__(self, settings):
         super().__init__(settings)
-        self.base_url = settings.gemini.base_url.rstrip('/')
+        self.base_url = settings.gemini.base_url.rstrip("/")
         self.api_key = settings.gemini.api_key
-        self.headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
-        }
+        self.headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
         # 图片模型从配置读取（必须配置才能使用图片生成）
         self.image_model = settings.gemini.image_model
 
@@ -182,14 +166,16 @@ class OpenAICompatibleClient(BaseAIClient):
                             "messages": [{"role": "user", "content": prompt}],
                             "max_tokens": kwargs.get("max_tokens", 4096),
                             "temperature": kwargs.get("temperature", 0.7),
-                        }
+                        },
                     )
 
                     # 429 速率限制：指数退避重试
                     if response.status_code == 429:
                         if attempt < AI_MAX_RETRIES - 1:
-                            wait_time = 2 * (2 ** attempt)  # 2s, 4s, 8s
-                            console.print(f"[yellow]⏳ 速率限制(429)，{wait_time}秒后重试 ({attempt + 1}/{AI_MAX_RETRIES})...[/yellow]")
+                            wait_time = 2 * (2**attempt)  # 2s, 4s, 8s
+                            console.print(
+                                f"[yellow]⏳ 速率限制(429)，{wait_time}秒后重试 ({attempt + 1}/{AI_MAX_RETRIES})...[/yellow]"
+                            )
                             await asyncio.sleep(wait_time)
                             continue
                         else:
@@ -199,15 +185,15 @@ class OpenAICompatibleClient(BaseAIClient):
                     data = response.json()
 
                     return AIResponse(
-                        text=data["choices"][0]["message"]["content"],
-                        model=self.model,
-                        usage=data.get("usage")
+                        text=data["choices"][0]["message"]["content"], model=self.model, usage=data.get("usage")
                     )
             except (httpx.TimeoutException, httpx.ReadTimeout) as e:
                 last_error = e
                 if attempt < AI_MAX_RETRIES - 1:
                     wait_time = (attempt + 1) * 10  # 递增等待：10s, 20s, 30s
-                    console.print(f"[yellow]⏱️ AI 请求超时，{wait_time}秒后重试 ({attempt + 1}/{AI_MAX_RETRIES})...[/yellow]")
+                    console.print(
+                        f"[yellow]⏱️ AI 请求超时，{wait_time}秒后重试 ({attempt + 1}/{AI_MAX_RETRIES})...[/yellow]"
+                    )
                     await asyncio.sleep(wait_time)
                 else:
                     console.print(f"[red]❌ AI 请求超时，已重试 {AI_MAX_RETRIES} 次[/red]")
@@ -229,6 +215,7 @@ class OpenAICompatibleClient(BaseAIClient):
         - 超时错误：10/20/30 秒递增等待
         """
         import time
+
         last_error = None
 
         for attempt in range(AI_MAX_RETRIES):
@@ -242,14 +229,16 @@ class OpenAICompatibleClient(BaseAIClient):
                             "messages": [{"role": "user", "content": prompt}],
                             "max_tokens": kwargs.get("max_tokens", 4096),
                             "temperature": kwargs.get("temperature", 0.7),
-                        }
+                        },
                     )
 
                     # 429 速率限制：指数退避重试
                     if response.status_code == 429:
                         if attempt < AI_MAX_RETRIES - 1:
-                            wait_time = 2 * (2 ** attempt)  # 2s, 4s, 8s
-                            console.print(f"[yellow]⏳ 速率限制(429)，{wait_time}秒后重试 ({attempt + 1}/{AI_MAX_RETRIES})...[/yellow]")
+                            wait_time = 2 * (2**attempt)  # 2s, 4s, 8s
+                            console.print(
+                                f"[yellow]⏳ 速率限制(429)，{wait_time}秒后重试 ({attempt + 1}/{AI_MAX_RETRIES})...[/yellow]"
+                            )
                             time.sleep(wait_time)
                             continue
                         else:
@@ -259,15 +248,15 @@ class OpenAICompatibleClient(BaseAIClient):
                     data = response.json()
 
                     return AIResponse(
-                        text=data["choices"][0]["message"]["content"],
-                        model=self.model,
-                        usage=data.get("usage")
+                        text=data["choices"][0]["message"]["content"], model=self.model, usage=data.get("usage")
                     )
             except (httpx.TimeoutException, httpx.ReadTimeout) as e:
                 last_error = e
                 if attempt < AI_MAX_RETRIES - 1:
                     wait_time = (attempt + 1) * 10
-                    console.print(f"[yellow]⏱️ AI 请求超时，{wait_time}秒后重试 ({attempt + 1}/{AI_MAX_RETRIES})...[/yellow]")
+                    console.print(
+                        f"[yellow]⏱️ AI 请求超时，{wait_time}秒后重试 ({attempt + 1}/{AI_MAX_RETRIES})...[/yellow]"
+                    )
                     time.sleep(wait_time)
                 else:
                     console.print(f"[red]❌ AI 请求超时，已重试 {AI_MAX_RETRIES} 次[/red]")
@@ -281,7 +270,7 @@ class OpenAICompatibleClient(BaseAIClient):
 
         raise last_error or RuntimeError("AI 请求失败")
 
-    def generate_image_sync(self, prompt: str, output_path: Optional[str] = None, **kwargs) -> ImageResponse:
+    def generate_image_sync(self, prompt: str, output_path: str | None = None, **kwargs) -> ImageResponse:
         """
         使用 OpenAI 兼容 API 生成图片（同步）
 
@@ -304,7 +293,7 @@ class OpenAICompatibleClient(BaseAIClient):
                     "prompt": prompt,
                     "n": kwargs.get("n", 1),
                     "response_format": "b64_json",  # 返回 base64 编码
-                }
+                },
             )
             response.raise_for_status()
             data = response.json()
@@ -322,11 +311,7 @@ class OpenAICompatibleClient(BaseAIClient):
                         Path(output_path).write_bytes(image_data)
                         saved_path = output_path
 
-                    return ImageResponse(
-                        image_bytes=image_data,
-                        model=self.image_model,
-                        saved_path=saved_path
-                    )
+                    return ImageResponse(image_bytes=image_data, model=self.image_model, saved_path=saved_path)
 
             raise RuntimeError("图片生成失败：未返回有效数据")
 
@@ -429,10 +414,7 @@ def generate_image(prompt: str, output_path: str, **kwargs) -> ImageResponse:
 
 
 def generate_project_cover(
-    project_name: str,
-    project_desc: str,
-    output_path: str,
-    style: str = "tech"
+    project_name: str, project_desc: str, output_path: str, style: str = "tech"
 ) -> ImageResponse:
     """
     为 GitHub 项目生成封面图

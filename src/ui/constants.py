@@ -42,8 +42,8 @@ SKILLS_INFO = [
         "image": "hunter_intro_02.png",
         "description": "从海量信息中找到值得写的爆款选题，分析热点趋势，确定最佳切入角度。",
         "outputs": ["选定主题", "切入角度", "目标读者", "标题候选"],
-        "color": "var(--skill-topic, #ff6b6b)",         # CSS 变量引用
-        "color_hex": "#ff6b6b"                          # 备用十六进制值
+        "color": "var(--skill-topic, #ff6b6b)",  # CSS 变量引用
+        "color_hex": "#ff6b6b",  # 备用十六进制值
     },
     {
         "id": "research",
@@ -54,7 +54,7 @@ SKILLS_INFO = [
         "description": "根据选题搜索相关资料，提取核心观点和数据，验证信息可靠性。",
         "outputs": ["核心洞察", "事实数据", "来源列表", "详细笔记"],
         "color": "var(--skill-research, #4ecdc4)",
-        "color_hex": "#4ecdc4"
+        "color_hex": "#4ecdc4",
     },
     {
         "id": "structure",
@@ -65,7 +65,7 @@ SKILLS_INFO = [
         "description": "设计文章骨架和阅读节奏，规划引人入胜的开篇钩子和有力的结尾。",
         "outputs": ["开篇钩子", "章节大纲", "结尾设计", "预估字数"],
         "color": "var(--skill-structure, #45b7d1)",
-        "color_hex": "#45b7d1"
+        "color_hex": "#45b7d1",
     },
     {
         "id": "write",
@@ -76,7 +76,7 @@ SKILLS_INFO = [
         "description": "根据大纲撰写完整文章，融入研究素材，自动过滤 AI 痕迹词。",
         "outputs": ["完整初稿", "实际字数", "可读性评分"],
         "color": "var(--skill-write, #96ceb4)",
-        "color_hex": "#96ceb4"
+        "color_hex": "#96ceb4",
     },
     {
         "id": "package",
@@ -87,7 +87,7 @@ SKILLS_INFO = [
         "description": "为文章打造吸睛外包装，生成标题选项、精炼摘要、封面图 Prompt。",
         "outputs": ["最终标题", "备选标题", "文章摘要", "封面提示词"],
         "color": "var(--skill-package, #ffeaa7)",
-        "color_hex": "#ffeaa7"
+        "color_hex": "#ffeaa7",
     },
     {
         "id": "publish",
@@ -98,8 +98,8 @@ SKILLS_INFO = [
         "description": "最终违禁词检查，格式化推送内容，通过 PushPlus 一键推送到微信。",
         "outputs": ["推送状态", "推送时间", "消息 ID"],
         "color": "var(--skill-publish, #dfe6e9)",
-        "color_hex": "#dfe6e9"
-    }
+        "color_hex": "#dfe6e9",
+    },
 ]
 
 

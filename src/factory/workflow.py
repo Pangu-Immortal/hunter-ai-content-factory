@@ -13,9 +13,8 @@ Author: Pangu-Immortal
 """
 
 import json
-from pathlib import Path
-from typing import Optional
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from rich.console import Console
 
@@ -31,6 +30,7 @@ SKILLS_DIR = Path(__file__).parent / "skills"
 @dataclass
 class TopicOutput:
     """选题 Skill 输出"""
+
     selected_topic: str = ""  # 选定的主题
     angle: str = ""  # 切入角度
     target_audience: str = ""  # 目标读者
@@ -42,6 +42,7 @@ class TopicOutput:
 @dataclass
 class ResearchOutput:
     """研究 Skill 输出"""
+
     key_insights: list[str] = field(default_factory=list)  # 核心洞察
     notes: str = ""  # 详细笔记
     facts: list[dict] = field(default_factory=list)  # 关键事实
@@ -52,6 +53,7 @@ class ResearchOutput:
 @dataclass
 class StructureOutput:
     """结构化 Skill 输出"""
+
     hook: str = ""  # 开篇钩子
     outline: list[dict] = field(default_factory=list)  # 章节大纲
     closing: str = ""  # 结尾设计
@@ -61,6 +63,7 @@ class StructureOutput:
 @dataclass
 class WriteOutput:
     """写作 Skill 输出"""
+
     draft: str = ""  # 完整初稿
     actual_word_count: int = 0  # 实际字数
     readability_score: str = ""  # 可读性评分
@@ -69,6 +72,7 @@ class WriteOutput:
 @dataclass
 class PackageOutput:
     """封装 Skill 输出"""
+
     title: str = ""  # 最终标题
     title_alternatives: list[str] = field(default_factory=list)  # 备选标题
     summary: str = ""  # 摘要
@@ -80,6 +84,7 @@ class PackageOutput:
 @dataclass
 class PublishOutput:
     """发布 Skill 输出"""
+
     push_status: str = ""  # 推送状态
     push_time: str = ""  # 推送时间
     message_id: str = ""  # 消息 ID
@@ -89,6 +94,7 @@ class PublishOutput:
 @dataclass
 class WorkflowContext:
     """工作流上下文 - 存储所有 Skill 的输入输出"""
+
     # 输入参数
     niche: str = ""  # 细分领域
     trends: list[str] = field(default_factory=list)  # 趋势列表
@@ -111,7 +117,7 @@ def load_skill_config() -> dict:
     """
     config_path = SKILLS_DIR / "config.json"
     if config_path.exists():
-        with open(config_path, 'r', encoding='utf-8') as f:
+        with open(config_path, encoding="utf-8") as f:
             return json.load(f)
     return {}
 
@@ -128,7 +134,7 @@ def load_skill_prompt(skill_name: str) -> str:
     """
     prompt_path = SKILLS_DIR / skill_name / "prompt.md"
     if prompt_path.exists():
-        with open(prompt_path, 'r', encoding='utf-8') as f:
+        with open(prompt_path, encoding="utf-8") as f:
             return f.read()
     return ""
 
@@ -170,7 +176,9 @@ class ContentWorkflow:
             str: 填充后的 Prompt
         """
         template = load_skill_prompt("research")
-        return template.replace("{{topic}}", self.context.topic.selected_topic).replace("{{keywords}}", str(self.context.topic.keywords))
+        return template.replace("{{topic}}", self.context.topic.selected_topic).replace(
+            "{{keywords}}", str(self.context.topic.keywords)
+        )
 
     def get_structure_prompt(self) -> str:
         """
@@ -183,9 +191,14 @@ class ContentWorkflow:
         research_data = {
             "key_insights": self.context.research.key_insights,
             "notes": self.context.research.notes,
-            "facts": self.context.research.facts
+            "facts": self.context.research.facts,
         }
-        return template.replace("{{research_data}}", json.dumps(research_data, ensure_ascii=False)).replace("{{tone}}", self.config.get("account_tone", "")).replace("{{target_audience}}", self.context.topic.target_audience).replace("{{angle}}", self.context.topic.angle)
+        return (
+            template.replace("{{research_data}}", json.dumps(research_data, ensure_ascii=False))
+            .replace("{{tone}}", self.config.get("account_tone", ""))
+            .replace("{{target_audience}}", self.context.topic.target_audience)
+            .replace("{{angle}}", self.context.topic.angle)
+        )
 
     def get_write_prompt(self) -> str:
         """
@@ -195,7 +208,16 @@ class ContentWorkflow:
             str: 填充后的 Prompt
         """
         template = load_skill_prompt("write")
-        return template.replace("{{outline}}", json.dumps(self.context.structure.outline, ensure_ascii=False)).replace("{{hook}}", self.context.structure.hook).replace("{{closing}}", self.context.structure.closing).replace("{{research_data}}", self.context.research.notes).replace("{{target_audience}}", self.context.topic.target_audience).replace("{{angle}}", self.context.topic.angle).replace("{{length_constraints}}", json.dumps(self.config.get("article_length", {}), ensure_ascii=False)).replace("{{banned_words}}", str(self.config.get("banned_words", [])))
+        return (
+            template.replace("{{outline}}", json.dumps(self.context.structure.outline, ensure_ascii=False))
+            .replace("{{hook}}", self.context.structure.hook)
+            .replace("{{closing}}", self.context.structure.closing)
+            .replace("{{research_data}}", self.context.research.notes)
+            .replace("{{target_audience}}", self.context.topic.target_audience)
+            .replace("{{angle}}", self.context.topic.angle)
+            .replace("{{length_constraints}}", json.dumps(self.config.get("article_length", {}), ensure_ascii=False))
+            .replace("{{banned_words}}", str(self.config.get("banned_words", [])))
+        )
 
     def get_package_prompt(self) -> str:
         """
@@ -205,7 +227,12 @@ class ContentWorkflow:
             str: 填充后的 Prompt
         """
         template = load_skill_prompt("package")
-        return template.replace("{{draft}}", self.context.write.draft).replace("{{potential_titles}}", str(self.context.topic.potential_titles)).replace("{{target_audience}}", self.context.topic.target_audience).replace("{{tone}}", self.config.get("account_tone", ""))
+        return (
+            template.replace("{{draft}}", self.context.write.draft)
+            .replace("{{potential_titles}}", str(self.context.topic.potential_titles))
+            .replace("{{target_audience}}", self.context.topic.target_audience)
+            .replace("{{tone}}", self.config.get("account_tone", ""))
+        )
 
     def print_workflow_status(self):
         """打印工作流当前状态"""

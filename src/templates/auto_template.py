@@ -18,25 +18,21 @@ GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
 Author: Pangu-Immortal
 """
 
-import asyncio
 from dataclasses import dataclass, field
-from typing import Optional
 from pathlib import Path
 
 from rich.console import Console
-from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.panel import Panel
 
-from src.templates import BaseTemplate, TemplateResult, register_template
+from src.config import settings
 from src.intel.utils import (
-    get_output_path,
-    get_today_str,
-    push_to_wechat,
     create_article_dir,
     get_article_file_path,
     get_chromadb_client,
+    get_today_str,
+    push_to_wechat,
 )
-from src.config import settings
+from src.templates import BaseTemplate, TemplateResult, register_template
 from src.utils.ai_client import get_ai_client
 
 # 终端输出美化
@@ -46,12 +42,13 @@ console = Console()
 @dataclass
 class IntelData:
     """情报数据结构"""
-    source: str           # 来源平台
-    title: str            # 标题/摘要
-    content: str          # 内容
-    url: str = ""         # 原始链接
-    author: str = ""      # 作者
-    score: int = 0        # 热度分数
+
+    source: str  # 来源平台
+    title: str  # 标题/摘要
+    content: str  # 内容
+    url: str = ""  # 原始链接
+    author: str = ""  # 作者
+    score: int = 0  # 热度分数
     tags: list[str] = field(default_factory=list)  # 标签
     images: list[str] = field(default_factory=list)  # 图片 URL 列表（封面图、截图等）
 
@@ -59,12 +56,13 @@ class IntelData:
 @dataclass
 class AnalysisResult:
     """AI 分析结果"""
-    selected_topic: str       # 选定的主题
-    topic_reason: str         # 选题理由
-    pain_points: list[str]    # 提炼的痛点
-    key_insights: list[str]   # 核心洞察
-    content_outline: str      # 内容大纲
-    target_audience: str      # 目标读者
+
+    selected_topic: str  # 选定的主题
+    topic_reason: str  # 选题理由
+    pain_points: list[str]  # 提炼的痛点
+    key_insights: list[str]  # 核心洞察
+    content_outline: str  # 内容大纲
+    target_audience: str  # 目标读者
 
 
 @register_template("auto")
@@ -94,7 +92,7 @@ class AutoTemplate(BaseTemplate):
         self.topic = topic
         self.platforms = platforms or ["hackernews", "twitter", "reddit", "github", "xiaohongshu"]
         self.intel_data: list[IntelData] = []
-        self.analysis_result: Optional[AnalysisResult] = None
+        self.analysis_result: AnalysisResult | None = None
         self.ai_client = None
         self._init_ai_client()
         self._init_chromadb()
@@ -178,16 +176,18 @@ class AutoTemplate(BaseTemplate):
                     f"?description=1&font=Inter&language=1&name=1&owner=1"
                     f"&pattern=Plus&stargazers=1&theme=Auto"
                 )
-                intel.append(IntelData(
-                    source="GitHub",
-                    title=p.name,
-                    content=f"{p.description} | Stars: {p.stars}",
-                    url=p.url,
-                    author=p.name.split("/")[0],
-                    score=p.stars,
-                    tags=p.topics[:5],
-                    images=[socialify_url],  # GitHub 使用 Socialify 生成项目封面
-                ))
+                intel.append(
+                    IntelData(
+                        source="GitHub",
+                        title=p.name,
+                        content=f"{p.description} | Stars: {p.stars}",
+                        url=p.url,
+                        author=p.name.split("/")[0],
+                        score=p.stars,
+                        tags=p.topics[:5],
+                        images=[socialify_url],  # GitHub 使用 Socialify 生成项目封面
+                    )
+                )
 
             console.print(f"  ✅ GitHub: {len(intel)} 条")
 
@@ -205,20 +205,22 @@ class AutoTemplate(BaseTemplate):
             from src.intel.utils import create_http_client
 
             http = create_http_client(timeout=15.0)
-            response = http.get('https://hacker-news.firebaseio.com/v0/topstories.json')
+            response = http.get("https://hacker-news.firebaseio.com/v0/topstories.json")
             top_ids = response.json()[:10]
 
             for item_id in top_ids:
-                item = http.get(f'https://hacker-news.firebaseio.com/v0/item/{item_id}.json').json()
-                if item and item.get('score', 0) >= 50:
-                    intel.append(IntelData(
-                        source="HackerNews",
-                        title=item.get('title', ''),
-                        content=item.get('title', ''),
-                        url=item.get('url', ''),
-                        author=item.get('by', ''),
-                        score=item.get('score', 0),
-                    ))
+                item = http.get(f"https://hacker-news.firebaseio.com/v0/item/{item_id}.json").json()
+                if item and item.get("score", 0) >= 50:
+                    intel.append(
+                        IntelData(
+                            source="HackerNews",
+                            title=item.get("title", ""),
+                            content=item.get("title", ""),
+                            url=item.get("url", ""),
+                            author=item.get("by", ""),
+                            score=item.get("score", 0),
+                        )
+                    )
 
             http.close()
             console.print(f"  ✅ HackerNews: {len(intel)} 条")
@@ -235,6 +237,7 @@ class AutoTemplate(BaseTemplate):
 
         try:
             import json
+
             from twikit import Client as TwitterClient
 
             cookies_file = settings.twitter.cookies_file
@@ -242,39 +245,41 @@ class AutoTemplate(BaseTemplate):
                 console.print("  [yellow]⚠️ Twitter Cookies 未配置[/yellow]")
                 return intel
 
-            client = TwitterClient(language='en-US')
+            client = TwitterClient(language="en-US")
 
-            with open(cookies_file, 'r', encoding='utf-8') as f:
+            with open(cookies_file, encoding="utf-8") as f:
                 cookies_data = json.load(f)
 
             if isinstance(cookies_data, list):
-                cookies_dict = {c['name']: c['value'] for c in cookies_data if 'name' in c}
+                cookies_dict = {c["name"]: c["value"] for c in cookies_data if "name" in c}
                 client.set_cookies(cookies_dict)
             else:
                 client.set_cookies(cookies_data)
 
             keywords = ["AI tools", "ChatGPT", "LLM", "AI agent"]
             for kw in keywords[:2]:
-                tweets = await client.search_tweet(kw, product='Latest', count=3)
+                tweets = await client.search_tweet(kw, product="Latest", count=3)
                 for tweet in tweets or []:
                     # 尝试获取推文媒体图片
                     images = []
-                    if hasattr(tweet, 'media') and tweet.media:
+                    if hasattr(tweet, "media") and tweet.media:
                         for media in tweet.media:
-                            if hasattr(media, 'media_url_https'):
+                            if hasattr(media, "media_url_https"):
                                 images.append(media.media_url_https)
-                            elif hasattr(media, 'url'):
+                            elif hasattr(media, "url"):
                                 images.append(media.url)
 
-                    intel.append(IntelData(
-                        source="Twitter",
-                        title=tweet.text[:50],
-                        content=tweet.text,
-                        url=f"https://twitter.com/i/status/{tweet.id}",
-                        author=tweet.user.name if tweet.user else "Unknown",
-                        tags=[kw],
-                        images=images,  # Twitter 推文媒体图片
-                    ))
+                    intel.append(
+                        IntelData(
+                            source="Twitter",
+                            title=tweet.text[:50],
+                            content=tweet.text,
+                            url=f"https://twitter.com/i/status/{tweet.id}",
+                            author=tweet.user.name if tweet.user else "Unknown",
+                            tags=[kw],
+                            images=images,  # Twitter 推文媒体图片
+                        )
+                    )
 
             console.print(f"  ✅ Twitter: {len(intel)} 条")
 
@@ -297,16 +302,18 @@ class AutoTemplate(BaseTemplate):
             for post in hunter.posts[:8]:
                 # 收集缩略图（如果有）
                 images = [post.thumbnail] if post.thumbnail else []
-                intel.append(IntelData(
-                    source="Reddit",
-                    title=post.title,
-                    content=f"{post.title} | {post.selftext[:200] if post.selftext else ''}",
-                    url=post.permalink,
-                    author=post.author,
-                    score=post.score,
-                    tags=[f"r/{post.subreddit}"],
-                    images=images,  # Reddit 帖子缩略图
-                ))
+                intel.append(
+                    IntelData(
+                        source="Reddit",
+                        title=post.title,
+                        content=f"{post.title} | {post.selftext[:200] if post.selftext else ''}",
+                        url=post.permalink,
+                        author=post.author,
+                        score=post.score,
+                        tags=[f"r/{post.subreddit}"],
+                        images=images,  # Reddit 帖子缩略图
+                    )
+                )
 
             console.print(f"  ✅ Reddit: {len(intel)} 条")
 
@@ -332,28 +339,32 @@ class AutoTemplate(BaseTemplate):
 
             for note in notes:
                 # 支持 XhsNote 对象和字典两种格式
-                if hasattr(note, 'title'):
+                if hasattr(note, "title"):
                     # XhsNote 对象
-                    intel.append(IntelData(
-                        source="小红书",
-                        title=note.title,
-                        content=note.desc[:200] if note.desc else "",
-                        url=note.url or f"https://www.xiaohongshu.com/explore/{note.note_id}",
-                        author=note.author,
-                        score=note.likes,
-                        images=note.images,  # 小红书笔记图片列表
-                    ))
+                    intel.append(
+                        IntelData(
+                            source="小红书",
+                            title=note.title,
+                            content=note.desc[:200] if note.desc else "",
+                            url=note.url or f"https://www.xiaohongshu.com/explore/{note.note_id}",
+                            author=note.author,
+                            score=note.likes,
+                            images=note.images,  # 小红书笔记图片列表
+                        )
+                    )
                 else:
                     # 字典格式（兼容旧版本）
-                    intel.append(IntelData(
-                        source="小红书",
-                        title=note.get("title", ""),
-                        content=note.get("desc", "")[:200],
-                        url=note.get("url", f"https://www.xiaohongshu.com/explore/{note.get('note_id', '')}"),
-                        author=note.get("author", ""),
-                        score=note.get("likes", 0),
-                        images=note.get("images", []),  # 小红书笔记图片列表
-                    ))
+                    intel.append(
+                        IntelData(
+                            source="小红书",
+                            title=note.get("title", ""),
+                            content=note.get("desc", "")[:200],
+                            url=note.get("url", f"https://www.xiaohongshu.com/explore/{note.get('note_id', '')}"),
+                            author=note.get("author", ""),
+                            score=note.get("likes", 0),
+                            images=note.get("images", []),  # 小红书笔记图片列表
+                        )
+                    )
 
             console.print(f"  ✅ 小红书: {len(intel)} 条")
 
@@ -436,7 +447,7 @@ class AutoTemplate(BaseTemplate):
             result = self._parse_analysis(analysis_text)
             self.analysis_result = result
 
-            console.print(f"\n[green]✅ 分析完成[/green]")
+            console.print("\n[green]✅ 分析完成[/green]")
             console.print(f"   📌 选题: {result.selected_topic}")
             console.print(f"   🎯 痛点: {len(result.pain_points)} 个")
             console.print(f"   💡 洞察: {len(result.key_insights)} 个")
@@ -466,15 +477,15 @@ class AutoTemplate(BaseTemplate):
         import re
 
         # 提取各部分
-        topic_match = re.search(r'## 选定主题\n(.+?)(?=\n##|\Z)', text, re.DOTALL)
-        reason_match = re.search(r'## 选题理由\n(.+?)(?=\n##|\Z)', text, re.DOTALL)
-        pain_match = re.search(r'## 核心痛点\n(.+?)(?=\n##|\Z)', text, re.DOTALL)
-        insight_match = re.search(r'## 核心洞察\n(.+?)(?=\n##|\Z)', text, re.DOTALL)
-        audience_match = re.search(r'## 目标读者\n(.+?)(?=\n##|\Z)', text, re.DOTALL)
-        outline_match = re.search(r'## 文章大纲\n(.+?)(?=\n##|\Z)', text, re.DOTALL)
+        topic_match = re.search(r"## 选定主题\n(.+?)(?=\n##|\Z)", text, re.DOTALL)
+        reason_match = re.search(r"## 选题理由\n(.+?)(?=\n##|\Z)", text, re.DOTALL)
+        pain_match = re.search(r"## 核心痛点\n(.+?)(?=\n##|\Z)", text, re.DOTALL)
+        insight_match = re.search(r"## 核心洞察\n(.+?)(?=\n##|\Z)", text, re.DOTALL)
+        audience_match = re.search(r"## 目标读者\n(.+?)(?=\n##|\Z)", text, re.DOTALL)
+        outline_match = re.search(r"## 文章大纲\n(.+?)(?=\n##|\Z)", text, re.DOTALL)
 
         def extract_list(text: str) -> list[str]:
-            items = re.findall(r'\d+\.\s*(.+)', text)
+            items = re.findall(r"\d+\.\s*(.+)", text)
             return items
 
         return AnalysisResult(
@@ -539,7 +550,7 @@ class AutoTemplate(BaseTemplate):
                     "images": intel.images,
                 }
                 for intel in self.intel_data[:10]  # 保留前 10 条情报的详细信息
-            ]
+            ],
         }
         with open(metadata_path, "w", encoding="utf-8") as f:
             json.dump(metadata, f, ensure_ascii=False, indent=2)
@@ -556,9 +567,7 @@ class AutoTemplate(BaseTemplate):
         console.print("[cyan]✍️ AI 正在撰写文章...[/cyan]")
 
         analysis = self.analysis_result
-        intel_examples = "\n".join([
-            f"- [{i.source}] {i.title}" for i in self.intel_data[:5]
-        ])
+        intel_examples = "\n".join([f"- [{i.source}] {i.title}" for i in self.intel_data[:5]])
 
         prompt = f"""
 # Role: 公众号爆款写手
@@ -604,11 +613,11 @@ class AutoTemplate(BaseTemplate):
             article_text = response.text.strip()
 
             # 提取标题
-            lines = article_text.split('\n')
-            title = lines[0].replace('#', '').strip() if lines else analysis.selected_topic
+            lines = article_text.split("\n")
+            title = lines[0].replace("#", "").strip() if lines else analysis.selected_topic
 
             # 提取正文
-            content = '\n'.join(lines[1:]).strip() if len(lines) > 1 else article_text
+            content = "\n".join(lines[1:]).strip() if len(lines) > 1 else article_text
 
             console.print(f"[green]✅ 文章生成成功: {title}[/green]")
             return title, content
@@ -628,16 +637,18 @@ class AutoTemplate(BaseTemplate):
 
             self.collection.upsert(
                 documents=[content],
-                metadatas=[{
-                    "type": "auto_article",
-                    "title": title,
-                    "date": today,
-                    "topic": self.analysis_result.selected_topic if self.analysis_result else "",
-                    "platforms": ",".join(self.platforms),
-                }],
-                ids=[report_id]
+                metadatas=[
+                    {
+                        "type": "auto_article",
+                        "title": title,
+                        "date": today,
+                        "topic": self.analysis_result.selected_topic if self.analysis_result else "",
+                        "platforms": ",".join(self.platforms),
+                    }
+                ],
+                ids=[report_id],
             )
-            console.print(f"[green]💾 文章已存入数据库[/green]")
+            console.print("[green]💾 文章已存入数据库[/green]")
 
         except Exception as e:
             console.print(f"[yellow]⚠️ 数据库存储失败: {e}[/yellow]")
@@ -657,11 +668,9 @@ class AutoTemplate(BaseTemplate):
         """
         self.print_header()
 
-        console.print(Panel(
-            "[bold magenta]🚀 自动创作模式启动[/bold magenta]\n"
-            "Intel 采集 → AI 分析 → 内容生成",
-            expand=False
-        ))
+        console.print(
+            Panel("[bold magenta]🚀 自动创作模式启动[/bold magenta]\nIntel 采集 → AI 分析 → 内容生成", expand=False)
+        )
 
         try:
             # 步骤 1: 采集
@@ -678,7 +687,7 @@ class AutoTemplate(BaseTemplate):
                 )
 
             # 步骤 2: 分析
-            analysis = await self.step2_ai_analysis()
+            await self.step2_ai_analysis()
 
             # 步骤 3: 生成
             title, content, article_dir = await self.step3_generate_content()
@@ -689,14 +698,16 @@ class AutoTemplate(BaseTemplate):
                 success = push_to_wechat(title=f"【AI创作】{title}", content=content)
                 push_status = "已推送" if success else "推送失败"
 
-            console.print(Panel(
-                f"[bold green]✅ 自动创作完成[/bold green]\n"
-                f"📌 主题: {title}\n"
-                f"📊 情报: {len(intel_data)} 条\n"
-                f"📁 目录: {article_dir}\n"
-                f"📤 推送: {push_status}",
-                expand=False
-            ))
+            console.print(
+                Panel(
+                    f"[bold green]✅ 自动创作完成[/bold green]\n"
+                    f"📌 主题: {title}\n"
+                    f"📊 情报: {len(intel_data)} 条\n"
+                    f"📁 目录: {article_dir}\n"
+                    f"📤 推送: {push_status}",
+                    expand=False,
+                )
+            )
 
             return TemplateResult(
                 success=True,

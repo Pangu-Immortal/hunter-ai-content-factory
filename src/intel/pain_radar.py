@@ -17,33 +17,31 @@ Author: Pangu-Immortal
 
 import asyncio
 import datetime
-import time
 import random
+import time
 
-from twikit import Client as TwitterClient
 from rich.console import Console
-from rich.progress import track
+from twikit import Client as TwitterClient
 
 from src.config import settings
-from src.utils.ai_client import get_ai_client
-from src.intel.utils import (
-    get_chromadb_client,
-    generate_content_id,
-    push_to_wechat,
-    get_dated_output_path,
-    get_today_str,
-    get_output_path,
-)
 from src.intel.pain_store import PainStore  # 痛点结构化存储
+from src.intel.utils import (
+    generate_content_id,
+    get_chromadb_client,
+    get_output_path,
+    get_today_str,
+    push_to_wechat,
+)
+from src.utils.ai_client import get_ai_client
 
 # 终端输出美化
 console = Console()
 
 # 目标产品列表
-TARGETS = ['DeepSeek', 'ChatGPT', 'Claude', 'Gemini', 'Cursor', 'Windsurf']
+TARGETS = ["DeepSeek", "ChatGPT", "Claude", "Gemini", "Cursor", "Windsurf"]
 
 # 痛点关键词
-PAIN_KEYWORDS = ['error', 'fail', 'broken', 'slow', 'stupid', 'bug', 'api down', 'not working']
+PAIN_KEYWORDS = ["error", "fail", "broken", "slow", "stupid", "bug", "api down", "not working"]
 
 
 class PainRadar:
@@ -109,30 +107,34 @@ class PainRadar:
 
             self.collection.upsert(
                 documents=[content],
-                metadatas=[{
-                    "source": source,
-                    "author": str(author),
-                    "type": "pain",
-                    "time": current_time,
-                    "platform": pain.platform or "",
-                    "category": pain.category or "",
-                }],
-                ids=[doc_id]
+                metadatas=[
+                    {
+                        "source": source,
+                        "author": str(author),
+                        "type": "pain",
+                        "time": current_time,
+                        "platform": pain.platform or "",
+                        "category": pain.category or "",
+                    }
+                ],
+                ids=[doc_id],
             )
 
             # 记录到本次会话列表（包含结构化数据）
-            self.pain_points.append({
-                "id": pain.id,
-                "content": content,
-                "source": source,
-                "author": author,
-                "platform": pain.platform,
-                "category": pain.category,
-                "severity": pain.severity,
-                "tags": pain.tags,
-                "frequency": pain.frequency,
-                "is_new": is_new,
-            })
+            self.pain_points.append(
+                {
+                    "id": pain.id,
+                    "content": content,
+                    "source": source,
+                    "author": author,
+                    "platform": pain.platform,
+                    "category": pain.category,
+                    "severity": pain.severity,
+                    "tags": pain.tags,
+                    "frequency": pain.frequency,
+                    "is_new": is_new,
+                }
+            )
 
             status = "新增" if is_new else f"合并(频率:{pain.frequency})"
             console.print(f"  🩸 捕获痛点 [{status}]: {content[:40]}...")
@@ -150,7 +152,7 @@ class PainRadar:
             int: 捕获的痛点数量
         """
         console.print("\n[bold cyan]🐦 正在扫描 Twitter 最新愤怒值...[/bold cyan]")
-        client = TwitterClient(language='en-US')
+        client = TwitterClient(language="en-US")
         count = 0
 
         # 生成搜索词组合
@@ -174,13 +176,14 @@ class PainRadar:
             # Cookie-Editor 导出格式: [{name, value, ...}, ...]
             # twikit 2.x 期望格式: {name: value, ...}
             import json
-            with open(cookies_file, 'r', encoding='utf-8') as f:
+
+            with open(cookies_file, encoding="utf-8") as f:
                 cookies_data = json.load(f)
 
             # 检查格式并转换
             if isinstance(cookies_data, list):
                 # Cookie-Editor 数组格式 → 字典格式
-                cookies_dict = {c['name']: c['value'] for c in cookies_data if 'name' in c and 'value' in c}
+                cookies_dict = {c["name"]: c["value"] for c in cookies_data if "name" in c and "value" in c}
                 console.print(f"[dim]🔄 已转换 {len(cookies_dict)} 个 cookies 为 twikit 格式[/dim]")
                 client.set_cookies(cookies_dict)
             elif isinstance(cookies_data, dict):
@@ -193,14 +196,14 @@ class PainRadar:
                 console.print(f"  🔍 搜索: {query}")
 
                 try:
-                    tweets = await client.search_tweet(query, product='Latest', count=3)
+                    tweets = await client.search_tweet(query, product="Latest", count=3)
 
                     if not tweets:
                         console.print("     (无结果)")
                         continue
 
                     for tweet in tweets:
-                        text = tweet.text.replace('\n', ' ')
+                        text = tweet.text.replace("\n", " ")
                         user = tweet.user.name if tweet.user else "Unknown"
                         url = f"https://twitter.com/{tweet.user.screen_name}/status/{tweet.id}" if tweet.user else None
                         if self.save_pain("Twitter", user, text, url):
@@ -348,15 +351,17 @@ class PainRadar:
             report_id = f"pain_report_{date}"
             self.collection.upsert(
                 documents=[content],
-                metadatas=[{
-                    "type": "pain_report",
-                    "date": date,
-                    "source": "pain_radar",
-                    "time": datetime.datetime.now().isoformat(),
-                }],
-                ids=[report_id]
+                metadatas=[
+                    {
+                        "type": "pain_report",
+                        "date": date,
+                        "source": "pain_radar",
+                        "time": datetime.datetime.now().isoformat(),
+                    }
+                ],
+                ids=[report_id],
             )
-            console.print(f"[green]💾 报告已存入数据库[/green]")
+            console.print("[green]💾 报告已存入数据库[/green]")
         except Exception as e:
             console.print(f"[yellow]⚠️ 数据库存储失败: {e}[/yellow]")
 
@@ -404,10 +409,7 @@ class PainRadar:
         # 为本次捕获的所有痛点更新分析摘要
         for pain in self.pain_points:
             if pain.get("is_new"):  # 只更新新增的痛点
-                self.pain_store.update_ai_analysis(
-                    pain_id=pain["id"],
-                    analysis=f"报告日期: {get_today_str()}"
-                )
+                self.pain_store.update_ai_analysis(pain_id=pain["id"], analysis=f"报告日期: {get_today_str()}")
 
 
 async def main():

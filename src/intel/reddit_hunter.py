@@ -19,17 +19,12 @@ Author: Pangu-Immortal
 import asyncio
 import datetime
 from dataclasses import dataclass, field
-from typing import Optional
 
 from rich.console import Console
-from rich.progress import track
 
-from src.config import settings
 from src.intel.utils import (
     create_http_client,
     get_chromadb_client,
-    generate_content_id,
-    get_today_str,
 )
 
 # 终端输出美化
@@ -39,19 +34,20 @@ console = Console()
 @dataclass
 class RedditPost:
     """Reddit 帖子数据结构"""
-    id: str                      # 帖子 ID
-    title: str                   # 标题
-    selftext: str                # 正文（self post）
-    author: str                  # 作者
-    subreddit: str               # 子版块
-    score: int                   # 分数（upvotes - downvotes）
-    num_comments: int            # 评论数
-    url: str                     # 帖子链接
-    permalink: str               # Reddit 永久链接
-    created_utc: float           # 创建时间戳
-    is_self: bool = True         # 是否为文字帖
-    link_flair_text: str = ""    # 帖子标签
-    thumbnail: str = ""          # 缩略图 URL（封面图）
+
+    id: str  # 帖子 ID
+    title: str  # 标题
+    selftext: str  # 正文（self post）
+    author: str  # 作者
+    subreddit: str  # 子版块
+    score: int  # 分数（upvotes - downvotes）
+    num_comments: int  # 评论数
+    url: str  # 帖子链接
+    permalink: str  # Reddit 永久链接
+    created_utc: float  # 创建时间戳
+    is_self: bool = True  # 是否为文字帖
+    link_flair_text: str = ""  # 帖子标签
+    thumbnail: str = ""  # 缩略图 URL（封面图）
     top_comments: list[dict] = field(default_factory=list)  # 热门评论
 
 
@@ -65,34 +61,49 @@ class RedditHunter:
 
     # AI 相关的 Subreddit 列表
     AI_SUBREDDITS = [
-        "MachineLearning",       # 机器学习学术讨论
-        "artificial",            # AI 综合讨论
-        "LocalLLaMA",            # 本地大模型
-        "ChatGPT",               # ChatGPT 使用讨论
-        "ClaudeAI",              # Claude AI 讨论
-        "singularity",           # AI 未来/通用智能
-        "StableDiffusion",       # 图像生成
-        "midjourney",            # Midjourney 讨论
+        "MachineLearning",  # 机器学习学术讨论
+        "artificial",  # AI 综合讨论
+        "LocalLLaMA",  # 本地大模型
+        "ChatGPT",  # ChatGPT 使用讨论
+        "ClaudeAI",  # Claude AI 讨论
+        "singularity",  # AI 未来/通用智能
+        "StableDiffusion",  # 图像生成
+        "midjourney",  # Midjourney 讨论
         "learnmachinelearning",  # ML 学习
-        "PromptEngineering",     # 提示词工程
+        "PromptEngineering",  # 提示词工程
     ]
 
     # 痛点相关的 Subreddit 列表
     PAIN_SUBREDDITS = [
-        "ChatGPT",               # ChatGPT 问题反馈
-        "ClaudeAI",              # Claude 问题反馈
-        "LocalLLaMA",            # 本地模型问题
-        "StableDiffusion",       # SD 问题
-        "midjourney",            # MJ 问题
-        "artificial",            # AI 综合问题
+        "ChatGPT",  # ChatGPT 问题反馈
+        "ClaudeAI",  # Claude 问题反馈
+        "LocalLLaMA",  # 本地模型问题
+        "StableDiffusion",  # SD 问题
+        "midjourney",  # MJ 问题
+        "artificial",  # AI 综合问题
     ]
 
     # 痛点关键词
     PAIN_KEYWORDS = [
-        "bug", "error", "broken", "issue", "problem", "fail",
-        "slow", "crash", "stuck", "not working", "hate",
-        "frustrating", "annoying", "worse", "downgrade",
-        "help", "can't", "won't", "doesn't work"
+        "bug",
+        "error",
+        "broken",
+        "issue",
+        "problem",
+        "fail",
+        "slow",
+        "crash",
+        "stuck",
+        "not working",
+        "hate",
+        "frustrating",
+        "annoying",
+        "worse",
+        "downgrade",
+        "help",
+        "can't",
+        "won't",
+        "doesn't work",
     ]
 
     # 最低分数阈值
@@ -109,9 +120,7 @@ class RedditHunter:
         """
         self.mode = mode
         self.http = create_http_client(timeout=30.0)
-        self.http.headers.update({
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) HunterAI/2.0"
-        })
+        self.http.headers.update({"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) HunterAI/2.0"})
         self.posts: list[RedditPost] = []
         self._init_chromadb()
 
@@ -120,10 +129,9 @@ class RedditHunter:
         try:
             client = get_chromadb_client()
             self.collection = client.get_or_create_collection(
-                name="reddit_posts",
-                metadata={"description": "Reddit 帖子存储，用于去重"}
+                name="reddit_posts", metadata={"description": "Reddit 帖子存储，用于去重"}
             )
-            console.print(f"[green]✅ ChromaDB 连接成功 (Reddit 集合)[/green]")
+            console.print("[green]✅ ChromaDB 连接成功 (Reddit 集合)[/green]")
         except Exception as e:
             console.print(f"[yellow]⚠️ ChromaDB 初始化失败: {e}[/yellow]")
             self.collection = None
@@ -163,14 +171,16 @@ class RedditHunter:
 
             self.collection.upsert(
                 documents=[doc_text],
-                metadatas=[{
-                    "subreddit": post.subreddit,
-                    "author": post.author,
-                    "score": post.score,
-                    "url": post.url,
-                    "collected_at": datetime.datetime.now().isoformat(),
-                }],
-                ids=[post_id]
+                metadatas=[
+                    {
+                        "subreddit": post.subreddit,
+                        "author": post.author,
+                        "score": post.score,
+                        "url": post.url,
+                        "collected_at": datetime.datetime.now().isoformat(),
+                    }
+                ],
+                ids=[post_id],
             )
 
             console.print(f"[green]   💾 新帖子: {post.title[:40]}... (r/{post.subreddit})[/green]")
@@ -180,12 +190,7 @@ class RedditHunter:
             console.print(f"[yellow]   ⚠️ 存储失败: {e}[/yellow]")
             return True  # 存储失败也视为新帖子
 
-    async def fetch_subreddit(
-        self,
-        subreddit: str,
-        sort: str = "hot",
-        limit: int = 10
-    ) -> list[RedditPost]:
+    async def fetch_subreddit(self, subreddit: str, sort: str = "hot", limit: int = 10) -> list[RedditPost]:
         """
         获取指定 subreddit 的帖子
 
@@ -242,7 +247,7 @@ class RedditHunter:
                     posts.append(post)
 
             elif response.status_code == 429:
-                console.print(f"[yellow]⚠️ Reddit 限流，等待重试...[/yellow]")
+                console.print("[yellow]⚠️ Reddit 限流，等待重试...[/yellow]")
                 await asyncio.sleep(5)
 
             else:
@@ -282,11 +287,13 @@ class RedditHunter:
                             continue
 
                         c_data = child.get("data", {})
-                        comments.append({
-                            "author": c_data.get("author", "[deleted]"),
-                            "body": c_data.get("body", ""),
-                            "score": c_data.get("score", 0),
-                        })
+                        comments.append(
+                            {
+                                "author": c_data.get("author", "[deleted]"),
+                                "body": c_data.get("body", ""),
+                                "score": c_data.get("score", 0),
+                            }
+                        )
 
         except Exception as e:
             console.print(f"[dim]   评论获取失败: {e}[/dim]")

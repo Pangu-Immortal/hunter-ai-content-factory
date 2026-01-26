@@ -17,12 +17,11 @@ Author: Pangu-Immortal
 """
 
 import os
-import sys
-import subprocess
 import platform
 import shutil
+import subprocess
+import sys
 from pathlib import Path
-from typing import Tuple, Optional
 
 
 # 颜色输出（跨平台兼容）
@@ -80,24 +79,22 @@ class EnvironmentChecker:
 
     def _get_os_name(self) -> str:
         """获取友好的操作系统名称"""
-        os_map = {
-            "Windows": "Windows",
-            "Darwin": "macOS",
-            "Linux": "Ubuntu/Linux"
-        }
+        os_map = {"Windows": "Windows", "Darwin": "macOS", "Linux": "Ubuntu/Linux"}
         return os_map.get(self.os_type, self.os_type)
 
     def print_header(self):
         """打印检查头部"""
-        print(Colors.header(f"""
+        print(
+            Colors.header(f"""
 ╔════════════════════════════════════════════╗
 ║     🦅 Hunter AI 环境自检工具 v2.0         ║
 ╠════════════════════════════════════════════╣
 ║  操作系统: {self.os_name:<30} ║
 ╚════════════════════════════════════════════╝
-"""))
+""")
+        )
 
-    def check_python_version(self) -> Tuple[bool, str]:
+    def check_python_version(self) -> tuple[bool, str]:
         """检查 Python 版本"""
         current = sys.version_info[:2]
         required = self.MIN_PYTHON_VERSION
@@ -108,19 +105,14 @@ class EnvironmentChecker:
             self.issues.append("python_version")
             return False, f"Python {current[0]}.{current[1]} (需要 {required[0]}.{required[1]}+)"
 
-    def check_uv_installed(self) -> Tuple[bool, str]:
+    def check_uv_installed(self) -> tuple[bool, str]:
         """检查 UV 是否安装"""
         uv_path = shutil.which("uv")
 
         if uv_path:
             # 获取版本
             try:
-                result = subprocess.run(
-                    ["uv", "--version"],
-                    capture_output=True,
-                    text=True,
-                    timeout=10
-                )
+                result = subprocess.run(["uv", "--version"], capture_output=True, text=True, timeout=10)
                 version = result.stdout.strip().split()[-1] if result.returncode == 0 else "未知"
                 return True, f"UV {version}"
             except Exception:
@@ -129,22 +121,23 @@ class EnvironmentChecker:
             self.issues.append("uv_missing")
             return False, "UV 未安装"
 
-    def check_config_file(self) -> Tuple[bool, str]:
+    def check_config_file(self) -> tuple[bool, str]:
         """检查 config.yaml 配置文件"""
         import yaml
+
         config_file = self.ROOT_DIR / "config.yaml"
-        config_example = self.ROOT_DIR / "config.example.yaml"
+        self.ROOT_DIR / "config.example.yaml"
 
         if config_file.exists():
             # 检查关键配置是否填写
             try:
-                with open(config_file, 'r', encoding='utf-8') as f:
+                with open(config_file, encoding="utf-8") as f:
                     config = yaml.safe_load(f) or {}
 
                 # 检查必填项
                 missing = []
-                gemini_key = config.get('gemini', {}).get('api_key', '')
-                if not gemini_key or gemini_key == 'your_gemini_api_key_here':
+                gemini_key = config.get("gemini", {}).get("api_key", "")
+                if not gemini_key or gemini_key == "your_gemini_api_key_here":
                     missing.append("gemini.api_key")
 
                 if missing:
@@ -159,7 +152,7 @@ class EnvironmentChecker:
             self.issues.append("config_missing")
             return False, "config.yaml 文件不存在"
 
-    def check_config_validation(self) -> Tuple[bool, str]:
+    def check_config_validation(self) -> tuple[bool, str]:
         """使用 ConfigValidator 进行深度配置验证"""
         config_file = self.ROOT_DIR / "config.yaml"
 
@@ -192,7 +185,7 @@ class EnvironmentChecker:
         except Exception as e:
             return True, f"跳过（{e}）"
 
-    def check_dependencies(self) -> Tuple[bool, str]:
+    def check_dependencies(self) -> tuple[bool, str]:
         """检查依赖是否安装"""
         venv_dir = self.ROOT_DIR / ".venv"
 
@@ -202,7 +195,7 @@ class EnvironmentChecker:
             self.issues.append("deps_missing")
             return False, "依赖未安装"
 
-    def check_directories(self) -> Tuple[bool, str]:
+    def check_directories(self) -> tuple[bool, str]:
         """检查必要目录"""
         required_dirs = ["data", "output"]
         missing = []
@@ -280,13 +273,7 @@ class EnvironmentChecker:
         print(Colors.info("正在安装依赖..."))
 
         try:
-            result = subprocess.run(
-                ["uv", "sync"],
-                cwd=self.ROOT_DIR,
-                capture_output=True,
-                text=True,
-                timeout=300
-            )
+            result = subprocess.run(["uv", "sync"], cwd=self.ROOT_DIR, capture_output=True, text=True, timeout=300)
 
             if result.returncode == 0:
                 print(Colors.success("依赖安装成功"))

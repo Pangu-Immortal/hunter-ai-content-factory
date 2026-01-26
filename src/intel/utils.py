@@ -22,26 +22,27 @@ GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
 Author: Pangu-Immortal
 """
 
-import hashlib
 import datetime
+import hashlib
 import logging
-from pathlib import Path
-from typing import Optional, Callable, TypeVar, ParamSpec
+from collections.abc import Callable
 from functools import wraps
+from pathlib import Path
+from typing import ParamSpec, TypeVar
 
-import httpx
 import chromadb
+import httpx
 from rich.console import Console
 from tenacity import (
+    RetryError,
+    before_sleep_log,
     retry,
+    retry_if_exception_type,
     stop_after_attempt,
     wait_exponential,
-    retry_if_exception_type,
-    before_sleep_log,
-    RetryError,
 )
 
-from src.config import settings, ROOT_DIR
+from src.config import settings
 
 # 终端输出美化
 console = Console()
@@ -60,13 +61,13 @@ T = TypeVar("T")
 
 # 可重试的异常类型
 RETRYABLE_EXCEPTIONS = (
-    httpx.TimeoutException,      # 超时
-    httpx.ConnectError,          # 连接错误
-    httpx.ReadError,             # 读取错误
-    httpx.WriteError,            # 写入错误
-    httpx.PoolTimeout,           # 连接池超时
-    ConnectionError,             # 通用连接错误
-    TimeoutError,                # 通用超时
+    httpx.TimeoutException,  # 超时
+    httpx.ConnectError,  # 连接错误
+    httpx.ReadError,  # 读取错误
+    httpx.WriteError,  # 写入错误
+    httpx.PoolTimeout,  # 连接池超时
+    ConnectionError,  # 通用连接错误
+    TimeoutError,  # 通用超时
 )
 
 
@@ -141,7 +142,7 @@ def retry_async(
     )
 
 
-def safe_retry(func: Callable[P, T]) -> Callable[P, T | None]:
+def safe_retry[**P, T](func: Callable[P, T]) -> Callable[P, T | None]:
     """
     安全重试包装器（不抛出异常，失败返回 None）
 
@@ -159,6 +160,7 @@ def safe_retry(func: Callable[P, T]) -> Callable[P, T | None]:
         def optional_api_call():
             ...
     """
+
     @wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> T | None:
         try:
@@ -166,6 +168,7 @@ def safe_retry(func: Callable[P, T]) -> Callable[P, T | None]:
         except (RetryError, Exception) as e:
             console.print(f"[yellow]⚠️ 操作失败（已重试）: {e}[/yellow]")
             return None
+
     return wrapper
 
 
@@ -231,7 +234,7 @@ def generate_content_id(source: str, content: str, author: str = "") -> str:
     Returns:
         str: 唯一标识 ID
     """
-    fingerprint = hashlib.md5(content.encode('utf-8')).hexdigest()  # 内容指纹
+    fingerprint = hashlib.md5(content.encode("utf-8")).hexdigest()  # 内容指纹
     return f"{source}_{author}_{fingerprint}"
 
 
@@ -257,17 +260,17 @@ def push_to_wechat(title: str, content: str, template: str = "markdown") -> bool
     try:
         with create_http_client(timeout=15.0) as client:
             response = client.post(
-                'https://www.pushplus.plus/send',  # PushPlus API
+                "https://www.pushplus.plus/send",  # PushPlus API
                 json={
                     "token": settings.push.token,
                     "title": title[:100],  # 标题限制 100 字符
                     "content": content,
                     "template": template,
-                }
+                },
             )
             result = response.json()
 
-            if result.get('code') == 200:  # 推送成功
+            if result.get("code") == 200:  # 推送成功
                 console.print(f"[green]📨 推送成功！消息ID: {result.get('data')}[/green]")
                 return True
             else:
@@ -342,7 +345,7 @@ def create_article_dir(article_title: str, date_str: str = None) -> Path:
         date_str = get_today_str()
 
     # 清理文章标题中的特殊字符（保留中文、英文、数字）
-    safe_title = re.sub(r'[<>:"/\\|?*\n\r\t]', '', article_title)  # 移除文件名非法字符
+    safe_title = re.sub(r'[<>:"/\\|?*\n\r\t]', "", article_title)  # 移除文件名非法字符
     safe_title = safe_title.strip()[:50]  # 限制长度，避免路径过长
     if not safe_title:
         safe_title = "untitled"
@@ -379,12 +382,7 @@ def get_today_str() -> str:
 
 
 async def call_with_retry(
-    func: Callable,
-    *args,
-    max_attempts: int = 3,
-    min_wait: float = 1,
-    max_wait: float = 10,
-    **kwargs
+    func: Callable, *args, max_attempts: int = 3, min_wait: float = 1, max_wait: float = 10, **kwargs
 ):
     """
     带重试的异步函数调用
@@ -405,7 +403,6 @@ async def call_with_retry(
     示例:
         result = await call_with_retry(fetch_data, url, max_attempts=5)
     """
-    import asyncio
 
     @retry(
         stop=stop_after_attempt(max_attempts),

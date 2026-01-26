@@ -15,7 +15,7 @@
 
 import os
 import socket
-import gradio as gr
+
 from rich.console import Console
 
 # 终端输出
@@ -278,8 +278,8 @@ def main():
     console.print("[cyan]外网分享: 启动后显示公网链接[/cyan]\n")
 
     # 设置环境变量避免代理干扰
-    os.environ['NO_PROXY'] = 'localhost,127.0.0.1,0.0.0.0'
-    os.environ['no_proxy'] = 'localhost,127.0.0.1,0.0.0.0'
+    os.environ["NO_PROXY"] = "localhost,127.0.0.1,0.0.0.0"
+    os.environ["no_proxy"] = "localhost,127.0.0.1,0.0.0.0"
 
     app.launch(
         server_name="0.0.0.0",
@@ -287,7 +287,7 @@ def main():
         share=True,
         show_error=True,
         inbrowser=False,
-        js=CUSTOM_JS,    # 注入 JavaScript 移除溢出按钮
+        js=CUSTOM_JS,  # 注入 JavaScript 移除溢出按钮
         # CSS 已在 gr.Blocks() 中传递，深浅主题跟随系统自动切换
     )
 

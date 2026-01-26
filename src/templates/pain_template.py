@@ -15,10 +15,11 @@ GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
 Author: Pangu-Immortal
 """
 
-from src.templates import BaseTemplate, TemplateResult, register_template
-from src.intel.utils import get_output_path, get_today_str, push_to_wechat
-from src.config import settings
 from rich.console import Console
+
+from src.config import settings
+from src.intel.utils import get_output_path, get_today_str, push_to_wechat
+from src.templates import BaseTemplate, TemplateResult, register_template
 
 console = Console()
 
@@ -118,11 +119,10 @@ class PainTemplate(BaseTemplate):
         for i, result in enumerate(results[:5], 1):  # 最多展示 5 个
             if isinstance(result, dict):
                 pain = result.get("pain", result.get("content", ""))
-                source = result.get("source", "Twitter")
+                result.get("source", "Twitter")
                 analysis = result.get("analysis", "")
             else:
                 pain = str(result)
-                source = "Twitter"
                 analysis = ""
 
             content.append(f"## 痛点 {i}\n\n")

@@ -6,7 +6,7 @@ Hunter AI 内容工厂 - 公共组件
 - create_footer: 底部页脚
 """
 
-from .header import create_header
 from .footer import create_footer
+from .header import create_header
 
 __all__ = ["create_header", "create_footer"]

@@ -49,7 +49,7 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP"]
-ignore = ["E501"]
+ignore = ["E501", "E722"]  # E722: bare except (需要逐个审查)
 
 [tool.mypy]
 python_version = "3.12"

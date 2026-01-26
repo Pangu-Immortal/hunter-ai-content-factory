@@ -18,6 +18,7 @@ Author: Pangu-Immortal
 """
 
 import asyncio
+
 import click
 from rich.console import Console
 from rich.panel import Panel
@@ -54,14 +55,16 @@ def cli():
 # 核心命令：一键启动
 # ═══════════════════════════════════════════════════════════════════════════════
 
+
 @cli.command()
 @click.option(
-    '--type', '-t',
-    type=click.Choice(['github', 'pain', 'news', 'xhs', 'auto']),
-    default='github',
-    help='内容类型：github(开源推荐) / pain(痛点方案) / news(资讯快报) / xhs(小红书热门) / auto(自动创作)'
+    "--type",
+    "-t",
+    type=click.Choice(["github", "pain", "news", "xhs", "auto"]),
+    default="github",
+    help="内容类型：github(开源推荐) / pain(痛点方案) / news(资讯快报) / xhs(小红书热门) / auto(自动创作)",
 )
-@click.option('--dry-run', is_flag=True, help='试运行（不推送到微信）')
+@click.option("--dry-run", is_flag=True, help="试运行（不推送到微信）")
 def run(type, dry_run):
     """
     🚀 一键启动 - 全自动生成并推送文章
@@ -85,15 +88,18 @@ def run(type, dry_run):
       uv run hunter run --dry-run      # 试运行，不推送
     """
     # 显示启动信息
-    console.print(Panel.fit(
-        f"[bold cyan]🦅 Hunter AI 内容工厂[/bold cyan]\n"
-        f"[dim]模板: {type} | 推送: {'禁用' if dry_run else '启用'}[/dim]",
-        border_style="cyan"
-    ))
+    console.print(
+        Panel.fit(
+            f"[bold cyan]🦅 Hunter AI 内容工厂[/bold cyan]\n"
+            f"[dim]模板: {type} | 推送: {'禁用' if dry_run else '启用'}[/dim]",
+            border_style="cyan",
+        )
+    )
 
     # 临时禁用推送（如果 dry-run）
     if dry_run:
         from src.config import settings
+
         settings.push.enabled = False
         console.print("[yellow]⚠️ 试运行模式：不会推送到微信[/yellow]\n")
 
@@ -134,9 +140,9 @@ def templates():
 
 
 @cli.command()
-@click.option('--port', '-p', default=7860, help='Web UI 端口（默认 7860）')
-@click.option('--share', '-s', is_flag=True, help='开启外链分享')
-@click.option('--no-browser', is_flag=True, help='不自动打开浏览器')
+@click.option("--port", "-p", default=7860, help="Web UI 端口（默认 7860）")
+@click.option("--share", "-s", is_flag=True, help="开启外链分享")
+@click.option("--no-browser", is_flag=True, help="不自动打开浏览器")
 def web(port, share, no_browser):
     """
     🌐 启动 Web UI - 可视化操作界面
@@ -155,11 +161,13 @@ def web(port, share, no_browser):
       uv run hunter web --share      # 开启外链分享
       uv run hunter web --no-browser # 不自动打开浏览器
     """
-    console.print(Panel.fit(
-        "[bold cyan]🌐 Hunter AI Web UI[/bold cyan]\n"
-        f"[dim]端口: {port} | 分享: {'启用' if share else '禁用'}[/dim]",
-        border_style="cyan"
-    ))
+    console.print(
+        Panel.fit(
+            "[bold cyan]🌐 Hunter AI Web UI[/bold cyan]\n"
+            f"[dim]端口: {port} | 分享: {'启用' if share else '禁用'}[/dim]",
+            border_style="cyan",
+        )
+    )
 
     from src.gradio_app import create_app
 
@@ -177,45 +185,46 @@ def web(port, share, no_browser):
 # 工具命令
 # ═══════════════════════════════════════════════════════════════════════════════
 
+
 @cli.command()
 def config():
     """⚙️ 显示当前配置"""
     console.print(Panel.fit("⚙️ 当前配置", style="bold cyan"))
 
-    from src.config import settings, get_config_status
+    from src.config import get_config_status, settings
 
     # 显示配置来源
     status = get_config_status()
     console.print(f"\n[bold]配置来源:[/bold] {settings.config_source}")
     console.print(f"[bold]配置文件:[/bold] {status['config_file']}")
 
-    console.print(f"\n[bold]Gemini:[/bold]")
+    console.print("\n[bold]Gemini:[/bold]")
     console.print(f"  模型: {settings.gemini.model}")
-    api_key_status = '✅ 已配置' if status['gemini']['api_key_configured'] else '❌ 未配置'
+    api_key_status = "✅ 已配置" if status["gemini"]["api_key_configured"] else "❌ 未配置"
     console.print(f"  API Key: {api_key_status}")
 
-    console.print(f"\n[bold]GitHub:[/bold]")
-    token_status = '✅ 已配置' if status['github']['token_configured'] else '❌ 未配置'
+    console.print("\n[bold]GitHub:[/bold]")
+    token_status = "✅ 已配置" if status["github"]["token_configured"] else "❌ 未配置"
     console.print(f"  Token: {token_status}")
     console.print(f"  最小 Stars: {settings.github.min_stars}")
 
-    console.print(f"\n[bold]Twitter:[/bold]")
+    console.print("\n[bold]Twitter:[/bold]")
     console.print(f"  Cookies 路径: {settings.twitter.cookies_path}")
-    cookies_status = '✅ 存在' if status['twitter']['cookies_exists'] else '❌ 不存在'
+    cookies_status = "✅ 存在" if status["twitter"]["cookies_exists"] else "❌ 不存在"
     console.print(f"  Cookies 文件: {cookies_status}")
 
-    console.print(f"\n[bold]PushPlus:[/bold]")
-    push_status = '✅ 已配置' if status['pushplus']['token_configured'] else '❌ 未配置'
+    console.print("\n[bold]PushPlus:[/bold]")
+    push_status = "✅ 已配置" if status["pushplus"]["token_configured"] else "❌ 未配置"
     console.print(f"  Token: {push_status}")
     console.print(f"  启用推送: {'是' if settings.push.enabled else '否'}")
 
-    console.print(f"\n[bold]公众号:[/bold]")
+    console.print("\n[bold]公众号:[/bold]")
     console.print(f"  名称: {settings.account.name}")
     console.print(f"  领域: {settings.account.niche}")
 
 
 @cli.command()
-@click.option('--fix', '-f', is_flag=True, help='尝试自动修复配置问题')
+@click.option("--fix", "-f", is_flag=True, help="尝试自动修复配置问题")
 def validate(fix):
     """✅ 验证配置文件"""
     console.print(Panel.fit("✅ 配置验证", style="bold cyan"))
@@ -233,20 +242,21 @@ def validate(fix):
 
 
 @cli.command()
-@click.argument('content_file', type=click.Path(exists=True))
-@click.option('--fix', '-f', is_flag=True, help='自动修复违禁词（替换 AI 痕迹词）')
-@click.option('--output', '-o', default='', help='修复后输出到指定文件')
+@click.argument("content_file", type=click.Path(exists=True))
+@click.option("--fix", "-f", is_flag=True, help="自动修复违禁词（替换 AI 痕迹词）")
+@click.option("--output", "-o", default="", help="修复后输出到指定文件")
 def check(content_file, fix, output):
     """🔍 检查文章违禁词"""
     console.print(Panel.fit("🔍 违禁词检查", style="bold cyan"))
 
     from pathlib import Path
-    from src.utils.content_filter import ContentFilter
+
     from src.config import settings
+    from src.utils.content_filter import ContentFilter
 
     # 读取文件内容
     file_path = Path(content_file)
-    content = file_path.read_text(encoding='utf-8')
+    content = file_path.read_text(encoding="utf-8")
 
     console.print(f"\n[bold]文件:[/bold] {file_path}")
     console.print(f"[bold]字数:[/bold] {len(content)}")
@@ -263,11 +273,11 @@ def check(content_file, fix, output):
 
         if output:
             output_path = Path(output)
-            output_path.write_text(cleaned_content, encoding='utf-8')
+            output_path.write_text(cleaned_content, encoding="utf-8")
             console.print(f"\n[green]✅ 已修复并保存到: {output_path}[/green]")
         else:
-            file_path.write_text(cleaned_content, encoding='utf-8')
-            console.print(f"\n[green]✅ 已修复并覆盖原文件[/green]")
+            file_path.write_text(cleaned_content, encoding="utf-8")
+            console.print("\n[green]✅ 已修复并覆盖原文件[/green]")
 
         console.print(f"[dim]替换了 {len(result.replaced_words)} 个 AI 痕迹词[/dim]")
     else:
@@ -291,11 +301,13 @@ def clean():
 # 保留旧命令（向下兼容）
 # ═══════════════════════════════════════════════════════════════════════════════
 
+
 @cli.command(hidden=True)
 def github():
     """[旧命令] 运行 GitHub 猎手"""
     console.print("[yellow]提示: 此命令已弃用，请使用 'hunter run -t github'[/yellow]\n")
     from src.intel.github_hunter import main
+
     main()
 
 
@@ -304,6 +316,7 @@ def pain():
     """[旧命令] 运行痛点雷达"""
     console.print("[yellow]提示: 此命令已弃用，请使用 'hunter run -t pain'[/yellow]\n")
     from src.intel.pain_radar import main
+
     asyncio.run(main())
 
 
@@ -312,6 +325,7 @@ def publish():
     """[旧命令] 运行全能猎手"""
     console.print("[yellow]提示: 此命令已弃用，请使用 'hunter run -t news'[/yellow]\n")
     from src.intel.auto_publisher import main
+
     asyncio.run(main())
 
 
@@ -320,27 +334,30 @@ def refine():
     """[旧命令] 运行内容精炼器"""
     console.print("[yellow]提示: 此命令已弃用[/yellow]\n")
     from src.refiner.refiner import main
+
     main()
 
 
 @cli.command(hidden=True)
-@click.option('--niche', '-n', default='', help='细分领域')
-@click.option('--trends', '-t', multiple=True, help='趋势关键词')
-@click.option('--resume', '-r', default='', help='从指定 Skill 恢复')
+@click.option("--niche", "-n", default="", help="细分领域")
+@click.option("--trends", "-t", multiple=True, help="趋势关键词")
+@click.option("--resume", "-r", default="", help="从指定 Skill 恢复")
 def factory(niche, trends, resume):
     """[旧命令] 运行内容工厂"""
     console.print("[yellow]提示: 此命令已弃用，请使用 'hunter run'[/yellow]\n")
     from src.factory.executor import WorkflowExecutor
 
     executor = WorkflowExecutor()
-    context = asyncio.run(executor.run(
-        niche=niche,
-        trends=list(trends) if trends else [],
-        resume_from=resume if resume else None,
-    ))
+    asyncio.run(
+        executor.run(
+            niche=niche,
+            trends=list(trends) if trends else [],
+            resume_from=resume if resume else None,
+        )
+    )
 
 
-@cli.command(name='all', hidden=True)
+@cli.command(name="all", hidden=True)
 def all_modules():
     """[旧命令] 全员出击"""
     console.print("[yellow]提示: 此命令已弃用，请使用 'hunter run'[/yellow]\n")

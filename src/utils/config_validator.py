@@ -17,14 +17,11 @@ Hunter AI 内容工厂 - 配置验证器
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 from rich.console import Console
-from rich.table import Table
 from rich.panel import Panel
 
-from src.config import ROOT_DIR, CONFIG_YAML, load_yaml_config
-
+from src.config import CONFIG_YAML, ROOT_DIR, load_yaml_config
 
 console = Console()
 
@@ -32,10 +29,11 @@ console = Console()
 @dataclass
 class ValidationResult:
     """验证结果"""
-    passed: bool = True                                    # 是否通过验证
-    errors: list[str] = field(default_factory=list)       # 错误列表
-    warnings: list[str] = field(default_factory=list)     # 警告列表
-    info: list[str] = field(default_factory=list)         # 信息列表
+
+    passed: bool = True  # 是否通过验证
+    errors: list[str] = field(default_factory=list)  # 错误列表
+    warnings: list[str] = field(default_factory=list)  # 警告列表
+    info: list[str] = field(default_factory=list)  # 信息列表
 
 
 class ConfigValidator:
@@ -49,7 +47,7 @@ class ConfigValidator:
     - 检查违禁词数量
     """
 
-    def __init__(self, config_path: Optional[Path] = None):
+    def __init__(self, config_path: Path | None = None):
         """
         初始化验证器
 
@@ -120,7 +118,7 @@ class ConfigValidator:
         elif token.startswith("ghp_your"):
             result.warnings.append("github.token 使用了占位符")
         elif not token.startswith("ghp_") and not token.startswith("github_pat_"):
-            result.warnings.append(f"github.token 格式可能不正确（应以 ghp_ 或 github_pat_ 开头）")
+            result.warnings.append("github.token 格式可能不正确（应以 ghp_ 或 github_pat_ 开头）")
         else:
             result.info.append(f"GitHub Token: 已配置 ({token[:12]}...)")
 
@@ -211,7 +209,9 @@ class ConfigValidator:
                 console.print(f"  • {info}")
 
         # 汇总
-        console.print(f"\n[dim]错误: {len(result.errors)} | 警告: {len(result.warnings)} | 信息: {len(result.info)}[/dim]")
+        console.print(
+            f"\n[dim]错误: {len(result.errors)} | 警告: {len(result.warnings)} | 信息: {len(result.info)}[/dim]"
+        )
 
 
 def validate_config() -> ValidationResult:

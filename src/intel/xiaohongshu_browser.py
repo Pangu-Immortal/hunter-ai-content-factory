@@ -18,17 +18,15 @@ Author: Pangu-Immortal
 
 import asyncio
 import json
-import re
 import random
-from pathlib import Path
+import re
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
 
-from src.config import settings, ROOT_DIR
-from src.utils.logger import get_logger
-from src.utils.ai_client import get_ai_client
+from src.config import settings
 from src.intel.utils import create_article_dir, get_article_file_path, get_today_str
+from src.utils.ai_client import get_ai_client
+from src.utils.logger import get_logger
 
 logger = get_logger("hunter.intel.xiaohongshu_browser")
 
@@ -37,21 +35,23 @@ logger = get_logger("hunter.intel.xiaohongshu_browser")
 # 数据模型
 # ═══════════════════════════════════════════════════════════════════════════════
 
+
 @dataclass
 class XhsNote:
     """小红书笔记数据"""
-    note_id: str                          # 笔记 ID
-    title: str                            # 标题
-    desc: str                             # 描述/正文
-    author: str                           # 作者昵称
-    author_id: str = ""                   # 作者 ID
-    likes: int = 0                        # 点赞数
-    collects: int = 0                     # 收藏数
-    comments: int = 0                     # 评论数
+
+    note_id: str  # 笔记 ID
+    title: str  # 标题
+    desc: str  # 描述/正文
+    author: str  # 作者昵称
+    author_id: str = ""  # 作者 ID
+    likes: int = 0  # 点赞数
+    collects: int = 0  # 收藏数
+    comments: int = 0  # 评论数
     images: list[str] = field(default_factory=list)  # 图片列表
-    tags: list[str] = field(default_factory=list)    # 标签列表
-    url: str = ""                         # 笔记链接
-    created_at: Optional[datetime] = None # 发布时间
+    tags: list[str] = field(default_factory=list)  # 标签列表
+    url: str = ""  # 笔记链接
+    created_at: datetime | None = None  # 发布时间
 
     def to_dict(self) -> dict:
         """转为字典"""
@@ -74,6 +74,7 @@ class XhsNote:
 # ═══════════════════════════════════════════════════════════════════════════════
 # 小红书浏览器采集器
 # ═══════════════════════════════════════════════════════════════════════════════
+
 
 class XiaohongshuBrowser:
     """
@@ -102,7 +103,7 @@ class XiaohongshuBrowser:
             Playwright 格式的 cookies 列表
         """
         # 从配置文件加载
-        if hasattr(settings, 'xiaohongshu') and settings.xiaohongshu.cookies:
+        if hasattr(settings, "xiaohongshu") and settings.xiaohongshu.cookies:
             cookie_str = settings.xiaohongshu.cookies
             return self._parse_cookie_string(cookie_str)
 
@@ -119,22 +120,24 @@ class XiaohongshuBrowser:
             Playwright cookies 列表
         """
         cookies = []
-        for item in cookie_str.split(';'):
+        for item in cookie_str.split(";"):
             item = item.strip()
-            if '=' in item:
-                key, value = item.split('=', 1)
-                cookies.append({
-                    "name": key.strip(),
-                    "value": value.strip(),
-                    "domain": ".xiaohongshu.com",
-                    "path": "/",
-                })
+            if "=" in item:
+                key, value = item.split("=", 1)
+                cookies.append(
+                    {
+                        "name": key.strip(),
+                        "value": value.strip(),
+                        "domain": ".xiaohongshu.com",
+                        "path": "/",
+                    }
+                )
         return cookies
 
     def is_logged_in(self) -> bool:
         """检查是否已配置 Cookie"""
         cookie_names = [c["name"] for c in self.cookies]
-        required = ['web_session', 'a1']
+        required = ["web_session", "a1"]
         return all(name in cookie_names for name in required)
 
     async def _init_browser(self):
@@ -149,18 +152,18 @@ class XiaohongshuBrowser:
         self.browser = await self._playwright.chromium.launch(
             headless=True,  # 无头模式
             args=[
-                '--disable-blink-features=AutomationControlled',  # 隐藏自动化特征
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-            ]
+                "--disable-blink-features=AutomationControlled",  # 隐藏自动化特征
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+            ],
         )
 
         # 创建上下文（模拟真实浏览器）
         self.context = await self.browser.new_context(
-            viewport={'width': 1920, 'height': 1080},
-            user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            locale='zh-CN',
-            timezone_id='Asia/Shanghai',
+            viewport={"width": 1920, "height": 1080},
+            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            locale="zh-CN",
+            timezone_id="Asia/Shanghai",
         )
 
         # 注入 Cookie
@@ -184,7 +187,7 @@ class XiaohongshuBrowser:
         if self.browser:
             await self.browser.close()
             self.browser = None
-        if hasattr(self, '_playwright') and self._playwright:
+        if hasattr(self, "_playwright") and self._playwright:
             await self._playwright.stop()
             self._playwright = None
         logger.info("浏览器已关闭")
@@ -214,20 +217,20 @@ class XiaohongshuBrowser:
         try:
             # 访问搜索页
             search_url = f"{self.BASE_URL}/search_result?keyword={keyword}&source=web_search_result_notes"
-            await self.page.goto(search_url, wait_until='networkidle', timeout=30000)
+            await self.page.goto(search_url, wait_until="networkidle", timeout=30000)
 
             # 等待页面加载
             await asyncio.sleep(2)
 
             # 检查是否需要登录
             page_content = await self.page.content()
-            if '登录' in page_content and '注册' in page_content and len(page_content) < 5000:
+            if "登录" in page_content and "注册" in page_content and len(page_content) < 5000:
                 logger.warning("检测到登录页面，Cookie 可能已过期")
                 return []
 
             # 滚动加载更多内容
             for _ in range(3):
-                await self.page.evaluate('window.scrollBy(0, 1000)')
+                await self.page.evaluate("window.scrollBy(0, 1000)")
                 await asyncio.sleep(1)
 
             # 解析笔记列表
@@ -273,7 +276,7 @@ class XiaohongshuBrowser:
 
         return notes
 
-    async def _parse_note_card(self, element) -> Optional[XhsNote]:
+    async def _parse_note_card(self, element) -> XhsNote | None:
         """
         解析单个笔记卡片
 
@@ -287,14 +290,14 @@ class XiaohongshuBrowser:
             # 获取链接和 ID
             link_elem = await element.query_selector('a[href*="/explore/"], a[href*="/search_result/"]')
             if not link_elem:
-                link_elem = await element.query_selector('a')
+                link_elem = await element.query_selector("a")
 
-            href = await link_elem.get_attribute('href') if link_elem else ""
+            href = await link_elem.get_attribute("href") if link_elem else ""
             note_id = ""
-            if '/explore/' in href:
-                note_id = href.split('/explore/')[-1].split('?')[0]
-            elif '/search_result/' in href:
-                note_id = href.split('/')[-1].split('?')[0]
+            if "/explore/" in href:
+                note_id = href.split("/explore/")[-1].split("?")[0]
+            elif "/search_result/" in href:
+                note_id = href.split("/")[-1].split("?")[0]
 
             # 获取标题
             title_elem = await element.query_selector('span.title, div[class*="title"], a.title')
@@ -310,8 +313,8 @@ class XiaohongshuBrowser:
             likes = self._parse_count(likes_text)
 
             # 获取封面图
-            img_elem = await element.query_selector('img')
-            cover_url = await img_elem.get_attribute('src') if img_elem else ""
+            img_elem = await element.query_selector("img")
+            cover_url = await img_elem.get_attribute("src") if img_elem else ""
 
             if not note_id and not title:
                 return None
@@ -339,10 +342,10 @@ class XiaohongshuBrowser:
 
         try:
             # 移除非数字字符（保留数字、小数点、万/w）
-            count_str = re.sub(r'[^\d.万wW]', '', count_str)
+            count_str = re.sub(r"[^\d.万wW]", "", count_str)
 
-            if '万' in count_str or 'w' in count_str.lower():
-                num = float(count_str.replace('万', '').replace('w', '').replace('W', ''))
+            if "万" in count_str or "w" in count_str.lower():
+                num = float(count_str.replace("万", "").replace("w", "").replace("W", ""))
                 return int(num * 10000)
             elif count_str:
                 return int(float(count_str))
@@ -351,7 +354,7 @@ class XiaohongshuBrowser:
         except Exception:
             return 0
 
-    async def get_note_detail(self, note_id: str) -> Optional[XhsNote]:
+    async def get_note_detail(self, note_id: str) -> XhsNote | None:
         """
         获取笔记详情
 
@@ -366,7 +369,7 @@ class XiaohongshuBrowser:
 
         try:
             url = f"{self.BASE_URL}/explore/{note_id}"
-            await self.page.goto(url, wait_until='networkidle', timeout=30000)
+            await self.page.goto(url, wait_until="networkidle", timeout=30000)
             await asyncio.sleep(2)
 
             # 解析详情页
@@ -390,7 +393,7 @@ class XiaohongshuBrowser:
             images = []
             img_elems = await self.page.query_selector_all('div[class*="swiper"] img, div[class*="carousel"] img')
             for img in img_elems:
-                src = await img.get_attribute('src')
+                src = await img.get_attribute("src")
                 if src:
                     images.append(src)
 
@@ -399,7 +402,7 @@ class XiaohongshuBrowser:
             tag_elems = await self.page.query_selector_all('a[href*="/search_result?keyword="]')
             for tag in tag_elems:
                 tag_text = await tag.inner_text()
-                if tag_text and tag_text.startswith('#'):
+                if tag_text and tag_text.startswith("#"):
                     tags.append(tag_text[1:])
 
             return XhsNote(
@@ -473,9 +476,9 @@ class XiaohongshuBrowser:
 【笔记{i}】
 标题：{note.title}
 作者：{note.author}
-内容：{note.desc[:500] if note.desc else '（无详细内容）'}
+内容：{note.desc[:500] if note.desc else "（无详细内容）"}
 点赞：{note.likes} | 收藏：{note.collects} | 评论：{note.comments}
-标签：{', '.join(note.tags) if note.tags else '无'}
+标签：{", ".join(note.tags) if note.tags else "无"}
 """
             notes_summary.append(summary)
 
@@ -486,7 +489,7 @@ class XiaohongshuBrowser:
 
 ## 小红书热门笔记
 
-{''.join(notes_summary)}
+{"".join(notes_summary)}
 
 ## 写作要求
 
@@ -521,8 +524,8 @@ class XiaohongshuBrowser:
 
             # 清理 markdown 代码块标记
             if article.startswith("```"):
-                article = re.sub(r'^```\w*\n?', '', article)
-                article = re.sub(r'\n?```$', '', article)
+                article = re.sub(r"^```\w*\n?", "", article)
+                article = re.sub(r"\n?```$", "", article)
 
             logger.info(f"文章生成完成，字数：{len(article)}")
             return article
@@ -591,11 +594,11 @@ class XiaohongshuBrowser:
                 }
 
             # 4. 提取标题并创建文章目录
-            article_lines = article.split('\n')
+            article_lines = article.split("\n")
             title = keyword
             for line in article_lines:
-                if line.startswith('#'):
-                    title = line.replace('#', '').strip()[:30]
+                if line.startswith("#"):
+                    title = line.replace("#", "").strip()[:30]
                     break
 
             article_dir = create_article_dir(title)
@@ -616,10 +619,7 @@ class XiaohongshuBrowser:
                 "notes": [n.to_dict() for n in notes],
             }
             metadata_path = get_article_file_path(article_dir, "metadata.json")
-            metadata_path.write_text(
-                json.dumps(metadata, ensure_ascii=False, indent=2),
-                encoding="utf-8"
-            )
+            metadata_path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")
             logger.info(f"元数据已保存: {metadata_path}")
 
             return {
@@ -651,6 +651,7 @@ class XiaohongshuBrowser:
 # 命令行入口
 # ═══════════════════════════════════════════════════════════════════════════════
 
+
 async def main():
     """命令行入口"""
     import argparse
@@ -677,4 +678,5 @@ async def main():
 
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(main())

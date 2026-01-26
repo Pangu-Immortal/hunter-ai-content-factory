@@ -16,9 +16,10 @@ GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
 Author: Pangu-Immortal
 """
 
-from src.templates import BaseTemplate, TemplateResult, register_template
-from src.config import settings
 from rich.console import Console
+
+from src.config import settings
+from src.templates import BaseTemplate, TemplateResult, register_template
 
 console = Console()
 
@@ -60,7 +61,7 @@ class XiaohongshuTemplate(BaseTemplate):
         """
         from src.intel.xiaohongshu_browser import XiaohongshuBrowser
 
-        console.print(f"[cyan]📱 方案一：Playwright 浏览器采集[/cyan]")
+        console.print("[cyan]📱 方案一：Playwright 浏览器采集[/cyan]")
         hunter = XiaohongshuBrowser()
 
         if not hunter.is_logged_in():
@@ -79,7 +80,7 @@ class XiaohongshuTemplate(BaseTemplate):
         """
         from src.intel.xiaohongshu_hunter import XiaohongshuHunter
 
-        console.print(f"[cyan]📱 方案二：httpx API 采集[/cyan]")
+        console.print("[cyan]📱 方案二：httpx API 采集[/cyan]")
         hunter = XiaohongshuHunter()
 
         if not hunter.is_logged_in():
@@ -101,7 +102,7 @@ class XiaohongshuTemplate(BaseTemplate):
         self.print_header()
 
         # 检查 Cookie 配置
-        if not hasattr(settings, 'xiaohongshu') or not settings.xiaohongshu.cookies:
+        if not hasattr(settings, "xiaohongshu") or not settings.xiaohongshu.cookies:
             console.print("[yellow]⚠️ 未配置小红书 Cookie[/yellow]")
             console.print("[cyan]   请在 config.yaml 中配置 xiaohongshu.cookies[/cyan]")
             console.print("[dim]   获取方法: 浏览器登录小红书 → F12 → Console → 输入 document.cookie[/dim]")

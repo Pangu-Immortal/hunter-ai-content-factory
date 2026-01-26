@@ -17,30 +17,29 @@ GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
 Author: Pangu-Immortal
 """
 
-import json
 import asyncio
-from pathlib import Path
-from datetime import datetime
+import json
+from collections.abc import Callable
 from dataclasses import asdict
-from typing import Optional, Callable
+from datetime import datetime
 
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from src.config import settings, ROOT_DIR
-from src.utils.ai_client import get_ai_client
+from src.config import settings
 from src.factory.workflow import (
     ContentWorkflow,
-    WorkflowContext,
-    TopicOutput,
-    ResearchOutput,
-    StructureOutput,
-    WriteOutput,
     PackageOutput,
     PublishOutput,
+    ResearchOutput,
+    StructureOutput,
+    TopicOutput,
+    WorkflowContext,
+    WriteOutput,
 )
+from src.intel.utils import get_output_path, get_today_str, push_to_wechat
+from src.utils.ai_client import get_ai_client
 from src.utils.content_filter import ContentFilter
-from src.intel.utils import push_to_wechat, get_output_path, get_today_str
 
 # 终端输出美化
 console = Console()
@@ -142,8 +141,8 @@ class WorkflowExecutor:
         self,
         niche: str = "",
         trends: list[str] = None,
-        resume_from: Optional[str] = None,
-        on_skill_complete: Optional[Callable] = None,
+        resume_from: str | None = None,
+        on_skill_complete: Callable | None = None,
     ) -> WorkflowContext:
         """
         执行完整工作流
@@ -158,10 +157,7 @@ class WorkflowExecutor:
             WorkflowContext: 完整的工作流上下文
         """
         # 设置输入
-        self.workflow.set_input(
-            niche=niche or settings.account.niche,
-            trends=trends or []
-        )
+        self.workflow.set_input(niche=niche or settings.account.niche, trends=trends or [])
 
         # 恢复检查点
         start_index = 0
@@ -171,7 +167,7 @@ class WorkflowExecutor:
                 self._load_checkpoint(resume_from)
                 console.print(f"[cyan]📌 从 {resume_from} 恢复执行[/cyan]")
 
-        console.print(f"\n[bold magenta]🚀 开始执行工作流[/bold magenta]")
+        console.print("\n[bold magenta]🚀 开始执行工作流[/bold magenta]")
         console.print(f"   领域: {self.workflow.context.niche}")
         console.print(f"   趋势: {self.workflow.context.trends}")
 
@@ -196,12 +192,12 @@ class WorkflowExecutor:
 
                     progress.update(task, completed=True)
 
-                except Exception as e:
+                except Exception:
                     console.print(f"[red]❌ {skill_name} 执行失败，工作流中断[/red]")
                     console.print(f"[yellow]💡 可使用 --resume {skill_name} 从此处恢复[/yellow]")
                     raise
 
-        console.print(f"\n[bold green]✅ 工作流执行完成！[/bold green]")
+        console.print("\n[bold green]✅ 工作流执行完成！[/bold green]")
         self.workflow.print_workflow_status()
 
         return self.workflow.context
@@ -323,7 +319,7 @@ class WorkflowExecutor:
         # 保存文章
         today = get_today_str()
         output_path = get_output_path(f"article_{today}.md", "articles")
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(f"# {ctx.package.title}\n\n")
             f.write(ctx.write.draft)
         console.print(f"[green]📄 文章已保存: {output_path}[/green]")
@@ -352,7 +348,7 @@ class WorkflowExecutor:
             "timestamp": datetime.now().isoformat(),
             "context": asdict(self.workflow.context),
         }
-        with open(checkpoint_file, 'w', encoding='utf-8') as f:
+        with open(checkpoint_file, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
         console.print(f"[dim]💾 检查点已保存: {skill_name}[/dim]")
 
@@ -370,7 +366,7 @@ class WorkflowExecutor:
             return False
 
         try:
-            with open(checkpoint_file, 'r', encoding='utf-8') as f:
+            with open(checkpoint_file, encoding="utf-8") as f:
                 data = json.load(f)
 
             # 恢复上下文（简化版本，只恢复必要字段）

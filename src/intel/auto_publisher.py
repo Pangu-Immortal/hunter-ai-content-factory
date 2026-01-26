@@ -17,24 +17,24 @@ Author: Pangu-Immortal
 
 import asyncio
 import datetime
-import time
 import random
+import time
 
-from twikit import Client as TwitterClient
 from rich.console import Console
 from rich.progress import track
+from twikit import Client as TwitterClient
 
 from src.config import settings
-from src.utils.ai_client import get_ai_client
 from src.intel.utils import (
-    create_http_client,
-    get_chromadb_client,
-    generate_content_id,
-    push_to_wechat,
     create_article_dir,
+    create_http_client,
+    generate_content_id,
     get_article_file_path,
+    get_chromadb_client,
     get_today_str,
+    push_to_wechat,
 )
+from src.utils.ai_client import get_ai_client
 
 # 终端输出美化
 console = Console()
@@ -42,35 +42,44 @@ console = Console()
 # Twitter 猎杀关键词（多模态全生态版）
 TWITTER_KEYWORDS = [
     # 图像生成
-    'Midjourney hands weird',
-    'Flux text spelling error',
-    'AI art consistent character',
-    'DALL-E ugly face',
-    'Stable Diffusion color dull',
-    'AI background messy',
+    "Midjourney hands weird",
+    "Flux text spelling error",
+    "AI art consistent character",
+    "DALL-E ugly face",
+    "Stable Diffusion color dull",
+    "AI background messy",
     # 视频生成
-    'Runway morphing weird',
-    'Luma physics fail',
-    'Kling video flickering',
-    'AI video face melting',
-    'Sora movement unnatural',
+    "Runway morphing weird",
+    "Luma physics fail",
+    "Kling video flickering",
+    "AI video face melting",
+    "Sora movement unnatural",
     # 音频/音乐
-    'Suno lyrics wrong',
-    'Udio robotic voice',
-    'AI music ending abrupt',
-    'ElevenLabs emotionless',
-    'AI voice clone glitch',
+    "Suno lyrics wrong",
+    "Udio robotic voice",
+    "AI music ending abrupt",
+    "ElevenLabs emotionless",
+    "AI voice clone glitch",
     # 文本写作
-    'ChatGPT sounds like AI',
-    'Claude too formal',
-    'DeepSeek hallucination',
-    'LLM repetitive phrases',
-    'AI essay lack of depth',
-    'marketing copy boring'
+    "ChatGPT sounds like AI",
+    "Claude too formal",
+    "DeepSeek hallucination",
+    "LLM repetitive phrases",
+    "AI essay lack of depth",
+    "marketing copy boring",
 ]
 
 # 垃圾词黑名单
-SPAM_FILTERS = ['100+ AI Tools', 'Check my bio', 'Sign up now', 'Top 10 tools', 'Affiliate', 'Crypto', 'Giveaway', 'NFT']
+SPAM_FILTERS = [
+    "100+ AI Tools",
+    "Check my bio",
+    "Sign up now",
+    "Top 10 tools",
+    "Affiliate",
+    "Crypto",
+    "Giveaway",
+    "NFT",
+]
 
 # Hacker News 过滤门槛
 HN_MIN_SCORE = 100
@@ -84,9 +93,9 @@ class AutoPublisher:
         self.intel_list: list[str] = []  # 本次会话情报列表
         self.intel_images: list[str] = []  # 采集的图片 URL 列表
         self.intel_sources: list[dict] = []  # 情报源详情（包含图片）
-        self.article_content: str = ""    # 生成的文章内容
-        self.article_title: str = ""      # 文章标题
-        self.push_status: str = ""        # 推送状态
+        self.article_content: str = ""  # 生成的文章内容
+        self.article_title: str = ""  # 文章标题
+        self.push_status: str = ""  # 推送状态
         self.http = create_http_client(timeout=15.0)
         self._init_ai_client()
         self._init_chromadb()
@@ -119,7 +128,9 @@ class AutoPublisher:
         """
         return any(spam.lower() in text.lower() for spam in SPAM_FILTERS)
 
-    def save_and_buffer(self, source: str, author: str, content: str, tag: str, images: list[str] = None, url: str = "") -> bool:
+    def save_and_buffer(
+        self, source: str, author: str, content: str, tag: str, images: list[str] = None, url: str = ""
+    ) -> bool:
         """
         保存情报并加入缓冲区
 
@@ -140,20 +151,15 @@ class AutoPublisher:
 
             # 查重
             existing = self.collection.get(ids=[doc_id])
-            if existing and existing['ids']:
+            if existing and existing["ids"]:
                 console.print(f"  💤 [跳过旧闻] {content[:20]}...")
                 return False
 
             current_time = datetime.datetime.now().isoformat()
             self.collection.upsert(
                 documents=[content],
-                metadatas=[{
-                    "source": source,
-                    "author": str(author),
-                    "tag": str(tag),
-                    "time": current_time
-                }],
-                ids=[doc_id]
+                metadatas=[{"source": source, "author": str(author), "tag": str(tag), "time": current_time}],
+                ids=[doc_id],
             )
 
             intel_item = f"【{source}】({tag}) @{author}: {content}"
@@ -162,14 +168,16 @@ class AutoPublisher:
             # 保存图片和情报源详情
             if images:
                 self.intel_images.extend(images)
-            self.intel_sources.append({
-                "source": source,
-                "author": author,
-                "content": content[:100],
-                "tag": tag,
-                "url": url,
-                "images": images,
-            })
+            self.intel_sources.append(
+                {
+                    "source": source,
+                    "author": author,
+                    "content": content[:100],
+                    "tag": tag,
+                    "url": url,
+                    "images": images,
+                }
+            )
 
             console.print(f"  💾 [捕获新知] {content[:30]}...")
             return True
@@ -189,18 +197,16 @@ class AutoPublisher:
         count = 0
 
         try:
-            response = self.http.get('https://hacker-news.firebaseio.com/v0/topstories.json')
+            response = self.http.get("https://hacker-news.firebaseio.com/v0/topstories.json")
             top_ids = response.json()[:15]  # 取前 15 条
 
             for item_id in track(top_ids, description="HN 文章"):
                 try:
-                    item = self.http.get(
-                        f'https://hacker-news.firebaseio.com/v0/item/{item_id}.json'
-                    ).json()
+                    item = self.http.get(f"https://hacker-news.firebaseio.com/v0/item/{item_id}.json").json()
 
-                    if item and item.get('score', 0) >= HN_MIN_SCORE:
-                        title = item.get('title')
-                        item_url = item.get('url', '')
+                    if item and item.get("score", 0) >= HN_MIN_SCORE:
+                        title = item.get("title")
+                        item_url = item.get("url", "")
                         hn_link = f"https://news.ycombinator.com/item?id={item_id}"
                         content = f"Title: {title} | Link: {item_url}"
                         # HackerNews 无图片，但保存链接
@@ -227,7 +233,7 @@ class AutoPublisher:
         import json
 
         console.print("\n[bold cyan]🐦 [2/5] 扫描 Twitter...[/bold cyan]")
-        client = TwitterClient(language='en-US')
+        client = TwitterClient(language="en-US")
         count = 0
 
         # 随机抽取 6 个关键词
@@ -241,13 +247,13 @@ class AutoPublisher:
 
         try:
             # 加载并转换 cookies 格式
-            with open(cookies_file, 'r', encoding='utf-8') as f:
+            with open(cookies_file, encoding="utf-8") as f:
                 cookies_data = json.load(f)
 
             # 检查格式并转换
             if isinstance(cookies_data, list):
                 # Cookie-Editor 数组格式 → 字典格式
-                cookies_dict = {c['name']: c['value'] for c in cookies_data if 'name' in c and 'value' in c}
+                cookies_dict = {c["name"]: c["value"] for c in cookies_data if "name" in c and "value" in c}
                 console.print(f"[dim]🔄 已转换 {len(cookies_dict)} 个 cookies 为 twikit 格式[/dim]")
                 client.set_cookies(cookies_dict)
             elif isinstance(cookies_data, dict):
@@ -259,14 +265,14 @@ class AutoPublisher:
             for keyword in daily_keywords:
                 try:
                     console.print(f"  🔍 搜索: {keyword}")
-                    tweets = await client.search_tweet(keyword, product='Latest', count=3)
+                    tweets = await client.search_tweet(keyword, product="Latest", count=3)
 
                     if not tweets:
                         console.print("     (无新内容)")
                         continue
 
                     for tweet in tweets:
-                        text = tweet.text.replace('\n', ' ')
+                        text = tweet.text.replace("\n", " ")
                         if self.is_spam(text):
                             continue
 
@@ -274,16 +280,16 @@ class AutoPublisher:
 
                         # 提取推文媒体图片
                         images = []
-                        if hasattr(tweet, 'media') and tweet.media:
+                        if hasattr(tweet, "media") and tweet.media:
                             for media in tweet.media:
-                                if hasattr(media, 'media_url_https'):
+                                if hasattr(media, "media_url_https"):
                                     images.append(media.media_url_https)
-                                elif isinstance(media, dict) and media.get('media_url_https'):
-                                    images.append(media['media_url_https'])
+                                elif isinstance(media, dict) and media.get("media_url_https"):
+                                    images.append(media["media_url_https"])
 
                         # 构建推文链接
                         tweet_url = ""
-                        if tweet.user and hasattr(tweet.user, 'screen_name'):
+                        if tweet.user and hasattr(tweet.user, "screen_name"):
                             tweet_url = f"https://twitter.com/{tweet.user.screen_name}/status/{tweet.id}"
 
                         if self.save_and_buffer("Twitter", user, text, keyword, images=images, url=tweet_url):
@@ -323,8 +329,7 @@ class AutoPublisher:
                 # 提取帖子缩略图
                 images = [post.thumbnail] if post.thumbnail else []
                 if self.save_and_buffer(
-                    "Reddit", f"r/{post.subreddit}", content, "AI Discussion",
-                    images=images, url=post.permalink
+                    "Reddit", f"r/{post.subreddit}", content, "AI Discussion", images=images, url=post.permalink
                 ):
                     count += 1
 
@@ -365,8 +370,7 @@ class AutoPublisher:
                 )
 
                 if self.save_and_buffer(
-                    "GitHub", project.name, content, "Trending",
-                    images=[socialify_url], url=project.url
+                    "GitHub", project.name, content, "Trending", images=[socialify_url], url=project.url
                 ):
                     count += 1
 
@@ -404,7 +408,7 @@ class AutoPublisher:
 
             for note in notes:
                 # 支持 XhsNote 对象和字典两种格式
-                if hasattr(note, 'title'):
+                if hasattr(note, "title"):
                     # XhsNote 对象
                     title = note.title
                     desc = note.desc[:100] if note.desc else ""
@@ -421,10 +425,7 @@ class AutoPublisher:
 
                 content = f"Title: {title} | Desc: {desc}"
 
-                if self.save_and_buffer(
-                    "小红书", author, content, "AI工具",
-                    images=images, url=url
-                ):
+                if self.save_and_buffer("小红书", author, content, "AI工具", images=images, url=url):
                     count += 1
 
             console.print(f"[green]✅ 小红书采集: {count} 条[/green]")
@@ -512,7 +513,7 @@ class AutoPublisher:
         today = get_today_str()
 
         # 提取标题
-        first_line = article_content.split('\n')[0].replace('#', '').strip()
+        first_line = article_content.split("\n")[0].replace("#", "").strip()
         title = first_line[:30] if first_line else f"创意方案_{today}"
 
         # 创建文章专属目录
@@ -520,7 +521,7 @@ class AutoPublisher:
 
         # 保存 Markdown 文件
         md_path = get_article_file_path(article_dir, "article.md")
-        md_path.write_text(article_content, encoding='utf-8')
+        md_path.write_text(article_content, encoding="utf-8")
         console.print(f"[green]📝 Markdown 已保存: {md_path}[/green]")
 
         # 保存元数据
@@ -530,13 +531,10 @@ class AutoPublisher:
             "source": "auto_publisher",
             "intel_count": len(self.intel_list),
             "cover_images": self.intel_images[:10],  # 保留前 10 张图片作为封面候选
-            "intel_sources": self.intel_sources,      # 包含图片的情报源详情
+            "intel_sources": self.intel_sources,  # 包含图片的情报源详情
         }
         metadata_path = get_article_file_path(article_dir, "metadata.json")
-        metadata_path.write_text(
-            json.dumps(metadata, ensure_ascii=False, indent=2),
-            encoding="utf-8"
-        )
+        metadata_path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")
         console.print(f"[green]📋 元数据已保存: {metadata_path}[/green]")
 
         # 推送到微信
@@ -587,7 +585,7 @@ class AutoPublisher:
             # 保存文章内容和标题到实例属性
             self.article_content = article
             if not article.startswith("❌"):
-                first_line = article.split('\n')[0].replace('#', '').strip()
+                first_line = article.split("\n")[0].replace("#", "").strip()
                 self.article_title = first_line[:30] if first_line else f"创意方案_{get_today_str()}"
 
             self.deliver_result(article)
@@ -614,15 +612,17 @@ class AutoPublisher:
             report_id = f"news_report_{today}"
             self.collection.upsert(
                 documents=[content],
-                metadatas=[{
-                    "type": "news_report",
-                    "date": today,
-                    "source": "auto_publisher",
-                    "intel_count": len(self.intel_list),
-                }],
-                ids=[report_id]
+                metadatas=[
+                    {
+                        "type": "news_report",
+                        "date": today,
+                        "source": "auto_publisher",
+                        "intel_count": len(self.intel_list),
+                    }
+                ],
+                ids=[report_id],
             )
-            console.print(f"[green]💾 报告已存入数据库[/green]")
+            console.print("[green]💾 报告已存入数据库[/green]")
         except Exception as e:
             console.print(f"[yellow]⚠️ 数据库存储失败: {e}[/yellow]")
 

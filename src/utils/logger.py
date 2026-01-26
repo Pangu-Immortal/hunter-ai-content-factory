@@ -16,16 +16,12 @@ Hunter AI 内容工厂 - 结构化日志模块
 """
 
 import logging
-import sys
-from pathlib import Path
-from typing import Optional
 from functools import lru_cache
 
 from rich.console import Console
 from rich.logging import RichHandler
 
-from src.config import settings, ROOT_DIR
-
+from src.config import ROOT_DIR, settings
 
 # 日志目录
 LOGS_DIR = ROOT_DIR / "data" / "logs"
@@ -44,17 +40,19 @@ def setup_file_handler(logger: logging.Logger, log_file: str) -> None:
 
     file_handler = logging.FileHandler(file_path, encoding="utf-8")
     file_handler.setLevel(logging.DEBUG)  # 文件记录所有级别
-    file_handler.setFormatter(logging.Formatter(
-        "%(asctime)s | %(name)s | %(levelname)s | %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    ))
+    file_handler.setFormatter(
+        logging.Formatter(
+            "%(asctime)s | %(name)s | %(levelname)s | %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+    )
     logger.addHandler(file_handler)
 
 
 @lru_cache
 def get_logger(
     name: str,
-    level: Optional[str] = None,
+    level: str | None = None,
     log_to_file: bool = False,
 ) -> logging.Logger:
     """
@@ -106,6 +104,7 @@ def get_logger(
 # ═══════════════════════════════════════════════════════════════════════════════
 # 预定义的模块日志器
 # ═══════════════════════════════════════════════════════════════════════════════
+
 
 def get_intel_logger() -> logging.Logger:
     """获取情报模块日志器"""

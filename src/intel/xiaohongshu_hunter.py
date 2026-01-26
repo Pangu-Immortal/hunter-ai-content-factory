@@ -23,23 +23,19 @@ GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
 Author: Pangu-Immortal
 """
 
-import json
-import re
 import hashlib
-import time
+import json
 import random
-from pathlib import Path
+import re
+import time
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
-from urllib.parse import urlencode
 
 import httpx
 
-from src.config import settings, ROOT_DIR
-from src.utils.logger import get_logger
-from src.utils.ai_client import get_ai_client
+from src.config import ROOT_DIR, settings
 from src.intel.utils import create_article_dir, get_article_file_path, get_today_str
+from src.utils.logger import get_logger
 
 logger = get_logger("hunter.intel.xiaohongshu")
 
@@ -48,21 +44,23 @@ logger = get_logger("hunter.intel.xiaohongshu")
 # 数据模型
 # ═══════════════════════════════════════════════════════════════════════════════
 
+
 @dataclass
 class XhsNote:
     """小红书笔记数据"""
-    note_id: str                          # 笔记 ID
-    title: str                            # 标题
-    desc: str                             # 描述/正文
-    author: str                           # 作者昵称
-    author_id: str                        # 作者 ID
-    likes: int = 0                        # 点赞数
-    collects: int = 0                     # 收藏数
-    comments: int = 0                     # 评论数
+
+    note_id: str  # 笔记 ID
+    title: str  # 标题
+    desc: str  # 描述/正文
+    author: str  # 作者昵称
+    author_id: str  # 作者 ID
+    likes: int = 0  # 点赞数
+    collects: int = 0  # 收藏数
+    comments: int = 0  # 评论数
     images: list[str] = field(default_factory=list)  # 图片列表
-    tags: list[str] = field(default_factory=list)    # 标签列表
-    url: str = ""                         # 笔记链接
-    created_at: Optional[datetime] = None # 发布时间
+    tags: list[str] = field(default_factory=list)  # 标签列表
+    url: str = ""  # 笔记链接
+    created_at: datetime | None = None  # 发布时间
 
     def to_dict(self) -> dict:
         """转为字典"""
@@ -85,6 +83,7 @@ class XhsNote:
 # ═══════════════════════════════════════════════════════════════════════════════
 # 小红书采集器
 # ═══════════════════════════════════════════════════════════════════════════════
+
 
 class XiaohongshuHunter:
     """
@@ -113,7 +112,7 @@ class XiaohongshuHunter:
     def __init__(self):
         """初始化采集器"""
         self.cookies = self._load_cookies()
-        self.client: Optional[httpx.AsyncClient] = None
+        self.client: httpx.AsyncClient | None = None
 
     def _load_cookies(self) -> dict:
         """
@@ -124,7 +123,7 @@ class XiaohongshuHunter:
         2. data/auth/xiaohongshu_cookies.json 文件
         """
         # 从配置文件加载
-        if hasattr(settings, 'xiaohongshu') and settings.xiaohongshu.cookies:
+        if hasattr(settings, "xiaohongshu") and settings.xiaohongshu.cookies:
             cookie_str = settings.xiaohongshu.cookies
             return self._parse_cookie_string(cookie_str)
 
@@ -132,7 +131,7 @@ class XiaohongshuHunter:
         cookie_file = ROOT_DIR / "data" / "auth" / "xiaohongshu_cookies.json"
         if cookie_file.exists():
             try:
-                with open(cookie_file, 'r', encoding='utf-8') as f:
+                with open(cookie_file, encoding="utf-8") as f:
                     return json.load(f)
             except Exception as e:
                 logger.warning(f"读取 Cookie 文件失败: {e}")
@@ -142,10 +141,10 @@ class XiaohongshuHunter:
     def _parse_cookie_string(self, cookie_str: str) -> dict:
         """解析 Cookie 字符串为字典"""
         cookies = {}
-        for item in cookie_str.split(';'):
+        for item in cookie_str.split(";"):
             item = item.strip()
-            if '=' in item:
-                key, value = item.split('=', 1)
+            if "=" in item:
+                key, value = item.split("=", 1)
                 cookies[key.strip()] = value.strip()
         return cookies
 
@@ -155,14 +154,14 @@ class XiaohongshuHunter:
         cookie_dir.mkdir(parents=True, exist_ok=True)
 
         cookie_file = cookie_dir / "xiaohongshu_cookies.json"
-        with open(cookie_file, 'w', encoding='utf-8') as f:
+        with open(cookie_file, "w", encoding="utf-8") as f:
             json.dump(cookies, f, ensure_ascii=False, indent=2)
 
         logger.info(f"Cookie 已保存到 {cookie_file}")
 
     def is_logged_in(self) -> bool:
         """检查是否已登录（Cookie 是否有效）"""
-        required_keys = ['web_session', 'a1']
+        required_keys = ["web_session", "a1"]
         return all(key in self.cookies for key in required_keys)
 
     async def _get_client(self) -> httpx.AsyncClient:
@@ -182,7 +181,7 @@ class XiaohongshuHunter:
             await self.client.aclose()
             self.client = None
 
-    def _generate_x_s(self, url: str, data: Optional[dict] = None) -> str:
+    def _generate_x_s(self, url: str, data: dict | None = None) -> str:
         """
         生成 X-s 签名
 
@@ -191,11 +190,11 @@ class XiaohongshuHunter:
         """
         # 简化签名：时间戳 + 随机数
         timestamp = int(time.time() * 1000)
-        random_str = ''.join(random.choices('abcdefghijklmnopqrstuvwxyz0123456789', k=8))
+        random_str = "".join(random.choices("abcdefghijklmnopqrstuvwxyz0123456789", k=8))
         sign_str = f"{timestamp}{random_str}{url}"
 
         if data:
-            sign_str += json.dumps(data, separators=(',', ':'), ensure_ascii=False)
+            sign_str += json.dumps(data, separators=(",", ":"), ensure_ascii=False)
 
         return hashlib.md5(sign_str.encode()).hexdigest()
 
@@ -280,8 +279,7 @@ class XiaohongshuHunter:
                 # 提取图片
                 if "image_list" in note_card:
                     note.images = [
-                        img.get("url_default", "") or img.get("url", "")
-                        for img in note_card.get("image_list", [])
+                        img.get("url_default", "") or img.get("url", "") for img in note_card.get("image_list", [])
                     ]
 
                 # 提取标签
@@ -297,7 +295,7 @@ class XiaohongshuHunter:
             logger.error(f"搜索异常: {e}")
             return []
 
-    async def get_note_detail(self, note_id: str) -> Optional[XhsNote]:
+    async def get_note_detail(self, note_id: str) -> XhsNote | None:
         """
         获取笔记详情
 
@@ -395,10 +393,10 @@ class XiaohongshuHunter:
             return 0
 
         try:
-            if '万' in count_str:
-                return int(float(count_str.replace('万', '')) * 10000)
-            elif 'w' in count_str.lower():
-                return int(float(count_str.lower().replace('w', '')) * 10000)
+            if "万" in count_str:
+                return int(float(count_str.replace("万", "")) * 10000)
+            elif "w" in count_str.lower():
+                return int(float(count_str.lower().replace("w", "")) * 10000)
             else:
                 return int(count_str)
         except Exception:
@@ -464,7 +462,7 @@ class XiaohongshuHunter:
 作者：{note.author}
 内容：{note.desc[:500]}...
 点赞：{note.likes} | 收藏：{note.collects} | 评论：{note.comments}
-标签：{', '.join(note.tags) if note.tags else '无'}
+标签：{", ".join(note.tags) if note.tags else "无"}
 """
             notes_summary.append(summary)
 
@@ -475,7 +473,7 @@ class XiaohongshuHunter:
 
 ## 小红书热门笔记
 
-{''.join(notes_summary)}
+{"".join(notes_summary)}
 
 ## 写作要求
 
@@ -512,8 +510,8 @@ class XiaohongshuHunter:
 
             # 清理 markdown 代码块标记
             if article.startswith("```"):
-                article = re.sub(r'^```\w*\n?', '', article)
-                article = re.sub(r'\n?```$', '', article)
+                article = re.sub(r"^```\w*\n?", "", article)
+                article = re.sub(r"\n?```$", "", article)
 
             logger.info(f"文章生成完成，字数：{len(article)}")
             return article
@@ -574,11 +572,11 @@ class XiaohongshuHunter:
                 }
 
             # 3. 提取标题并创建文章目录
-            article_lines = article.split('\n')
+            article_lines = article.split("\n")
             title = keyword  # 默认使用关键词
             for line in article_lines:
-                if line.startswith('#'):
-                    title = line.replace('#', '').strip()[:30]
+                if line.startswith("#"):
+                    title = line.replace("#", "").strip()[:30]
                     break
 
             article_dir = create_article_dir(title)
@@ -599,10 +597,7 @@ class XiaohongshuHunter:
                 "notes": [n.to_dict() for n in notes],
             }
             metadata_path = get_article_file_path(article_dir, "metadata.json")
-            metadata_path.write_text(
-                json.dumps(metadata, ensure_ascii=False, indent=2),
-                encoding="utf-8"
-            )
+            metadata_path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")
             logger.info(f"元数据已保存: {metadata_path}")
 
             return {
@@ -632,6 +627,7 @@ class XiaohongshuHunter:
 # 命令行入口
 # ═══════════════════════════════════════════════════════════════════════════════
 
+
 async def main():
     """命令行入口"""
     import argparse
@@ -659,4 +655,5 @@ async def main():
 
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(main())

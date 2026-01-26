@@ -15,9 +15,10 @@ GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
 Author: Pangu-Immortal
 """
 
-from src.templates import BaseTemplate, TemplateResult, register_template
-from src.intel.github_trending import GitHubTrendingHunter
 from rich.console import Console
+
+from src.intel.github_trending import GitHubTrendingHunter
+from src.templates import BaseTemplate, TemplateResult, register_template
 
 console = Console()
 

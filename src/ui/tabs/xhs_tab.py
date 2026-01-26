@@ -5,7 +5,9 @@
 """
 
 import asyncio
+
 import gradio as gr
+
 from ..handlers import run_xhs_template
 
 
@@ -24,15 +26,9 @@ def create_xhs_tab():
             with gr.Column(scale=1):
                 gr.Markdown("### ⚙️ 参数设置")
                 xhs_keyword = gr.Textbox(
-                    label="🔍 搜索关键词",
-                    placeholder="数码好物、美妆测评...",
-                    value="",
-                    info="留空则采集热门笔记"
+                    label="🔍 搜索关键词", placeholder="数码好物、美妆测评...", value="", info="留空则采集热门笔记"
                 )
-                xhs_dry_run = gr.Checkbox(
-                    label="🧪 试运行模式（不推送）",
-                    value=True
-                )
+                xhs_dry_run = gr.Checkbox(label="🧪 试运行模式（不推送）", value=True)
                 xhs_run_btn = gr.Button("📕 开始采集", variant="primary", size="lg")
 
             with gr.Column(scale=2):
@@ -45,5 +41,5 @@ def create_xhs_tab():
         xhs_run_btn.click(
             fn=lambda k, d: asyncio.run(run_xhs_template(k, d)),
             inputs=[xhs_keyword, xhs_dry_run],
-            outputs=[xhs_log_output, xhs_article_output]
+            outputs=[xhs_log_output, xhs_article_output],
         )

@@ -5,6 +5,7 @@
 """
 
 import gradio as gr
+
 from ..handlers import run_content_check, run_content_clean
 
 
@@ -15,11 +16,7 @@ def create_check_tab():
         检查文章违禁词，清理 AI 生成痕迹。支持：标题党词汇、虚假宣传词、AI 痕迹词。
         """)
 
-        content_input = gr.Textbox(
-            label="📝 待检查内容",
-            placeholder="粘贴你的文章内容...",
-            lines=8
-        )
+        content_input = gr.Textbox(label="📝 待检查内容", placeholder="粘贴你的文章内容...", lines=8)
 
         with gr.Row():
             check_btn = gr.Button("🔍 检查违禁词", variant="secondary")

@@ -26,12 +26,7 @@ from src.intel.utils import push_to_wechat
 console = Console()
 
 
-def push_article_to_wechat(
-    title: str,
-    content: str,
-    summary: str = "",
-    template: str = "markdown"
-) -> dict:
+def push_article_to_wechat(title: str, content: str, summary: str = "", template: str = "markdown") -> dict:
     """
     推送文章到微信（封装版，返回详细结果）
 
@@ -52,7 +47,7 @@ def push_article_to_wechat(
             "push_status": "skipped",
             "push_time": datetime.datetime.now().isoformat(),
             "message_id": "",
-            "error_message": "Token 未配置"
+            "error_message": "Token 未配置",
         }
 
     today = datetime.date.today().strftime("%Y-%m-%d")
@@ -68,25 +63,21 @@ def push_article_to_wechat(
 
     # 调用核心推送函数
     try:
-        success = push_to_wechat(
-            title=formatted_title,
-            content=formatted_content,
-            template=template
-        )
+        success = push_to_wechat(title=formatted_title, content=formatted_content, template=template)
 
         if success:
             return {
                 "push_status": "success",
                 "push_time": datetime.datetime.now().isoformat(),
                 "message_id": "",  # push_to_wechat 不返回 message_id
-                "error_message": ""
+                "error_message": "",
             }
         else:
             return {
                 "push_status": "failed",
                 "push_time": datetime.datetime.now().isoformat(),
                 "message_id": "",
-                "error_message": "推送返回失败"
+                "error_message": "推送返回失败",
             }
 
     except Exception as e:
@@ -95,7 +86,7 @@ def push_article_to_wechat(
             "push_status": "error",
             "push_time": datetime.datetime.now().isoformat(),
             "message_id": "",
-            "error_message": str(e)
+            "error_message": str(e),
         }
 
 
@@ -114,18 +105,15 @@ def push_article_from_file(file_path: str | Path, title: str = "") -> dict:
 
     if not path.exists():
         console.print(f"[red]❌ 文件不存在: {path}[/red]")
-        return {
-            "push_status": "error",
-            "error_message": f"文件不存在: {path}"
-        }
+        return {"push_status": "error", "error_message": f"文件不存在: {path}"}
 
     # 读取文件内容
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         content = f.read()
 
     # 如果没有指定标题，从文件名提取
     if not title:
-        title = path.stem.replace('_', ' ')
+        title = path.stem.replace("_", " ")
 
     return push_article_to_wechat(title=title, content=content)
 
@@ -152,11 +140,7 @@ def main():
 感谢阅读！
 """
 
-    result = push_article_to_wechat(
-        title="测试文章",
-        content=test_content,
-        summary="这是一篇测试文章的摘要"
-    )
+    result = push_article_to_wechat(title="测试文章", content=test_content, summary="这是一篇测试文章的摘要")
 
     console.print(f"\n推送结果: {result}")
 

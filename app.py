@@ -12,8 +12,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 # 设置环境变量
-os.environ['NO_PROXY'] = 'localhost,127.0.0.1,0.0.0.0'
-os.environ['no_proxy'] = 'localhost,127.0.0.1,0.0.0.0'
+os.environ["NO_PROXY"] = "localhost,127.0.0.1,0.0.0.0"
+os.environ["no_proxy"] = "localhost,127.0.0.1,0.0.0.0"
 
 # 导入 Gradio 应用
 from src.ui import create_app

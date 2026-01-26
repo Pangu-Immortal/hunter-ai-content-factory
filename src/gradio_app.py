@@ -15,9 +15,10 @@ Author: Pangu-Immortal
 """
 
 import asyncio
-import gradio as gr
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
+import gradio as gr
 from rich.console import Console
 
 # 终端输出
@@ -30,12 +31,14 @@ ROOT_DIR = Path(__file__).parent.parent
 # 自定义 CSS 样式 - 从外部文件加载
 # ═══════════════════════════════════════════════════════════════════════════════
 
+
 def load_custom_css() -> str:
     """从外部文件加载 CSS 样式"""
     css_path = ROOT_DIR / "src" / "static" / "styles.css"
     if css_path.exists():
         return css_path.read_text(encoding="utf-8")
     return ""
+
 
 CUSTOM_CSS = load_custom_css()
 
@@ -55,7 +58,7 @@ SKILLS_INFO = [
         "description": "从海量信息中找到值得写的爆款选题，分析热点趋势，确定最佳切入角度。",
         "outputs": ["选定主题", "切入角度", "目标读者", "标题候选"],
         "color": "var(--skill-topic, #ff6b6b)",
-        "color_hex": "#ff6b6b"
+        "color_hex": "#ff6b6b",
     },
     {
         "id": "research",
@@ -66,7 +69,7 @@ SKILLS_INFO = [
         "description": "根据选题搜索相关资料，提取核心观点和数据，验证信息可靠性。",
         "outputs": ["核心洞察", "事实数据", "来源列表", "详细笔记"],
         "color": "var(--skill-research, #4ecdc4)",
-        "color_hex": "#4ecdc4"
+        "color_hex": "#4ecdc4",
     },
     {
         "id": "structure",
@@ -77,7 +80,7 @@ SKILLS_INFO = [
         "description": "设计文章骨架和阅读节奏，规划引人入胜的开篇钩子和有力的结尾。",
         "outputs": ["开篇钩子", "章节大纲", "结尾设计", "预估字数"],
         "color": "var(--skill-structure, #45b7d1)",
-        "color_hex": "#45b7d1"
+        "color_hex": "#45b7d1",
     },
     {
         "id": "write",
@@ -88,7 +91,7 @@ SKILLS_INFO = [
         "description": "根据大纲撰写完整文章，融入研究素材，自动过滤 AI 痕迹词。",
         "outputs": ["完整初稿", "实际字数", "可读性评分"],
         "color": "var(--skill-write, #96ceb4)",
-        "color_hex": "#96ceb4"
+        "color_hex": "#96ceb4",
     },
     {
         "id": "package",
@@ -99,7 +102,7 @@ SKILLS_INFO = [
         "description": "为文章打造吸睛外包装，生成标题选项、精炼摘要、封面图 Prompt。",
         "outputs": ["最终标题", "备选标题", "文章摘要", "封面提示词"],
         "color": "var(--skill-package, #ffeaa7)",
-        "color_hex": "#ffeaa7"
+        "color_hex": "#ffeaa7",
     },
     {
         "id": "publish",
@@ -110,8 +113,8 @@ SKILLS_INFO = [
         "description": "最终违禁词检查，格式化推送内容，通过 PushPlus 一键推送到微信。",
         "outputs": ["推送状态", "推送时间", "消息 ID"],
         "color": "var(--skill-publish, #dfe6e9)",
-        "color_hex": "#dfe6e9"
-    }
+        "color_hex": "#dfe6e9",
+    },
 ]
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -121,6 +124,7 @@ SKILLS_INFO = [
 # ═══════════════════════════════════════════════════════════════════════════════
 # 五大模板运行函数（详细日志版）
 # ═══════════════════════════════════════════════════════════════════════════════
+
 
 def format_error_message(error_msg: str, template_name: str) -> str:
     """格式化错误消息"""
@@ -168,12 +172,7 @@ def format_error_message(error_msg: str, template_name: str) -> str:
 
 
 async def run_github_template(
-    keyword: str,
-    min_stars: int,
-    brief_count: int,
-    deep_count: int,
-    min_words: int,
-    dry_run: bool
+    keyword: str, min_stars: int, brief_count: int, deep_count: int, min_words: int, dry_run: bool
 ):
     """
     🔥 GitHub 爆款 - 运行 GitHub 热门项目推荐模板
@@ -225,7 +224,7 @@ async def run_github_template(
 
         if result and result.success:
             word_count = len(result.content)
-            logs.append(f"\n### ✅ 生成完成！\n")
+            logs.append("\n### ✅ 生成完成！\n")
             logs.append(f"- **标题**: {result.title}\n")
             logs.append(f"- **字数**: {word_count} 字 {'✅' if word_count >= min_words else '⚠️ 未达标'}\n")
             logs.append(f"- **关键词**: {search_keyword}\n")
@@ -233,12 +232,12 @@ async def run_github_template(
             return "\n".join(logs), result.content
         else:
             error_msg = result.error if result else "未知错误"
-            logs.append(f"\n### ⚠️ 执行完成（有问题）\n")
+            logs.append("\n### ⚠️ 执行完成（有问题）\n")
             logs.append(f"- 错误: {error_msg}\n")
             return "\n".join(logs), ""
 
     except ImportError as e:
-        logs.append(f"\n### ❌ 模块导入失败\n")
+        logs.append("\n### ❌ 模块导入失败\n")
         logs.append(f"- 错误: {str(e)}\n")
         logs.append("- 解决: 运行 `uv sync` 安装依赖\n")
         return "\n".join(logs), ""
@@ -292,12 +291,12 @@ async def run_pain_template(dry_run: bool):
             return "\n".join(logs), result.content
         else:
             error_msg = result.error if result else "未知错误"
-            logs.append(f"\n### ⚠️ 执行完成（有问题）\n")
+            logs.append("\n### ⚠️ 执行完成（有问题）\n")
             logs.append(f"- 错误: {error_msg}\n")
             return "\n".join(logs), ""
 
     except ImportError as e:
-        logs.append(f"\n### ❌ 模块导入失败\n")
+        logs.append("\n### ❌ 模块导入失败\n")
         logs.append(f"- 错误: {str(e)}\n")
         return "\n".join(logs), ""
 
@@ -349,12 +348,12 @@ async def run_news_template(dry_run: bool):
             return "\n".join(logs), result.content
         else:
             error_msg = result.error if result else "未知错误"
-            logs.append(f"\n### ⚠️ 执行完成（有问题）\n")
+            logs.append("\n### ⚠️ 执行完成（有问题）\n")
             logs.append(f"- 错误: {error_msg}\n")
             return "\n".join(logs), ""
 
     except ImportError as e:
-        logs.append(f"\n### ❌ 模块导入失败\n")
+        logs.append("\n### ❌ 模块导入失败\n")
         logs.append(f"- 错误: {str(e)}\n")
         return "\n".join(logs), ""
 
@@ -403,12 +402,12 @@ async def run_xhs_template(keyword: str, dry_run: bool):
             return "\n".join(logs), result.content
         else:
             error_msg = result.error if result else "未知错误"
-            logs.append(f"\n### ⚠️ 执行完成（有问题）\n")
+            logs.append("\n### ⚠️ 执行完成（有问题）\n")
             logs.append(f"- 错误: {error_msg}\n")
             return "\n".join(logs), ""
 
     except ImportError as e:
-        logs.append(f"\n### ❌ 模块导入失败\n")
+        logs.append("\n### ❌ 模块导入失败\n")
         logs.append(f"- 错误: {str(e)}\n")
         return "\n".join(logs), ""
 
@@ -470,12 +469,12 @@ async def run_auto_template(niche: str, dry_run: bool):
             return "\n".join(logs), result.content
         else:
             error_msg = result.error if result else "未知错误"
-            logs.append(f"\n### ⚠️ 执行完成（有问题）\n")
+            logs.append("\n### ⚠️ 执行完成（有问题）\n")
             logs.append(f"- 错误: {error_msg}\n")
             return "\n".join(logs), ""
 
     except ImportError as e:
-        logs.append(f"\n### ❌ 模块导入失败\n")
+        logs.append("\n### ❌ 模块导入失败\n")
         logs.append(f"- 错误: {str(e)}\n")
         return "\n".join(logs), ""
 
@@ -495,8 +494,8 @@ def run_content_check(content: str):
         return "⚠️ **请输入内容** | 粘贴你的文章内容后再检查", ""
 
     try:
-        from src.utils.content_filter import ContentFilter
         from src.config import settings
+        from src.utils.content_filter import ContentFilter
 
         filter_instance = ContentFilter(
             banned_words=settings.content.banned_words,
@@ -522,8 +521,8 @@ def run_content_clean(content: str):
         return "⚠️ **请输入内容** | 粘贴你的文章内容后再清理", ""
 
     try:
-        from src.utils.content_filter import ContentFilter
         from src.config import settings
+        from src.utils.content_filter import ContentFilter
 
         filter_instance = ContentFilter(
             banned_words=settings.content.banned_words,
@@ -544,28 +543,32 @@ def run_content_clean(content: str):
 def get_config_info():
     """获取配置信息 - 显示所有配置项状态"""
     try:
-        from src.config import get_settings, get_config_status
+        from src.config import get_config_status, get_settings
 
         get_settings.cache_clear()
         settings = get_settings()
         status = get_config_status()
 
         # 状态图标
-        gemini_ok = '✅' if status['gemini']['api_key_configured'] else '❌'
-        github_ok = '✅' if status['github']['token_configured'] else '⚪'
-        push_ok = '✅' if status['pushplus']['token_configured'] else '⚪'
+        gemini_ok = "✅" if status["gemini"]["api_key_configured"] else "❌"
+        github_ok = "✅" if status["github"]["token_configured"] else "⚪"
+        push_ok = "✅" if status["pushplus"]["token_configured"] else "⚪"
 
         # 检查其他配置
-        xhs_ok = '⚪'
-        twitter_ok = '⚪'
+        xhs_ok = "⚪"
+        twitter_ok = "⚪"
         try:
-            if hasattr(settings, 'xiaohongshu') and settings.xiaohongshu and getattr(settings.xiaohongshu, 'cookies', ''):
-                xhs_ok = '✅'
+            if (
+                hasattr(settings, "xiaohongshu")
+                and settings.xiaohongshu
+                and getattr(settings.xiaohongshu, "cookies", "")
+            ):
+                xhs_ok = "✅"
         except:
             pass
         try:
-            if hasattr(settings, 'twitter') and settings.twitter and getattr(settings.twitter, 'cookies_path', ''):
-                twitter_ok = '✅'
+            if hasattr(settings, "twitter") and settings.twitter and getattr(settings.twitter, "cookies_path", ""):
+                twitter_ok = "✅"
         except:
             pass
 
@@ -578,64 +581,68 @@ def get_config_info():
             return key[:show_chars] + "****" + key[-show_chars:]
 
         # Gemini 配置
-        gemini_key = getattr(settings.gemini, 'api_key', '') or ''
-        gemini_provider = getattr(settings.gemini, 'provider', 'official')
-        gemini_model = getattr(settings.gemini, 'model', '')
-        gemini_image = getattr(settings.gemini, 'image_model', '') or '未配置'
-        gemini_base = getattr(settings.gemini, 'base_url', '') or '官方API'
+        gemini_key = getattr(settings.gemini, "api_key", "") or ""
+        gemini_provider = getattr(settings.gemini, "provider", "official")
+        gemini_model = getattr(settings.gemini, "model", "")
+        gemini_image = getattr(settings.gemini, "image_model", "") or "未配置"
+        gemini_base = getattr(settings.gemini, "base_url", "") or "官方API"
 
         # GitHub 配置
-        github_key = getattr(settings.github, 'token', '') or ''
-        github_stars = getattr(settings.github, 'min_stars', 200)
-        github_days = getattr(settings.github, 'days_since_update', 30) if hasattr(settings.github, 'days_since_update') else 30
+        github_key = getattr(settings.github, "token", "") or ""
+        github_stars = getattr(settings.github, "min_stars", 200)
+        github_days = (
+            getattr(settings.github, "days_since_update", 30) if hasattr(settings.github, "days_since_update") else 30
+        )
 
         # PushPlus 配置
-        push_key = getattr(settings.push, 'token', '') or ''
-        push_enabled = getattr(settings.push, 'enabled', False)
+        push_key = getattr(settings.push, "token", "") or ""
+        push_enabled = getattr(settings.push, "enabled", False)
 
         # Twitter 配置
-        twitter_path = 'data/cookies.json'
+        twitter_path = "data/cookies.json"
         try:
-            if hasattr(settings, 'twitter') and settings.twitter:
-                twitter_path = getattr(settings.twitter, 'cookies_path', 'data/cookies.json')
+            if hasattr(settings, "twitter") and settings.twitter:
+                twitter_path = getattr(settings.twitter, "cookies_path", "data/cookies.json")
         except:
             pass
 
         # 小红书配置
-        xhs_cookies = ''
-        xhs_keyword = 'AI工具'
-        xhs_style = '种草'
+        xhs_cookies = ""
+        xhs_keyword = "AI工具"
+        xhs_style = "种草"
         try:
-            if hasattr(settings, 'xiaohongshu') and settings.xiaohongshu:
-                xhs_cookies = getattr(settings.xiaohongshu, 'cookies', '') or ''
-                xhs_keyword = getattr(settings.xiaohongshu, 'default_keyword', 'AI工具')
-                xhs_style = getattr(settings.xiaohongshu, 'default_style', '种草')
+            if hasattr(settings, "xiaohongshu") and settings.xiaohongshu:
+                xhs_cookies = getattr(settings.xiaohongshu, "cookies", "") or ""
+                xhs_keyword = getattr(settings.xiaohongshu, "default_keyword", "AI工具")
+                xhs_style = getattr(settings.xiaohongshu, "default_style", "种草")
         except:
             pass
 
         # 公众号配置
-        acc_name = getattr(settings.account, 'name', '')
-        acc_niche = getattr(settings.account, 'niche', '')
-        acc_tone = getattr(settings.account, 'tone', '')
-        acc_min = getattr(settings.account, 'min_length', 1500)
-        acc_max = getattr(settings.account, 'max_length', 2500)
-        acc_title = getattr(settings.account, 'max_title_length', 20) if hasattr(settings.account, 'max_title_length') else 20
+        acc_name = getattr(settings.account, "name", "")
+        acc_niche = getattr(settings.account, "niche", "")
+        acc_tone = getattr(settings.account, "tone", "")
+        acc_min = getattr(settings.account, "min_length", 1500)
+        acc_max = getattr(settings.account, "max_length", 2500)
+        acc_title = (
+            getattr(settings.account, "max_title_length", 20) if hasattr(settings.account, "max_title_length") else 20
+        )
 
         # 存储配置
-        chromadb = 'data/chromadb'
-        output = 'output'
+        chromadb = "data/chromadb"
+        output = "output"
         try:
-            if hasattr(settings, 'storage') and settings.storage:
-                chromadb = getattr(settings.storage, 'chromadb_path', 'data/chromadb')
-                output = getattr(settings.storage, 'output_dir', 'output')
+            if hasattr(settings, "storage") and settings.storage:
+                chromadb = getattr(settings.storage, "chromadb_path", "data/chromadb")
+                output = getattr(settings.storage, "output_dir", "output")
         except:
             pass
 
         # 系统配置
-        log_level = 'INFO'
+        log_level = "INFO"
         try:
-            if hasattr(settings, 'system') and settings.system:
-                log_level = getattr(settings.system, 'log_level', 'INFO')
+            if hasattr(settings, "system") and settings.system:
+                log_level = getattr(settings.system, "log_level", "INFO")
         except:
             pass
 
@@ -645,7 +652,7 @@ def get_config_info():
 |------|------|
 | API Key | {gemini_ok} {mask_key(gemini_key)} |
 | 提供商 | {gemini_provider} |
-| Base URL | {gemini_base[:25]}{'...' if len(str(gemini_base)) > 25 else ''} |
+| Base URL | {gemini_base[:25]}{"..." if len(str(gemini_base)) > 25 else ""} |
 | 文本模型 | {gemini_model} |
 | 图片模型 | {gemini_image} |
 
@@ -653,7 +660,7 @@ def get_config_info():
 | 项目 | 状态 |
 |------|------|
 | Token | {push_ok} {mask_key(push_key)} |
-| 推送 | {'✅ 启用' if push_enabled else '⚪ 禁用'} |
+| 推送 | {"✅ 启用" if push_enabled else "⚪ 禁用"} |
 
 **🐦 Twitter/X**
 | 项目 | 状态 |
@@ -664,7 +671,7 @@ def get_config_info():
 **📕 小红书**
 | 项目 | 状态 |
 |------|------|
-| Cookie | {xhs_ok} {mask_key(xhs_cookies, 6) if xhs_cookies else '未配置'} |
+| Cookie | {xhs_ok} {mask_key(xhs_cookies, 6) if xhs_cookies else "未配置"} |
 | 关键词 | {xhs_keyword} |
 | 风格 | {xhs_style} |
 
@@ -680,7 +687,7 @@ def get_config_info():
 |------|------|
 | 名称 | {acc_name} |
 | 领域 | {acc_niche} |
-| 风格 | {acc_tone[:8]}{'...' if len(str(acc_tone)) > 8 else ''} |
+| 风格 | {acc_tone[:8]}{"..." if len(str(acc_tone)) > 8 else ""} |
 | 字数 | {acc_min}-{acc_max} |
 | 标题 | ≤{acc_title}字 |
 
@@ -713,64 +720,109 @@ def load_current_config():
     """加载当前配置值"""
     try:
         from src.config import get_settings
+
         get_settings.cache_clear()
         settings = get_settings()
 
         return {
             # Gemini AI 配置
-            'gemini_provider': settings.gemini.provider or "official",
-            'gemini_base_url': settings.gemini.base_url or "",
-            'gemini_api_key': settings.gemini.api_key or "",
-            'gemini_model': settings.gemini.model or "gemini-2.0-flash",
-            'gemini_image_model': getattr(settings.gemini, 'image_model', "") or "",
+            "gemini_provider": settings.gemini.provider or "official",
+            "gemini_base_url": settings.gemini.base_url or "",
+            "gemini_api_key": settings.gemini.api_key or "",
+            "gemini_model": settings.gemini.model or "gemini-2.0-flash",
+            "gemini_image_model": getattr(settings.gemini, "image_model", "") or "",
             # GitHub 配置
-            'github_token': settings.github.token or "",
-            'github_min_stars': settings.github.min_stars,
-            'github_days_since_update': getattr(settings.github, 'days_since_update', 30),
+            "github_token": settings.github.token or "",
+            "github_min_stars": settings.github.min_stars,
+            "github_days_since_update": getattr(settings.github, "days_since_update", 30),
             # PushPlus 配置
-            'push_token': settings.push.token or "",
-            'push_enabled': settings.push.enabled,
+            "push_token": settings.push.token or "",
+            "push_enabled": settings.push.enabled,
             # Twitter/X 配置
-            'twitter_cookies_path': getattr(settings, 'twitter', {}).get('cookies_path', 'data/cookies.json') if hasattr(settings, 'twitter') else 'data/cookies.json',
+            "twitter_cookies_path": getattr(settings, "twitter", {}).get("cookies_path", "data/cookies.json")
+            if hasattr(settings, "twitter")
+            else "data/cookies.json",
             # 小红书配置
-            'xhs_cookies': getattr(settings, 'xiaohongshu', {}).get('cookies', '') if hasattr(settings, 'xiaohongshu') else '',
-            'xhs_default_keyword': getattr(settings, 'xiaohongshu', {}).get('default_keyword', 'AI工具') if hasattr(settings, 'xiaohongshu') else 'AI工具',
-            'xhs_default_style': getattr(settings, 'xiaohongshu', {}).get('default_style', '种草') if hasattr(settings, 'xiaohongshu') else '种草',
+            "xhs_cookies": getattr(settings, "xiaohongshu", {}).get("cookies", "")
+            if hasattr(settings, "xiaohongshu")
+            else "",
+            "xhs_default_keyword": getattr(settings, "xiaohongshu", {}).get("default_keyword", "AI工具")
+            if hasattr(settings, "xiaohongshu")
+            else "AI工具",
+            "xhs_default_style": getattr(settings, "xiaohongshu", {}).get("default_style", "种草")
+            if hasattr(settings, "xiaohongshu")
+            else "种草",
             # 公众号设置
-            'account_name': settings.account.name or "AI技术前沿",
-            'account_niche': settings.account.niche or "AI技术",
-            'account_tone': settings.account.tone or "专业且引人入胜",
-            'min_length': settings.account.min_length,
-            'max_length': settings.account.max_length,
-            'max_title_length': getattr(settings.account, 'max_title_length', 20),
+            "account_name": settings.account.name or "AI技术前沿",
+            "account_niche": settings.account.niche or "AI技术",
+            "account_tone": settings.account.tone or "专业且引人入胜",
+            "min_length": settings.account.min_length,
+            "max_length": settings.account.max_length,
+            "max_title_length": getattr(settings.account, "max_title_length", 20),
             # 存储配置
-            'chromadb_path': getattr(settings, 'storage', {}).get('chromadb_path', 'data/chromadb') if hasattr(settings, 'storage') else 'data/chromadb',
-            'output_dir': getattr(settings, 'storage', {}).get('output_dir', 'output') if hasattr(settings, 'storage') else 'output',
+            "chromadb_path": getattr(settings, "storage", {}).get("chromadb_path", "data/chromadb")
+            if hasattr(settings, "storage")
+            else "data/chromadb",
+            "output_dir": getattr(settings, "storage", {}).get("output_dir", "output")
+            if hasattr(settings, "storage")
+            else "output",
             # 系统配置
-            'log_level': getattr(settings, 'system', {}).get('log_level', 'INFO') if hasattr(settings, 'system') else 'INFO',
+            "log_level": getattr(settings, "system", {}).get("log_level", "INFO")
+            if hasattr(settings, "system")
+            else "INFO",
         }
     except Exception:
         return {
-            'gemini_provider': "official", 'gemini_base_url': "", 'gemini_api_key': "",
-            'gemini_model': "gemini-2.0-flash", 'gemini_image_model': "",
-            'github_token': "", 'github_min_stars': 200, 'github_days_since_update': 30,
-            'push_token': "", 'push_enabled': True,
-            'twitter_cookies_path': "data/cookies.json",
-            'xhs_cookies': "", 'xhs_default_keyword': "AI工具", 'xhs_default_style': "种草",
-            'account_name': "AI技术前沿", 'account_niche': "AI技术", 'account_tone': "专业且引人入胜",
-            'min_length': 1500, 'max_length': 2500, 'max_title_length': 20,
-            'chromadb_path': "data/chromadb", 'output_dir': "output", 'log_level': "INFO",
+            "gemini_provider": "official",
+            "gemini_base_url": "",
+            "gemini_api_key": "",
+            "gemini_model": "gemini-2.0-flash",
+            "gemini_image_model": "",
+            "github_token": "",
+            "github_min_stars": 200,
+            "github_days_since_update": 30,
+            "push_token": "",
+            "push_enabled": True,
+            "twitter_cookies_path": "data/cookies.json",
+            "xhs_cookies": "",
+            "xhs_default_keyword": "AI工具",
+            "xhs_default_style": "种草",
+            "account_name": "AI技术前沿",
+            "account_niche": "AI技术",
+            "account_tone": "专业且引人入胜",
+            "min_length": 1500,
+            "max_length": 2500,
+            "max_title_length": 20,
+            "chromadb_path": "data/chromadb",
+            "output_dir": "output",
+            "log_level": "INFO",
         }
 
 
 def save_config(
-    gemini_provider, gemini_base_url, gemini_api_key, gemini_model, gemini_image_model,
-    github_token, github_min_stars, github_days_since_update,
-    push_token, push_enabled,
+    gemini_provider,
+    gemini_base_url,
+    gemini_api_key,
+    gemini_model,
+    gemini_image_model,
+    github_token,
+    github_min_stars,
+    github_days_since_update,
+    push_token,
+    push_enabled,
     twitter_cookies_path,
-    xhs_cookies, xhs_default_keyword, xhs_default_style,
-    account_name, account_niche, account_tone, min_length, max_length, max_title_length,
-    chromadb_path, output_dir, log_level
+    xhs_cookies,
+    xhs_default_keyword,
+    xhs_default_style,
+    account_name,
+    account_niche,
+    account_tone,
+    min_length,
+    max_length,
+    max_title_length,
+    chromadb_path,
+    output_dir,
+    log_level,
 ):
     """保存配置"""
     try:
@@ -781,65 +833,67 @@ def save_config(
 
         if not config_path.exists() and config_example.exists():
             import shutil
+
             shutil.copy(config_example, config_path)
 
         if config_path.exists():
-            with open(config_path, 'r', encoding='utf-8') as f:
+            with open(config_path, encoding="utf-8") as f:
                 config = yaml.safe_load(f) or {}
         else:
             config = {}
 
         # 更新 Gemini 配置
-        config.setdefault('gemini', {})
-        config['gemini']['provider'] = gemini_provider
-        config['gemini']['base_url'] = gemini_base_url
-        config['gemini']['api_key'] = gemini_api_key
-        config['gemini']['model'] = gemini_model
-        config['gemini']['image_model'] = gemini_image_model
+        config.setdefault("gemini", {})
+        config["gemini"]["provider"] = gemini_provider
+        config["gemini"]["base_url"] = gemini_base_url
+        config["gemini"]["api_key"] = gemini_api_key
+        config["gemini"]["model"] = gemini_model
+        config["gemini"]["image_model"] = gemini_image_model
 
         # 更新 GitHub 配置
-        config.setdefault('github', {})
-        config['github']['token'] = github_token
-        config['github']['min_stars'] = int(github_min_stars)
-        config['github']['days_since_update'] = int(github_days_since_update)
+        config.setdefault("github", {})
+        config["github"]["token"] = github_token
+        config["github"]["min_stars"] = int(github_min_stars)
+        config["github"]["days_since_update"] = int(github_days_since_update)
 
         # 更新 PushPlus 配置
-        config.setdefault('pushplus', {})
-        config['pushplus']['token'] = push_token
-        config['pushplus']['enabled'] = push_enabled
+        config.setdefault("pushplus", {})
+        config["pushplus"]["token"] = push_token
+        config["pushplus"]["enabled"] = push_enabled
 
         # 更新 Twitter 配置
-        config.setdefault('twitter', {})
-        config['twitter']['cookies_path'] = twitter_cookies_path
+        config.setdefault("twitter", {})
+        config["twitter"]["cookies_path"] = twitter_cookies_path
 
         # 更新小红书配置
-        config.setdefault('xiaohongshu', {})
-        config['xiaohongshu']['cookies'] = xhs_cookies
-        config['xiaohongshu']['default_keyword'] = xhs_default_keyword
-        config['xiaohongshu']['default_style'] = xhs_default_style
+        config.setdefault("xiaohongshu", {})
+        config["xiaohongshu"]["cookies"] = xhs_cookies
+        config["xiaohongshu"]["default_keyword"] = xhs_default_keyword
+        config["xiaohongshu"]["default_style"] = xhs_default_style
 
         # 更新公众号配置
-        config.setdefault('account', {})
-        config['account']['name'] = account_name
-        config['account']['niche'] = account_niche
-        config['account']['tone'] = account_tone
-        config['account']['min_length'] = int(min_length)
-        config['account']['max_length'] = int(max_length)
-        config['account']['max_title_length'] = int(max_title_length)
+        config.setdefault("account", {})
+        config["account"]["name"] = account_name
+        config["account"]["niche"] = account_niche
+        config["account"]["tone"] = account_tone
+        config["account"]["min_length"] = int(min_length)
+        config["account"]["max_length"] = int(max_length)
+        config["account"]["max_title_length"] = int(max_title_length)
 
         # 更新存储配置
-        config.setdefault('storage', {})
-        config['storage']['chromadb_path'] = chromadb_path
-        config['storage']['output_dir'] = output_dir
+        config.setdefault("storage", {})
+        config["storage"]["chromadb_path"] = chromadb_path
+        config["storage"]["output_dir"] = output_dir
 
         # 更新系统配置
-        config.setdefault('system', {})
-        config['system']['log_level'] = log_level
+        config.setdefault("system", {})
+        config["system"]["log_level"] = log_level
 
-        with open(config_path, 'w', encoding='utf-8') as f:
+        with open(config_path, "w", encoding="utf-8") as f:
             yaml.dump(config, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
 
         from src.config import get_settings
+
         get_settings.cache_clear()
 
         return "✅ **配置已保存！** 部分设置需重启生效。"
@@ -860,11 +914,11 @@ def get_image_path(filename: str) -> str:
 # Gradio 界面构建 - 上下分离布局
 # ═══════════════════════════════════════════════════════════════════════════════
 
+
 def create_app():
     """创建 Gradio 应用"""
 
     with gr.Blocks(title="Hunter AI 内容工厂") as app:
-
         # ═══════════════════════════════════════════════════════════════════
         # 顶部标题 + 主题切换
         # ═══════════════════════════════════════════════════════════════════
@@ -883,8 +937,7 @@ def create_app():
         # ═══════════════════════════════════════════════════════════════════
         # 上部功能区 - 三个核心功能 Tab
         # ═══════════════════════════════════════════════════════════════════
-        with gr.Tabs() as top_tabs:
-
+        with gr.Tabs():
             # ─────────────────────────────────────────────────────────────────
             # Tab 1: 🔥 GitHub 爆款
             # ─────────────────────────────────────────────────────────────────
@@ -902,7 +955,7 @@ def create_app():
                             label="🔍 搜索关键词",
                             value="AI",
                             placeholder="输入关键词，如: AI、LLM、RAG、Agent、机器学习...",
-                            info="筛选 GitHub 项目的品类/功能/技术方向"
+                            info="筛选 GitHub 项目的品类/功能/技术方向",
                         )
                         gr.Markdown("""
                         <div style="background: var(--tip-yellow-bg, rgba(255, 200, 0, 0.15)); padding: 8px 12px; border-radius: 6px; margin: 5px 0; font-size: 12px; border: 1px solid var(--tip-yellow-border, rgba(255, 200, 0, 0.4)); color: var(--tip-yellow-text, #ffd700);">
@@ -917,25 +970,37 @@ def create_app():
                         """)
                         github_min_stars_input = gr.Slider(
                             label="🌟 最小 Stars 数",
-                            minimum=50, maximum=5000, value=200, step=50,
-                            info="过滤低于此 Stars 数的项目"
+                            minimum=50,
+                            maximum=5000,
+                            value=200,
+                            step=50,
+                            info="过滤低于此 Stars 数的项目",
                         )
 
                         gr.Markdown("### 📝 文章结构")
                         github_brief_count = gr.Slider(
                             label="📋 项目简介数量",
-                            minimum=0, maximum=10, value=2, step=1,
-                            info="快速介绍的项目数量（每个约300-500字）"
+                            minimum=0,
+                            maximum=10,
+                            value=2,
+                            step=1,
+                            info="快速介绍的项目数量（每个约300-500字）",
                         )
                         github_deep_count = gr.Slider(
                             label="🔬 深度解读数量",
-                            minimum=1, maximum=5, value=1, step=1,
-                            info="详细分析的项目数量（每个约1500-2000字）"
+                            minimum=1,
+                            maximum=5,
+                            value=1,
+                            step=1,
+                            info="详细分析的项目数量（每个约1500-2000字）",
                         )
                         github_min_words = gr.Slider(
                             label="📏 文章最小字数",
-                            minimum=1500, maximum=8000, value=3500, step=500,
-                            info="生成文章的最低字数要求"
+                            minimum=1500,
+                            maximum=8000,
+                            value=3500,
+                            step=500,
+                            info="生成文章的最低字数要求",
                         )
                         gr.Markdown("""
                         <div style="background: var(--tip-cyan-bg, rgba(0, 255, 255, 0.1)); padding: 8px 12px; border-radius: 6px; margin: 5px 0; font-size: 12px; border: 1px solid var(--tip-cyan-border, rgba(0, 255, 255, 0.3)); color: var(--tip-cyan-text, #00ffff);">
@@ -947,10 +1012,7 @@ def create_app():
                         </div>
                         """)
 
-                        github_dry_run = gr.Checkbox(
-                            label="🧪 试运行模式（不推送）",
-                            value=True
-                        )
+                        github_dry_run = gr.Checkbox(label="🧪 试运行模式（不推送）", value=True)
                         github_run_btn = gr.Button("🔥 开始生成", variant="primary", size="lg")
 
                     with gr.Column(scale=2):
@@ -962,8 +1024,15 @@ def create_app():
 
                 github_run_btn.click(
                     fn=lambda k, s, b, d, w, r: asyncio.run(run_github_template(k, s, b, d, w, r)),
-                    inputs=[github_keyword_input, github_min_stars_input, github_brief_count, github_deep_count, github_min_words, github_dry_run],
-                    outputs=[github_log_output, github_article_output]
+                    inputs=[
+                        github_keyword_input,
+                        github_min_stars_input,
+                        github_brief_count,
+                        github_deep_count,
+                        github_min_words,
+                        github_dry_run,
+                    ],
+                    outputs=[github_log_output, github_article_output],
                 )
 
             # ─────────────────────────────────────────────────────────────────
@@ -988,10 +1057,7 @@ def create_app():
 
                         **痛点分类**: 性能/准确性/稳定性/功能/体验/API
                         """)
-                        pain_dry_run = gr.Checkbox(
-                            label="🧪 试运行模式（不推送）",
-                            value=True
-                        )
+                        pain_dry_run = gr.Checkbox(label="🧪 试运行模式（不推送）", value=True)
                         pain_run_btn = gr.Button("💊 开始诊断", variant="primary", size="lg")
 
                     with gr.Column(scale=2):
@@ -1004,7 +1070,7 @@ def create_app():
                 pain_run_btn.click(
                     fn=lambda d: asyncio.run(run_pain_template(d)),
                     inputs=[pain_dry_run],
-                    outputs=[pain_log_output, pain_article_output]
+                    outputs=[pain_log_output, pain_article_output],
                 )
 
             # ─────────────────────────────────────────────────────────────────
@@ -1031,10 +1097,7 @@ def create_app():
                         | GitHub | 开源趋势 |
                         | 小红书 | 生活热点 |
                         """)
-                        news_dry_run = gr.Checkbox(
-                            label="🧪 试运行模式（不推送）",
-                            value=True
-                        )
+                        news_dry_run = gr.Checkbox(label="🧪 试运行模式（不推送）", value=True)
                         news_run_btn = gr.Button("📰 生成快报", variant="primary", size="lg")
 
                     with gr.Column(scale=2):
@@ -1047,7 +1110,7 @@ def create_app():
                 news_run_btn.click(
                     fn=lambda d: asyncio.run(run_news_template(d)),
                     inputs=[news_dry_run],
-                    outputs=[news_log_output, news_article_output]
+                    outputs=[news_log_output, news_article_output],
                 )
 
             # ─────────────────────────────────────────────────────────────────
@@ -1069,12 +1132,9 @@ def create_app():
                             label="🔍 搜索关键词",
                             placeholder="数码好物、美妆测评...",
                             value="",
-                            info="留空则采集热门笔记"
+                            info="留空则采集热门笔记",
                         )
-                        xhs_dry_run = gr.Checkbox(
-                            label="🧪 试运行模式（不推送）",
-                            value=True
-                        )
+                        xhs_dry_run = gr.Checkbox(label="🧪 试运行模式（不推送）", value=True)
                         xhs_run_btn = gr.Button("📕 开始采集", variant="primary", size="lg")
 
                     with gr.Column(scale=2):
@@ -1087,7 +1147,7 @@ def create_app():
                 xhs_run_btn.click(
                     fn=lambda k, d: asyncio.run(run_xhs_template(k, d)),
                     inputs=[xhs_keyword, xhs_dry_run],
-                    outputs=[xhs_log_output, xhs_article_output]
+                    outputs=[xhs_log_output, xhs_article_output],
                 )
 
             # ─────────────────────────────────────────────────────────────────
@@ -1109,7 +1169,7 @@ def create_app():
                             label="📌 细分领域",
                             placeholder="AI技术、Python开发...",
                             value="AI技术",
-                            info="AI 会围绕此领域生成内容"
+                            info="AI 会围绕此领域生成内容",
                         )
                         gr.Markdown("""
                         **文章结构**：
@@ -1117,10 +1177,7 @@ def create_app():
                         - 🔧 魔法修补（解释为什么 AI 会犯错 + 解决方案）
                         - 🎁 咒语交付（可直接复制的 Prompt/指令）
                         """)
-                        auto_dry_run = gr.Checkbox(
-                            label="🧪 试运行模式（不推送）",
-                            value=True
-                        )
+                        auto_dry_run = gr.Checkbox(label="🧪 试运行模式（不推送）", value=True)
                         auto_run_btn = gr.Button("🚀 全自动运行", variant="primary", size="lg")
 
                     with gr.Column(scale=2):
@@ -1133,7 +1190,7 @@ def create_app():
                 auto_run_btn.click(
                     fn=lambda n, d: asyncio.run(run_auto_template(n, d)),
                     inputs=[auto_niche, auto_dry_run],
-                    outputs=[auto_log_output, auto_article_output]
+                    outputs=[auto_log_output, auto_article_output],
                 )
 
             # ─────────────────────────────────────────────────────────────────
@@ -1144,11 +1201,7 @@ def create_app():
                 检查文章违禁词，清理 AI 生成痕迹。支持：标题党词汇、虚假宣传词、AI 痕迹词。
                 """)
 
-                content_input = gr.Textbox(
-                    label="📝 待检查内容",
-                    placeholder="粘贴你的文章内容...",
-                    lines=8
-                )
+                content_input = gr.Textbox(label="📝 待检查内容", placeholder="粘贴你的文章内容...", lines=8)
 
                 with gr.Row():
                     check_btn = gr.Button("🔍 检查违禁词", variant="secondary")
@@ -1174,7 +1227,6 @@ def create_app():
                 with gr.Row():
                     # 左侧：配置表单
                     with gr.Column(scale=3):
-
                         # ═══════════════════════════════════════════════════════════
                         # 🤖 Gemini AI 配置
                         # ═══════════════════════════════════════════════════════════
@@ -1201,43 +1253,47 @@ def create_app():
                             gemini_provider = gr.Radio(
                                 label="API 提供商",
                                 choices=["official", "openai_compatible"],
-                                value=current_config['gemini_provider'],
-                                info="official=官方 Gemini（需翻墙）| openai_compatible=第三方聚合（国内可用）"
+                                value=current_config["gemini_provider"],
+                                info="official=官方 Gemini（需翻墙）| openai_compatible=第三方聚合（国内可用）",
                             )
                             gemini_base_url = gr.Textbox(
                                 label="API 地址（仅第三方需要）",
                                 placeholder="https://www.packyapi.com/v1",
-                                value=current_config['gemini_base_url'],
-                                info="第三方聚合服务地址，官方 API 留空"
+                                value=current_config["gemini_base_url"],
+                                info="第三方聚合服务地址，官方 API 留空",
                             )
                             gemini_api_key = gr.Textbox(
                                 label="API Key",
-                                value=current_config['gemini_api_key'],
+                                value=current_config["gemini_api_key"],
                                 type="password",
-                                info="从上述平台获取的密钥"
+                                info="从上述平台获取的密钥",
                             )
                             with gr.Row():
                                 gemini_model = gr.Dropdown(
                                     label="文本模型",
                                     choices=[
-                                        "gemini-2.0-flash", "gemini-1.5-pro",
-                                        "gemini-3-pro-preview", "gemini-3-flash-preview",
-                                        "gemini-2.5-pro", "gemini-2.5-flash",
+                                        "gemini-2.0-flash",
+                                        "gemini-1.5-pro",
+                                        "gemini-3-pro-preview",
+                                        "gemini-3-flash-preview",
+                                        "gemini-2.5-pro",
+                                        "gemini-2.5-flash",
                                     ],
-                                    value=current_config['gemini_model'],
+                                    value=current_config["gemini_model"],
                                     allow_custom_value=True,
-                                    info="推荐: gemini-3-pro-preview（最强）或 gemini-2.0-flash（快速）"
+                                    info="推荐: gemini-3-pro-preview（最强）或 gemini-2.0-flash（快速）",
                                 )
                                 gemini_image_model = gr.Dropdown(
                                     label="图片模型（可选）",
                                     choices=[
-                                        "", "imagen-3.0-generate-001",
+                                        "",
+                                        "imagen-3.0-generate-001",
                                         "gemini-3-pro-image-preview",
                                         "gemini-3-pro-image-preview-16-9-4K",
                                     ],
-                                    value=current_config['gemini_image_model'],
+                                    value=current_config["gemini_image_model"],
                                     allow_custom_value=True,
-                                    info="用于生成封面图，留空则使用在线服务"
+                                    info="用于生成封面图，留空则使用在线服务",
                                 )
 
                         # ═══════════════════════════════════════════════════════════
@@ -1258,14 +1314,14 @@ def create_app():
                             """)
                             push_token = gr.Textbox(
                                 label="PushPlus Token",
-                                value=current_config['push_token'],
+                                value=current_config["push_token"],
                                 type="password",
-                                info="从 pushplus.plus 个人中心获取"
+                                info="从 pushplus.plus 个人中心获取",
                             )
                             push_enabled = gr.Checkbox(
                                 label="启用推送",
-                                value=current_config['push_enabled'],
-                                info="关闭则只生成文章不推送到微信"
+                                value=current_config["push_enabled"],
+                                info="关闭则只生成文章不推送到微信",
                             )
 
                         # ═══════════════════════════════════════════════════════════
@@ -1287,8 +1343,8 @@ def create_app():
                             """)
                             twitter_cookies_path = gr.Textbox(
                                 label="Cookies 文件路径",
-                                value=current_config['twitter_cookies_path'],
-                                info="相对于项目根目录，默认: data/cookies.json"
+                                value=current_config["twitter_cookies_path"],
+                                info="相对于项目根目录，默认: data/cookies.json",
                             )
 
                         # ═══════════════════════════════════════════════════════════
@@ -1317,21 +1373,21 @@ def create_app():
                             """)
                             xhs_cookies = gr.Textbox(
                                 label="Cookie 字符串",
-                                value=current_config['xhs_cookies'],
+                                value=current_config["xhs_cookies"],
                                 lines=3,
-                                info="从浏览器控制台获取的完整 Cookie"
+                                info="从浏览器控制台获取的完整 Cookie",
                             )
                             with gr.Row():
                                 xhs_default_keyword = gr.Textbox(
                                     label="默认搜索关键词",
-                                    value=current_config['xhs_default_keyword'],
-                                    info="采集时的默认搜索词"
+                                    value=current_config["xhs_default_keyword"],
+                                    info="采集时的默认搜索词",
                                 )
                                 xhs_default_style = gr.Dropdown(
                                     label="默认文章风格",
                                     choices=["种草", "测评", "盘点"],
-                                    value=current_config['xhs_default_style'],
-                                    info="生成文章的默认风格"
+                                    value=current_config["xhs_default_style"],
+                                    info="生成文章的默认风格",
                                 )
 
                         # ═══════════════════════════════════════════════════════════
@@ -1358,24 +1414,26 @@ def create_app():
                             """)
                             github_token = gr.Textbox(
                                 label="GitHub Token",
-                                value=current_config['github_token'],
+                                value=current_config["github_token"],
                                 type="password",
-                                info="Personal Access Token，可选但推荐配置"
+                                info="Personal Access Token，可选但推荐配置",
                             )
                             with gr.Row():
                                 github_min_stars = gr.Slider(
                                     label="最小 Stars 数",
-                                    minimum=50, maximum=5000,
-                                    value=current_config['github_min_stars'],
+                                    minimum=50,
+                                    maximum=5000,
+                                    value=current_config["github_min_stars"],
                                     step=50,
-                                    info="只搜索 Star 数大于此值的项目"
+                                    info="只搜索 Star 数大于此值的项目",
                                 )
                                 github_days_since_update = gr.Slider(
                                     label="更新时间过滤（天）",
-                                    minimum=7, maximum=365,
-                                    value=current_config['github_days_since_update'],
+                                    minimum=7,
+                                    maximum=365,
+                                    value=current_config["github_days_since_update"],
                                     step=7,
-                                    info="只搜索最近 N 天内有更新的项目"
+                                    info="只搜索最近 N 天内有更新的项目",
                                 )
 
                         # ═══════════════════════════════════════════════════════════
@@ -1389,34 +1447,30 @@ def create_app():
                             """)
                             account_name = gr.Textbox(
                                 label="公众号名称",
-                                value=current_config['account_name'],
-                                info="用于生成文章时的署名和风格参考"
+                                value=current_config["account_name"],
+                                info="用于生成文章时的署名和风格参考",
                             )
                             account_niche = gr.Textbox(
                                 label="细分领域",
-                                value=current_config['account_niche'],
-                                info="如: AI技术、职场成长、产品设计"
+                                value=current_config["account_niche"],
+                                info="如: AI技术、职场成长、产品设计",
                             )
                             account_tone = gr.Textbox(
                                 label="写作风格",
-                                value=current_config['account_tone'],
-                                info="如: 专业且引人入胜、轻松幽默、深度严谨"
+                                value=current_config["account_tone"],
+                                info="如: 专业且引人入胜、轻松幽默、深度严谨",
                             )
                             with gr.Row():
                                 min_length = gr.Number(
-                                    label="最小字数",
-                                    value=current_config['min_length'],
-                                    info="文章最少字数"
+                                    label="最小字数", value=current_config["min_length"], info="文章最少字数"
                                 )
                                 max_length = gr.Number(
-                                    label="最大字数",
-                                    value=current_config['max_length'],
-                                    info="文章最多字数"
+                                    label="最大字数", value=current_config["max_length"], info="文章最多字数"
                                 )
                                 max_title_length = gr.Number(
                                     label="标题最大长度",
-                                    value=current_config['max_title_length'],
-                                    info="微信公众号建议不超过22字"
+                                    value=current_config["max_title_length"],
+                                    info="微信公众号建议不超过22字",
                                 )
 
                         # ═══════════════════════════════════════════════════════════
@@ -1431,19 +1485,17 @@ def create_app():
                             with gr.Row():
                                 chromadb_path = gr.Textbox(
                                     label="向量数据库路径",
-                                    value=current_config['chromadb_path'],
-                                    info="ChromaDB 存储路径，用于内容去重"
+                                    value=current_config["chromadb_path"],
+                                    info="ChromaDB 存储路径，用于内容去重",
                                 )
                                 output_dir = gr.Textbox(
-                                    label="输出目录",
-                                    value=current_config['output_dir'],
-                                    info="生成文章的保存目录"
+                                    label="输出目录", value=current_config["output_dir"], info="生成文章的保存目录"
                                 )
                             log_level = gr.Dropdown(
                                 label="日志级别",
                                 choices=["DEBUG", "INFO", "WARNING", "ERROR"],
-                                value=current_config['log_level'],
-                                info="DEBUG最详细，INFO正常，WARNING只显示警告"
+                                value=current_config["log_level"],
+                                info="DEBUG最详细，INFO正常，WARNING只显示警告",
                             )
 
                     # 右侧：状态显示
@@ -1472,15 +1524,31 @@ def create_app():
                 save_btn.click(
                     fn=save_config,
                     inputs=[
-                        gemini_provider, gemini_base_url, gemini_api_key, gemini_model, gemini_image_model,
-                        github_token, github_min_stars, github_days_since_update,
-                        push_token, push_enabled,
+                        gemini_provider,
+                        gemini_base_url,
+                        gemini_api_key,
+                        gemini_model,
+                        gemini_image_model,
+                        github_token,
+                        github_min_stars,
+                        github_days_since_update,
+                        push_token,
+                        push_enabled,
                         twitter_cookies_path,
-                        xhs_cookies, xhs_default_keyword, xhs_default_style,
-                        account_name, account_niche, account_tone, min_length, max_length, max_title_length,
-                        chromadb_path, output_dir, log_level
+                        xhs_cookies,
+                        xhs_default_keyword,
+                        xhs_default_style,
+                        account_name,
+                        account_niche,
+                        account_tone,
+                        min_length,
+                        max_length,
+                        max_title_length,
+                        chromadb_path,
+                        output_dir,
+                        log_level,
                     ],
-                    outputs=[save_output]
+                    outputs=[save_output],
                 )
                 refresh_btn.click(fn=get_config_info, outputs=[config_status])
 
@@ -1501,8 +1569,7 @@ def create_app():
         </div>
         """)
 
-        with gr.Tabs() as bottom_tabs:
-
+        with gr.Tabs():
             # ─────────────────────────────────────────────────────────────────
             # Tab: 首页介绍
             # ─────────────────────────────────────────────────────────────────
@@ -1512,8 +1579,7 @@ def create_app():
                         # 显示主图 - 无边框
                         main_img = get_image_path("hunter_intro_03.png")
                         if main_img:
-                            gr.Image(main_img, label=None, show_label=False, height=300,
-                                    container=False)
+                            gr.Image(main_img, label=None, show_label=False, height=300, container=False)
                     with gr.Column(scale=2):
                         gr.Markdown("""
 ### 🦅 Hunter AI 内容工厂
@@ -1538,34 +1604,36 @@ def create_app():
             # 6 个 Skill Tab
             # ─────────────────────────────────────────────────────────────────
             for skill in SKILLS_INFO:
-                with gr.Tab(f"{skill['emoji']} {skill['name']}", id=skill['id']):
+                with gr.Tab(f"{skill['emoji']} {skill['name']}", id=skill["id"]):
                     with gr.Row():
                         with gr.Column(scale=1):
-                            img_path = get_image_path(skill['image'])
+                            img_path = get_image_path(skill["image"])
                             if img_path:
-                                gr.Image(img_path, label=None, show_label=False, height=250,
-                                        container=False)
+                                gr.Image(img_path, label=None, show_label=False, height=250, container=False)
                             else:
                                 gr.HTML(f"""
                                 <div style="height: 250px; display: flex; align-items: center; justify-content: center;
-                                    background: linear-gradient(135deg, {skill['color']}22, {skill['color']}44);
+                                    background: linear-gradient(135deg, {skill["color"]}22, {skill["color"]}44);
                                     border-radius: 16px; font-size: 5em;">
-                                    {skill['emoji']}
+                                    {skill["emoji"]}
                                 </div>
                                 """)
 
                         with gr.Column(scale=2):
-                            gr.Markdown(f"""
-### {skill['emoji']} {skill['name']}
+                            gr.Markdown(
+                                f"""
+### {skill["emoji"]} {skill["name"]}
 
-**{skill['subtitle']}**
+**{skill["subtitle"]}**
 
-{skill['description']}
+{skill["description"]}
 
 #### 输出内容
 | 输出项 | 说明 |
 |--------|------|
-""" + "\n".join([f"| {out} | 由 AI 自动生成 |" for out in skill['outputs']]))
+"""
+                                + "\n".join([f"| {out} | 由 AI 自动生成 |" for out in skill["outputs"]])
+                            )
 
         # ═══════════════════════════════════════════════════════════════════
         # 页脚

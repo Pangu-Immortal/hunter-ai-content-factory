@@ -18,33 +18,32 @@ import datetime
 import json
 import time
 from datetime import timedelta
-from typing import Optional
 
 from rich.console import Console
 from rich.progress import track
 
-from src.config import settings, ROOT_DIR
-from src.utils.ai_client import get_ai_client
+from src.config import ROOT_DIR, settings
 from src.intel.utils import (
     create_http_client,
-    get_chromadb_client,
     generate_content_id,
-    push_to_wechat,
+    get_chromadb_client,
     get_dated_output_path,
     get_today_str,
+    push_to_wechat,
 )
+from src.utils.ai_client import get_ai_client
 
 # 终端输出美化
 console = Console()
 
 # GitHub 搜索关键词
 SEARCH_QUERIES = [
-    'DeepSeek tool',
-    'LLM Agent framework',
-    'RAG pipeline',
-    'AI workflow automation',
-    'Prompt Engineering tool',
-    'Browser Use'
+    "DeepSeek tool",
+    "LLM Agent framework",
+    "RAG pipeline",
+    "AI workflow automation",
+    "Prompt Engineering tool",
+    "Browser Use",
 ]
 
 
@@ -69,11 +68,11 @@ class GitHubHunter:
         """加载已推荐项目历史记录"""
         if self.HISTORY_FILE.exists():
             try:
-                with open(self.HISTORY_FILE, "r", encoding="utf-8") as f:
+                with open(self.HISTORY_FILE, encoding="utf-8") as f:
                     data = json.load(f)
                     console.print(f"[dim]📂 已加载 {len(data.get('projects', []))} 条历史推荐记录[/dim]")
                     return data
-            except (json.JSONDecodeError, IOError) as e:
+            except (OSError, json.JSONDecodeError) as e:
                 console.print(f"[yellow]⚠️ 历史记录文件损坏: {e}[/yellow]")
         return {"projects": []}
 
@@ -86,25 +85,23 @@ class GitHubHunter:
 
         for proj in self.projects:
             project_name = proj["name"]
-            existing = next(
-                (p for p in self.recommended_history["projects"] if p["name"] == project_name),
-                None
-            )
+            existing = next((p for p in self.recommended_history["projects"] if p["name"] == project_name), None)
             if existing:
                 existing["recommended_at"] = today
                 existing["stars"] = proj["stars"]
             else:
-                self.recommended_history["projects"].append({
-                    "name": project_name,
-                    "recommended_at": today,
-                    "stars": proj["stars"],
-                })
+                self.recommended_history["projects"].append(
+                    {
+                        "name": project_name,
+                        "recommended_at": today,
+                        "stars": proj["stars"],
+                    }
+                )
 
         # 清理 90 天前的旧记录
         cutoff = (datetime.datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d")
         self.recommended_history["projects"] = [
-            p for p in self.recommended_history["projects"]
-            if p.get("recommended_at", "2000-01-01") > cutoff
+            p for p in self.recommended_history["projects"] if p.get("recommended_at", "2000-01-01") > cutoff
         ]
 
         self.HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -112,7 +109,7 @@ class GitHubHunter:
             with open(self.HISTORY_FILE, "w", encoding="utf-8") as f:
                 json.dump(self.recommended_history, f, ensure_ascii=False, indent=2)
             console.print(f"[green]💾 已保存 {len(self.projects)} 个项目到历史记录[/green]")
-        except IOError as e:
+        except OSError as e:
             console.print(f"[red]❌ 保存历史记录失败: {e}[/red]")
 
     def _is_recently_recommended(self, project_name: str) -> bool:
@@ -200,24 +197,14 @@ class GitHubHunter:
             # 存入 ChromaDB
             self.collection.upsert(
                 documents=[content],
-                metadatas=[{
-                    "source": "GitHub",
-                    "author": project_name,
-                    "tag": "OpenSource",
-                    "time": current_time
-                }],
-                ids=[doc_id]
+                metadatas=[{"source": "GitHub", "author": project_name, "tag": "OpenSource", "time": current_time}],
+                ids=[doc_id],
             )
 
             # 加入内存列表
-            self.projects.append({
-                "name": project_name,
-                "stars": stars,
-                "lang": lang,
-                "desc": desc_cn,
-                "url": url,
-                "updated": updated_at
-            })
+            self.projects.append(
+                {"name": project_name, "stars": stars, "lang": lang, "desc": desc_cn, "url": url, "updated": updated_at}
+            )
 
             console.print(f"  💾 已归档: {project_name} (⭐{stars})")
             return True
@@ -230,14 +217,11 @@ class GitHubHunter:
         """执行 GitHub 项目搜索"""
         console.print("[bold cyan]🚀 GitHub 猎手开始狩猎...[/bold cyan]")
 
-        headers = {
-            'Accept': 'application/vnd.github.v3+json',
-            'User-Agent': 'HunterAI/1.0'
-        }
+        headers = {"Accept": "application/vnd.github.v3+json", "User-Agent": "HunterAI/1.0"}
 
         # 添加 GitHub Token（提高 API 配额）
         if settings.github.token:
-            headers['Authorization'] = f'token {settings.github.token}'
+            headers["Authorization"] = f"token {settings.github.token}"
             console.print("🔑 GitHub Token 已加载")
 
         min_stars = settings.github.min_stars  # 最小 Star 数
@@ -252,39 +236,36 @@ class GitHubHunter:
                 response = self.http.get(api_url, headers=headers)
 
                 if response.status_code == 200:
-                    items = response.json().get('items', [])
+                    items = response.json().get("items", [])
 
                     if not items:
                         console.print("     (无符合条件的项目)")
                         continue
 
                     for item in items:
-                        project_name = item['full_name']
+                        project_name = item["full_name"]
 
                         # 检查是否在冷却期内被推荐过
                         if self._is_recently_recommended(project_name):
                             console.print(f"     ⏭️ 跳过已推荐: {project_name}")
                             continue
 
-                        updated_at = item['updated_at'][:10]  # 提取日期
+                        updated_at = item["updated_at"][:10]  # 提取日期
                         last_update = datetime.datetime.strptime(updated_at, "%Y-%m-%d")
                         days_diff = (datetime.datetime.now() - last_update).days
 
                         if days_diff > days_limit:  # 过滤过期项目
                             continue
 
-                        desc_cn = self.translate_summary(
-                            item['description'] or "",
-                            item['full_name']
-                        )
+                        desc_cn = self.translate_summary(item["description"] or "", item["full_name"])
 
                         self.save_to_db(
-                            project_name=item['full_name'],
+                            project_name=item["full_name"],
                             desc_cn=desc_cn,
-                            stars=item['stargazers_count'],
-                            lang=item['language'] or "Unknown",
-                            url=item['html_url'],
-                            updated_at=updated_at
+                            stars=item["stargazers_count"],
+                            lang=item["language"] or "Unknown",
+                            url=item["html_url"],
+                            updated_at=updated_at,
                         )
 
                 elif response.status_code == 403:
@@ -305,7 +286,7 @@ class GitHubHunter:
             return
 
         today = get_today_str()
-        sorted_projects = sorted(self.projects, key=lambda x: x['stars'], reverse=True)  # 按 Star 数排序
+        sorted_projects = sorted(self.projects, key=lambda x: x["stars"], reverse=True)  # 按 Star 数排序
 
         # 生成 MD 报告内容
         md_content = f"# 🚀 GitHub AI 猎手简报 ({today})\n\n"
@@ -314,7 +295,9 @@ class GitHubHunter:
 
         for proj in sorted_projects:
             md_content += f"## [{proj['name']}]({proj['url']})\n\n"
-            md_content += f"**⭐ Stars:** {proj['stars']} | **🛠️ 语言:** {proj['lang']} | **📅 更新:** {proj['updated']}\n\n"
+            md_content += (
+                f"**⭐ Stars:** {proj['stars']} | **🛠️ 语言:** {proj['lang']} | **📅 更新:** {proj['updated']}\n\n"
+            )
             md_content += f"> 📝 {proj['desc']}\n\n"
             md_content += "---\n\n"
 
@@ -330,10 +313,7 @@ class GitHubHunter:
             console.print(f"[red]❌ MD 报告生成失败: {e}[/red]")
 
         # 推送到微信
-        push_to_wechat(
-            title=f"【开源猎手】今日捕获 {len(sorted_projects)} 个项目",
-            content=md_content
-        )
+        push_to_wechat(title=f"【开源猎手】今日捕获 {len(sorted_projects)} 个项目", content=md_content)
 
         # 保存推荐历史（避免下次重复推荐）
         self._save_history()

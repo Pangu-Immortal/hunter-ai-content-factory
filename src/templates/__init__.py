@@ -29,7 +29,7 @@ Author: Pangu-Immortal
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional, Type
+
 from rich.console import Console
 
 console = Console()
@@ -38,12 +38,13 @@ console = Console()
 @dataclass
 class TemplateResult:
     """模板执行结果"""
-    success: bool              # 是否成功
-    title: str                 # 文章标题
-    content: str               # 文章内容
-    output_path: str           # 输出文件路径
-    push_status: str           # 推送状态
-    error: Optional[str] = None  # 错误信息
+
+    success: bool  # 是否成功
+    title: str  # 文章标题
+    content: str  # 文章内容
+    output_path: str  # 输出文件路径
+    push_status: str  # 推送状态
+    error: str | None = None  # 错误信息
 
 
 class BaseTemplate(ABC):
@@ -84,7 +85,7 @@ class BaseTemplate(ABC):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # 模板类注册表（懒加载）
-_TEMPLATE_REGISTRY: dict[str, Type[BaseTemplate]] = {}
+_TEMPLATE_REGISTRY: dict[str, type[BaseTemplate]] = {}
 
 
 def register_template(name: str):
@@ -99,10 +100,12 @@ def register_template(name: str):
         class GitHubTemplate(BaseTemplate):
             ...
     """
-    def decorator(cls: Type[BaseTemplate]):
+
+    def decorator(cls: type[BaseTemplate]):
         cls.name = name
         _TEMPLATE_REGISTRY[name] = cls
         return cls
+
     return decorator
 
 
@@ -138,10 +141,7 @@ def list_templates() -> dict[str, str]:
         dict: {模板名称: 模板描述}
     """
     _load_templates()
-    return {
-        name: cls.description
-        for name, cls in _TEMPLATE_REGISTRY.items()
-    }
+    return {name: cls.description for name, cls in _TEMPLATE_REGISTRY.items()}
 
 
 def _load_templates():
@@ -150,11 +150,13 @@ def _load_templates():
         return  # 已加载
 
     # 导入模板模块（触发 @register_template 装饰器）
-    from src.templates import github_template
-    from src.templates import pain_template
-    from src.templates import news_template
-    from src.templates import xiaohongshu_template
-    from src.templates import auto_template
+    from src.templates import (  # noqa: F401
+        auto_template,
+        github_template,
+        news_template,
+        pain_template,
+        xiaohongshu_template,
+    )
 
 
 # 模板名称常量

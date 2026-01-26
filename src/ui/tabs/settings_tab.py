@@ -5,6 +5,7 @@
 """
 
 import gradio as gr
+
 from ..handlers import get_config_info, load_current_config, save_config
 
 
@@ -21,7 +22,6 @@ def create_settings_tab():
         with gr.Row():
             # 左侧：配置表单
             with gr.Column(scale=3):
-
                 # 🤖 Gemini AI 配置
                 with gr.Accordion("🤖 Gemini AI 配置（必填）", open=True):
                     gr.Markdown("""
@@ -46,43 +46,47 @@ def create_settings_tab():
                     gemini_provider = gr.Radio(
                         label="API 提供商",
                         choices=["official", "openai_compatible"],
-                        value=current_config['gemini_provider'],
-                        info="official=官方 Gemini（需翻墙）| openai_compatible=第三方聚合（国内可用）"
+                        value=current_config["gemini_provider"],
+                        info="official=官方 Gemini（需翻墙）| openai_compatible=第三方聚合（国内可用）",
                     )
                     gemini_base_url = gr.Textbox(
                         label="API 地址（仅第三方需要）",
                         placeholder="https://www.packyapi.com/v1",
-                        value=current_config['gemini_base_url'],
-                        info="第三方聚合服务地址，官方 API 留空"
+                        value=current_config["gemini_base_url"],
+                        info="第三方聚合服务地址，官方 API 留空",
                     )
                     gemini_api_key = gr.Textbox(
                         label="API Key",
-                        value=current_config['gemini_api_key'],
+                        value=current_config["gemini_api_key"],
                         type="password",
-                        info="从上述平台获取的密钥"
+                        info="从上述平台获取的密钥",
                     )
                     with gr.Row():
                         gemini_model = gr.Dropdown(
                             label="文本模型",
                             choices=[
-                                "gemini-2.0-flash", "gemini-1.5-pro",
-                                "gemini-3-pro-preview", "gemini-3-flash-preview",
-                                "gemini-2.5-pro", "gemini-2.5-flash",
+                                "gemini-2.0-flash",
+                                "gemini-1.5-pro",
+                                "gemini-3-pro-preview",
+                                "gemini-3-flash-preview",
+                                "gemini-2.5-pro",
+                                "gemini-2.5-flash",
                             ],
-                            value=current_config['gemini_model'],
+                            value=current_config["gemini_model"],
                             allow_custom_value=True,
-                            info="推荐: gemini-3-pro-preview（最强）或 gemini-2.0-flash（快速）"
+                            info="推荐: gemini-3-pro-preview（最强）或 gemini-2.0-flash（快速）",
                         )
                         gemini_image_model = gr.Dropdown(
                             label="图片模型（可选）",
                             choices=[
-                                "", "imagen-3.0-generate-001",
+                                "",
+                                "imagen-3.0-generate-001",
                                 "gemini-3-pro-image-preview",
                                 "gemini-3-pro-image-preview-16-9-4K",
                             ],
-                            value=current_config['gemini_image_model'],
+                            value=current_config["gemini_image_model"],
                             allow_custom_value=True,
-                            info="用于生成封面图，留空则使用在线服务"
+                            info="用于生成封面图，留空则使用在线服务",
                         )
 
                 # 📮 PushPlus 微信推送配置
@@ -101,14 +105,12 @@ def create_settings_tab():
                     """)
                     push_token = gr.Textbox(
                         label="PushPlus Token",
-                        value=current_config['push_token'],
+                        value=current_config["push_token"],
                         type="password",
-                        info="从 pushplus.plus 个人中心获取"
+                        info="从 pushplus.plus 个人中心获取",
                     )
                     push_enabled = gr.Checkbox(
-                        label="启用推送",
-                        value=current_config['push_enabled'],
-                        info="关闭则只生成文章不推送到微信"
+                        label="启用推送", value=current_config["push_enabled"], info="关闭则只生成文章不推送到微信"
                     )
 
                 # 🐦 Twitter/X 配置
@@ -128,8 +130,8 @@ def create_settings_tab():
                     """)
                     twitter_cookies_path = gr.Textbox(
                         label="Cookies 文件路径",
-                        value=current_config['twitter_cookies_path'],
-                        info="相对于项目根目录，默认: data/cookies.json"
+                        value=current_config["twitter_cookies_path"],
+                        info="相对于项目根目录，默认: data/cookies.json",
                     )
 
                 # 📕 小红书配置
@@ -160,21 +162,21 @@ def create_settings_tab():
                     """)
                     xhs_cookies = gr.Textbox(
                         label="Cookie 字符串",
-                        value=current_config['xhs_cookies'],
+                        value=current_config["xhs_cookies"],
                         lines=3,
-                        info="从浏览器控制台获取的完整 Cookie"
+                        info="从浏览器控制台获取的完整 Cookie",
                     )
                     with gr.Row():
                         xhs_default_keyword = gr.Textbox(
                             label="默认搜索关键词",
-                            value=current_config['xhs_default_keyword'],
-                            info="采集时的默认搜索词"
+                            value=current_config["xhs_default_keyword"],
+                            info="采集时的默认搜索词",
                         )
                         xhs_default_style = gr.Dropdown(
                             label="默认文章风格",
                             choices=["种草", "测评", "盘点"],
-                            value=current_config['xhs_default_style'],
-                            info="生成文章的默认风格"
+                            value=current_config["xhs_default_style"],
+                            info="生成文章的默认风格",
                         )
 
                 # 🐙 GitHub 配置
@@ -199,24 +201,26 @@ def create_settings_tab():
                     """)
                     github_token = gr.Textbox(
                         label="GitHub Token",
-                        value=current_config['github_token'],
+                        value=current_config["github_token"],
                         type="password",
-                        info="Personal Access Token，可选但推荐配置"
+                        info="Personal Access Token，可选但推荐配置",
                     )
                     with gr.Row():
                         github_min_stars = gr.Slider(
                             label="最小 Stars 数",
-                            minimum=50, maximum=5000,
-                            value=current_config['github_min_stars'],
+                            minimum=50,
+                            maximum=5000,
+                            value=current_config["github_min_stars"],
                             step=50,
-                            info="只搜索 Star 数大于此值的项目"
+                            info="只搜索 Star 数大于此值的项目",
                         )
                         github_days_since_update = gr.Slider(
                             label="更新时间过滤（天）",
-                            minimum=7, maximum=365,
-                            value=current_config['github_days_since_update'],
+                            minimum=7,
+                            maximum=365,
+                            value=current_config["github_days_since_update"],
                             step=7,
-                            info="只搜索最近 N 天内有更新的项目"
+                            info="只搜索最近 N 天内有更新的项目",
                         )
 
                 # 📝 公众号设置
@@ -227,35 +231,27 @@ def create_settings_tab():
                     ---
                     """)
                     account_name = gr.Textbox(
-                        label="公众号名称",
-                        value=current_config['account_name'],
-                        info="用于生成文章时的署名和风格参考"
+                        label="公众号名称", value=current_config["account_name"], info="用于生成文章时的署名和风格参考"
                     )
                     account_niche = gr.Textbox(
-                        label="细分领域",
-                        value=current_config['account_niche'],
-                        info="如: AI技术、职场成长、产品设计"
+                        label="细分领域", value=current_config["account_niche"], info="如: AI技术、职场成长、产品设计"
                     )
                     account_tone = gr.Textbox(
                         label="写作风格",
-                        value=current_config['account_tone'],
-                        info="如: 专业且引人入胜、轻松幽默、深度严谨"
+                        value=current_config["account_tone"],
+                        info="如: 专业且引人入胜、轻松幽默、深度严谨",
                     )
                     with gr.Row():
                         min_length = gr.Number(
-                            label="最小字数",
-                            value=current_config['min_length'],
-                            info="文章最少字数"
+                            label="最小字数", value=current_config["min_length"], info="文章最少字数"
                         )
                         max_length = gr.Number(
-                            label="最大字数",
-                            value=current_config['max_length'],
-                            info="文章最多字数"
+                            label="最大字数", value=current_config["max_length"], info="文章最多字数"
                         )
                         max_title_length = gr.Number(
                             label="标题最大长度",
-                            value=current_config['max_title_length'],
-                            info="微信公众号建议不超过22字"
+                            value=current_config["max_title_length"],
+                            info="微信公众号建议不超过22字",
                         )
 
                 # 💾 存储与系统配置
@@ -268,19 +264,17 @@ def create_settings_tab():
                     with gr.Row():
                         chromadb_path = gr.Textbox(
                             label="向量数据库路径",
-                            value=current_config['chromadb_path'],
-                            info="ChromaDB 存储路径，用于内容去重"
+                            value=current_config["chromadb_path"],
+                            info="ChromaDB 存储路径，用于内容去重",
                         )
                         output_dir = gr.Textbox(
-                            label="输出目录",
-                            value=current_config['output_dir'],
-                            info="生成文章的保存目录"
+                            label="输出目录", value=current_config["output_dir"], info="生成文章的保存目录"
                         )
                     log_level = gr.Dropdown(
                         label="日志级别",
                         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
-                        value=current_config['log_level'],
-                        info="DEBUG最详细，INFO正常，WARNING只显示警告"
+                        value=current_config["log_level"],
+                        info="DEBUG最详细，INFO正常，WARNING只显示警告",
                     )
 
             # 右侧：状态显示
@@ -309,14 +303,30 @@ def create_settings_tab():
         save_btn.click(
             fn=save_config,
             inputs=[
-                gemini_provider, gemini_base_url, gemini_api_key, gemini_model, gemini_image_model,
-                github_token, github_min_stars, github_days_since_update,
-                push_token, push_enabled,
+                gemini_provider,
+                gemini_base_url,
+                gemini_api_key,
+                gemini_model,
+                gemini_image_model,
+                github_token,
+                github_min_stars,
+                github_days_since_update,
+                push_token,
+                push_enabled,
                 twitter_cookies_path,
-                xhs_cookies, xhs_default_keyword, xhs_default_style,
-                account_name, account_niche, account_tone, min_length, max_length, max_title_length,
-                chromadb_path, output_dir, log_level
+                xhs_cookies,
+                xhs_default_keyword,
+                xhs_default_style,
+                account_name,
+                account_niche,
+                account_tone,
+                min_length,
+                max_length,
+                max_title_length,
+                chromadb_path,
+                output_dir,
+                log_level,
             ],
-            outputs=[save_output]
+            outputs=[save_output],
         )
         refresh_btn.click(fn=get_config_info, outputs=[config_status])

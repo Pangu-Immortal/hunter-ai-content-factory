@@ -12,14 +12,14 @@ Hunter AI 内容工厂 - Tabs 模块
 - create_intro_tabs: 下部介绍区
 """
 
-from .github_tab import create_github_tab
-from .pain_tab import create_pain_tab
-from .news_tab import create_news_tab
-from .xhs_tab import create_xhs_tab
 from .auto_tab import create_auto_tab
 from .check_tab import create_check_tab
-from .settings_tab import create_settings_tab
+from .github_tab import create_github_tab
 from .intro_tabs import create_intro_tabs
+from .news_tab import create_news_tab
+from .pain_tab import create_pain_tab
+from .settings_tab import create_settings_tab
+from .xhs_tab import create_xhs_tab
 
 __all__ = [
     "create_github_tab",

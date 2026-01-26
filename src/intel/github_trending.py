@@ -19,27 +19,25 @@ Author: Pangu-Immortal
 import asyncio
 import json
 import re
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional
-from dataclasses import dataclass, field
 
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from src.config import settings, ROOT_DIR
-from src.utils.ai_client import get_ai_client, generate_project_cover
+from src.config import ROOT_DIR, settings
 from src.intel.utils import (
+    create_article_dir,
     create_http_client,
-    get_chromadb_client,
     generate_content_id,
-    push_to_wechat,
+    get_article_file_path,
+    get_chromadb_client,
     get_output_path,
     get_today_str,
-    call_with_retry,
-    create_article_dir,
-    get_article_file_path,
+    push_to_wechat,
 )
+from src.utils.ai_client import generate_project_cover, get_ai_client
 
 # 终端输出美化
 console = Console()
@@ -48,25 +46,27 @@ console = Console()
 @dataclass
 class TrendingProject:
     """GitHub Trending 项目数据结构"""
-    name: str                    # 项目全名（owner/repo）
-    description: str             # 项目描述
-    stars: int                   # Star 数
-    forks: int                   # Fork 数
-    today_stars: int             # 今日新增 Star
-    language: str                # 编程语言
-    url: str                     # 项目链接
+
+    name: str  # 项目全名（owner/repo）
+    description: str  # 项目描述
+    stars: int  # Star 数
+    forks: int  # Fork 数
+    today_stars: int  # 今日新增 Star
+    language: str  # 编程语言
+    url: str  # 项目链接
     topics: list[str] = field(default_factory=list)  # 标签
 
 
 @dataclass
 class ArticleContent:
     """文章内容结构"""
-    title: str                   # 文章标题
-    intro: str                   # 开篇引言
-    projects_brief: list[dict]   # 项目简介列表（2个）
-    deep_dive: dict              # 深度解读项目
-    conclusion: str              # 结尾总结
-    full_content: str = ""       # 完整文章内容
+
+    title: str  # 文章标题
+    intro: str  # 开篇引言
+    projects_brief: list[dict]  # 项目简介列表（2个）
+    deep_dive: dict  # 深度解读项目
+    conclusion: str  # 结尾总结
+    full_content: str = ""  # 完整文章内容
     cover_images: list[str] = field(default_factory=list)  # 封面图路径列表
 
 
@@ -87,12 +87,35 @@ class GitHubTrendingHunter:
 
     # AI/ML 相关的过滤关键词
     AI_KEYWORDS = [
-        "ai", "ml", "machine-learning", "deep-learning", "neural",
-        "llm", "gpt", "transformer", "nlp", "chatbot", "agent",
-        "rag", "embedding", "vector", "langchain", "openai",
-        "anthropic", "claude", "gemini", "ollama", "llama",
-        "diffusion", "stable-diffusion", "midjourney", "image-generation",
-        "automation", "workflow", "copilot", "assistant"
+        "ai",
+        "ml",
+        "machine-learning",
+        "deep-learning",
+        "neural",
+        "llm",
+        "gpt",
+        "transformer",
+        "nlp",
+        "chatbot",
+        "agent",
+        "rag",
+        "embedding",
+        "vector",
+        "langchain",
+        "openai",
+        "anthropic",
+        "claude",
+        "gemini",
+        "ollama",
+        "llama",
+        "diffusion",
+        "stable-diffusion",
+        "midjourney",
+        "image-generation",
+        "automation",
+        "workflow",
+        "copilot",
+        "assistant",
     ]
 
     # 关键词扩展映射 - 当项目不足时自动尝试相近关键词
@@ -145,8 +168,7 @@ class GitHubTrendingHunter:
         try:
             client = get_chromadb_client()
             self.collection = client.get_or_create_collection(
-                name="github_trending_projects",
-                metadata={"description": "GitHub Trending 项目向量存储，用于语义去重"}
+                name="github_trending_projects", metadata={"description": "GitHub Trending 项目向量存储，用于语义去重"}
             )
             count = self.collection.count()
             console.print(f"[green]✅ ChromaDB 向量数据库连接成功 (已存储 {count} 个项目)[/green]")
@@ -179,7 +201,7 @@ class GitHubTrendingHunter:
             results = self.collection.query(
                 query_texts=[project_text],
                 n_results=3,  # 返回最相似的 3 个
-                include=["distances", "metadatas"]
+                include=["distances", "metadatas"],
             )
 
             if results and results["distances"] and results["distances"][0]:
@@ -190,7 +212,9 @@ class GitHubTrendingHunter:
 
                 if similarity >= threshold:
                     matched_name = results["metadatas"][0][0].get("name", "未知") if results["metadatas"][0] else "未知"
-                    console.print(f"[yellow]🔍 发现相似项目: {project.name} ≈ {matched_name} (相似度: {similarity:.1%})[/yellow]")
+                    console.print(
+                        f"[yellow]🔍 发现相似项目: {project.name} ≈ {matched_name} (相似度: {similarity:.1%})[/yellow]"
+                    )
                     return True
 
             return False
@@ -220,24 +244,28 @@ class GitHubTrendingHunter:
                 self.collection.update(
                     ids=[project_id],
                     documents=[project_text],
-                    metadatas=[{
-                        "name": project.name,
-                        "stars": project.stars,
-                        "language": project.language,
-                        "updated_at": datetime.now().isoformat()
-                    }]
+                    metadatas=[
+                        {
+                            "name": project.name,
+                            "stars": project.stars,
+                            "language": project.language,
+                            "updated_at": datetime.now().isoformat(),
+                        }
+                    ],
                 )
             else:
                 # 新增
                 self.collection.add(
                     ids=[project_id],
                     documents=[project_text],
-                    metadatas=[{
-                        "name": project.name,
-                        "stars": project.stars,
-                        "language": project.language,
-                        "added_at": datetime.now().isoformat()
-                    }]
+                    metadatas=[
+                        {
+                            "name": project.name,
+                            "stars": project.stars,
+                            "language": project.language,
+                            "added_at": datetime.now().isoformat(),
+                        }
+                    ],
                 )
             console.print(f"[dim]💾 已存储到向量数据库: {project.name}[/dim]")
 
@@ -253,11 +281,11 @@ class GitHubTrendingHunter:
         """
         if self.HISTORY_FILE.exists():
             try:
-                with open(self.HISTORY_FILE, "r", encoding="utf-8") as f:
+                with open(self.HISTORY_FILE, encoding="utf-8") as f:
                     data = json.load(f)
                     console.print(f"[dim]📂 已加载 {len(data.get('projects', []))} 条历史推荐记录[/dim]")
                     return data
-            except (json.JSONDecodeError, IOError) as e:
+            except (OSError, json.JSONDecodeError) as e:
                 console.print(f"[yellow]⚠️ 历史记录文件损坏，将重新创建: {e}[/yellow]")
         return {"projects": []}
 
@@ -273,25 +301,23 @@ class GitHubTrendingHunter:
         # 添加新推荐的项目
         for project in new_projects:
             # 检查是否已存在（更新推荐日期）
-            existing = next(
-                (p for p in self.recommended_history["projects"] if p["name"] == project.name),
-                None
-            )
+            existing = next((p for p in self.recommended_history["projects"] if p["name"] == project.name), None)
             if existing:
                 existing["recommended_at"] = today  # 更新日期
                 existing["stars"] = project.stars  # 更新 star 数
             else:
-                self.recommended_history["projects"].append({
-                    "name": project.name,
-                    "recommended_at": today,
-                    "stars": project.stars,
-                })
+                self.recommended_history["projects"].append(
+                    {
+                        "name": project.name,
+                        "recommended_at": today,
+                        "stars": project.stars,
+                    }
+                )
 
         # 清理过期记录（超过 90 天的记录可以删除以控制文件大小）
         cutoff_date = (datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d")
         self.recommended_history["projects"] = [
-            p for p in self.recommended_history["projects"]
-            if p.get("recommended_at", "2000-01-01") > cutoff_date
+            p for p in self.recommended_history["projects"] if p.get("recommended_at", "2000-01-01") > cutoff_date
         ]
 
         # 确保目录存在
@@ -302,7 +328,7 @@ class GitHubTrendingHunter:
             with open(self.HISTORY_FILE, "w", encoding="utf-8") as f:
                 json.dump(self.recommended_history, f, ensure_ascii=False, indent=2)
             console.print(f"[green]💾 已保存 {len(new_projects)} 个项目到历史记录[/green]")
-        except IOError as e:
+        except OSError as e:
             console.print(f"[red]❌ 保存历史记录失败: {e}[/red]")
 
         # 同时存储到 ChromaDB 向量数据库（用于语义去重）
@@ -358,15 +384,13 @@ class GitHubTrendingHunter:
         Returns:
             list[TrendingProject]: 项目列表
         """
-        headers = {
-            "Accept": "application/vnd.github.v3+json",
-            "User-Agent": "HunterAI/2.0"
-        }
+        headers = {"Accept": "application/vnd.github.v3+json", "User-Agent": "HunterAI/2.0"}
         if settings.github.token:
             headers["Authorization"] = f"token {settings.github.token}"
 
         # 根据时间范围设置日期过滤
         from datetime import datetime, timedelta
+
         if since == "daily":
             date_filter = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
         elif since == "weekly":
@@ -396,9 +420,7 @@ class GitHubTrendingHunter:
             url = f"https://api.github.com/search/repositories?q={search_query}&sort=stars&order=desc&per_page=10"
 
             try:
-                response = await asyncio.to_thread(
-                    self.http.get, url, headers=headers
-                )
+                response = await asyncio.to_thread(self.http.get, url, headers=headers)
 
                 if response.status_code == 200:
                     items = response.json().get("items", [])
@@ -417,7 +439,7 @@ class GitHubTrendingHunter:
                         if not any(p.name == project.name for p in projects):
                             projects.append(project)
                 elif response.status_code == 403:
-                    console.print(f"[yellow]⚠️ GitHub API 限流，请配置 token 提高配额[/yellow]")
+                    console.print("[yellow]⚠️ GitHub API 限流，请配置 token 提高配额[/yellow]")
                     break
 
                 await asyncio.sleep(0.5)  # 避免限流
@@ -486,10 +508,14 @@ class GitHubTrendingHunter:
 
         total_skipped = skipped_history + skipped_similar
         if total_skipped > 0:
-            console.print(f"[cyan]🔄 已过滤 {total_skipped} 个项目 (历史记录: {skipped_history}, 语义相似: {skipped_similar})[/cyan]")
+            console.print(
+                f"[cyan]🔄 已过滤 {total_skipped} 个项目 (历史记录: {skipped_history}, 语义相似: {skipped_similar})[/cyan]"
+            )
 
         if len(filtered_projects) < 3:
-            raise ValueError(f"可选项目数量不足，需要至少 3 个，当前 {len(filtered_projects)} 个（已过滤 {total_skipped} 个重复）")
+            raise ValueError(
+                f"可选项目数量不足，需要至少 3 个，当前 {len(filtered_projects)} 个（已过滤 {total_skipped} 个重复）"
+            )
 
         # 按今日 star 增长排序
         sorted_by_growth = sorted(filtered_projects, key=lambda x: x.today_stars, reverse=True)
@@ -501,7 +527,7 @@ class GitHubTrendingHunter:
         remaining = [p for p in filtered_projects if p not in brief_projects]
         deep_dive_project = remaining[0] if remaining else sorted_by_growth[2]
 
-        console.print(f"[green]📋 已选择项目:[/green]")
+        console.print("[green]📋 已选择项目:[/green]")
         console.print(f"   简介1: {brief_projects[0].name} (⭐{brief_projects[0].stars})")
         console.print(f"   简介2: {brief_projects[1].name} (⭐{brief_projects[1].stars})")
         console.print(f"   深度: {deep_dive_project.name} (⭐{deep_dive_project.stars})")
@@ -550,10 +576,7 @@ class GitHubTrendingHunter:
         try:
             # 尝试使用 Gemini Imagen 生成图片
             response = generate_project_cover(
-                project_name=project.name,
-                project_desc=project.description,
-                output_path=str(output_path),
-                style="tech"
+                project_name=project.name, project_desc=project.description, output_path=str(output_path), style="tech"
             )
             console.print(f"   ✅ AI 封面图已生成: {response.saved_path}")
             return response.saved_path
@@ -561,7 +584,7 @@ class GitHubTrendingHunter:
             console.print(f"   [yellow]⚠️ AI 图片生成失败: {e}[/yellow]")
             # 降级方案：使用 socialify 服务生成美观的项目卡片
             socialify_url = self._get_socialify_url(project.name)
-            console.print(f"   📷 使用 Socialify 卡片替代")
+            console.print("   📷 使用 Socialify 卡片替代")
             return socialify_url
 
     def _get_socialify_url(self, project_name: str) -> str:
@@ -593,9 +616,7 @@ class GitHubTrendingHunter:
         )
 
     async def generate_article(
-        self,
-        brief_projects: list[TrendingProject],
-        deep_dive_project: TrendingProject
+        self, brief_projects: list[TrendingProject], deep_dive_project: TrendingProject
     ) -> tuple[ArticleContent, Path]:
         """
         使用 AI 生成公众号文章（图文并茂版）
@@ -747,8 +768,8 @@ pip install xxx
             article_text = response.text.strip()
 
             # 提取标题
-            title_match = re.search(r'^#\s*(.+)$', article_text, re.MULTILINE)
-            title = title_match.group(1) if title_match else f"今日 GitHub 热门 AI 项目推荐"
+            title_match = re.search(r"^#\s*(.+)$", article_text, re.MULTILINE)
+            title = title_match.group(1) if title_match else "今日 GitHub 热门 AI 项目推荐"
 
             # 第二步：创建文章专属目录（以标题命名）
             console.print(f"[cyan]📁 创建文章目录: {title}[/cyan]")
@@ -784,11 +805,11 @@ pip install xxx
                     "name": deep_dive_project.name,
                     "url": deep_dive_project.url,
                     "stars": deep_dive_project.stars,
-                    "cover": cover_paths[deep_dive_project.name]
+                    "cover": cover_paths[deep_dive_project.name],
                 },
                 conclusion="",  # 从正文提取
                 full_content=final_article_text,
-                cover_images=cover_image_list
+                cover_images=cover_image_list,
             )
 
             console.print(f"[green]✅ 文章生成成功: {title}[/green]")
@@ -800,7 +821,7 @@ pip install xxx
             console.print(f"[red]❌ 文章生成失败: {e}[/red]")
             raise
 
-    async def run(self) -> Optional[ArticleContent]:
+    async def run(self) -> ArticleContent | None:
         """
         执行完整流程
 
@@ -877,7 +898,7 @@ pip install xxx
         finally:
             self.http.close()
 
-    def _get_next_keyword(self) -> Optional[str]:
+    def _get_next_keyword(self) -> str | None:
         """
         获取下一个要尝试的关键词
 
@@ -900,7 +921,9 @@ pip install xxx
 
         return None
 
-    async def _save_and_push(self, article: ArticleContent, selected_projects: list[TrendingProject], article_dir: Path):
+    async def _save_and_push(
+        self, article: ArticleContent, selected_projects: list[TrendingProject], article_dir: Path
+    ):
         """
         保存文章并推送到微信
 
@@ -919,15 +942,13 @@ pip install xxx
         metadata = {
             "title": article.title,
             "date": get_today_str(),
-            "projects": [
-                {"name": p.name, "stars": p.stars, "url": p.url}
-                for p in selected_projects
-            ],
+            "projects": [{"name": p.name, "stars": p.stars, "url": p.url} for p in selected_projects],
             "cover_images": article.cover_images,
         }
         metadata_path = get_article_file_path(article_dir, "metadata.json")
         with open(metadata_path, "w", encoding="utf-8") as f:
             import json
+
             json.dump(metadata, f, ensure_ascii=False, indent=2)
         console.print(f"[green]📋 元数据已保存: {metadata_path}[/green]")
 
@@ -936,10 +957,7 @@ pip install xxx
 
         # 推送到微信
         if settings.push.enabled:
-            success = push_to_wechat(
-                title=f"【开源推荐】{article.title}",
-                content=article.full_content
-            )
+            success = push_to_wechat(title=f"【开源推荐】{article.title}", content=article.full_content)
             if success:
                 console.print("[green]📤 已推送到微信[/green]")
             else:

@@ -20,7 +20,6 @@ Hunter AI 内容工厂 - 内容过滤器
 
 import re
 from dataclasses import dataclass, field
-from typing import Optional
 
 from rich.console import Console
 from rich.table import Table
@@ -31,10 +30,11 @@ console = Console()
 @dataclass
 class FilterResult:
     """过滤结果"""
-    passed: bool                                          # 是否通过检查
+
+    passed: bool  # 是否通过检查
     found_words: list[str] = field(default_factory=list)  # 发现的违禁词
-    locations: list[dict] = field(default_factory=list)   # 违禁词位置信息
-    suggestion: str = ""                                  # 修改建议
+    locations: list[dict] = field(default_factory=list)  # 违禁词位置信息
+    suggestion: str = ""  # 修改建议
     replaced_words: list[str] = field(default_factory=list)  # 已替换的AI痕迹词
 
 
@@ -51,19 +51,52 @@ class ContentFilter:
     # 默认违禁词列表（与 config.example.yaml 保持同步）
     DEFAULT_BANNED_WORDS = [
         # 标题党/夸张词
-        "震惊", "必看", "100%", "绝对", "史上最", "惊呆了",
-        "不转不是中国人", "独家曝光", "内幕揭秘", "重大发现",
-        "速看", "疯传", "刷爆朋友圈", "火了", "炸了", "吓死人",
+        "震惊",
+        "必看",
+        "100%",
+        "绝对",
+        "史上最",
+        "惊呆了",
+        "不转不是中国人",
+        "独家曝光",
+        "内幕揭秘",
+        "重大发现",
+        "速看",
+        "疯传",
+        "刷爆朋友圈",
+        "火了",
+        "炸了",
+        "吓死人",
         # 虚假宣传词
-        "权威专家", "医学证实", "科学证明", "国家认证", "官方认定",
-        "独家秘方", "祖传配方", "包治百病",
+        "权威专家",
+        "医学证实",
+        "科学证明",
+        "国家认证",
+        "官方认定",
+        "独家秘方",
+        "祖传配方",
+        "包治百病",
         # 营销诱导词
-        "限时优惠", "仅剩XX名额", "不可错过", "立即行动",
-        "错过后悔", "最后机会", "手慢无", "赶紧抢",
+        "限时优惠",
+        "仅剩XX名额",
+        "不可错过",
+        "立即行动",
+        "错过后悔",
+        "最后机会",
+        "手慢无",
+        "赶紧抢",
         # AI生成痕迹词
-        "首先", "其次", "最后", "总之", "综上所述",
-        "值得注意的是", "需要指出的是", "不难发现", "显而易见",
-        "毋庸置疑", "众所周知",
+        "首先",
+        "其次",
+        "最后",
+        "总之",
+        "综上所述",
+        "值得注意的是",
+        "需要指出的是",
+        "不难发现",
+        "显而易见",
+        "毋庸置疑",
+        "众所周知",
     ]
 
     # 默认AI痕迹词替换规则
@@ -84,8 +117,8 @@ class ContentFilter:
 
     def __init__(
         self,
-        banned_words: Optional[list[str]] = None,
-        replacements: Optional[dict[str, str]] = None,
+        banned_words: list[str] | None = None,
+        replacements: dict[str, str] | None = None,
     ):
         """
         初始化内容过滤器
@@ -107,8 +140,8 @@ class ContentFilter:
         Returns:
             FilterResult: 检查结果
         """
-        found_words = []   # 发现的违禁词
-        locations = []     # 位置信息
+        found_words = []  # 发现的违禁词
+        locations = []  # 位置信息
 
         for word in self.banned_words:
             if word in content:
@@ -119,11 +152,13 @@ class ContentFilter:
                     start = max(0, match.start() - 20)
                     end = min(len(content), match.end() + 20)
                     context = content[start:end]
-                    locations.append({
-                        "word": word,
-                        "position": match.start(),
-                        "context": f"...{context}...",
-                    })
+                    locations.append(
+                        {
+                            "word": word,
+                            "position": match.start(),
+                            "context": f"...{context}...",
+                        }
+                    )
 
         passed = len(found_words) == 0
         suggestion = ""
@@ -178,8 +213,7 @@ class ContentFilter:
 
         # 检查剩余违禁词（排除已有替换规则的词）
         check_words = [
-            word for word in self.banned_words
-            if word not in self.replacements and f"{word}，" not in self.replacements
+            word for word in self.banned_words if word not in self.replacements and f"{word}，" not in self.replacements
         ]
 
         temp_filter = ContentFilter(banned_words=check_words)
@@ -226,17 +260,13 @@ class ContentFilter:
         table.add_column("上下文", style="dim")
 
         for loc in result.locations:
-            table.add_row(
-                loc["word"],
-                str(loc["position"]),
-                loc["context"]
-            )
+            table.add_row(loc["word"], str(loc["position"]), loc["context"])
 
         console.print(table)
         console.print(f"\n[yellow]{result.suggestion}[/yellow]")
 
 
-def check_content(content: str, banned_words: Optional[list[str]] = None) -> FilterResult:
+def check_content(content: str, banned_words: list[str] | None = None) -> FilterResult:
     """
     便捷函数：检查内容违禁词
 
@@ -251,7 +281,7 @@ def check_content(content: str, banned_words: Optional[list[str]] = None) -> Fil
     return filter_instance.check(content)
 
 
-def clean_ai_markers(content: str, replacements: Optional[dict[str, str]] = None) -> str:
+def clean_ai_markers(content: str, replacements: dict[str, str] | None = None) -> str:
     """
     便捷函数：清理AI痕迹词
 

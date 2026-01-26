@@ -15,6 +15,7 @@ Hunter AI 内容工厂 - 业务处理函数
 
 from datetime import datetime
 from pathlib import Path
+
 import gradio as gr
 
 # 项目根目录
@@ -67,12 +68,7 @@ def format_error_message(error_msg: str, template_name: str) -> str:
 
 
 async def run_github_template(
-    keyword: str,
-    min_stars: int,
-    brief_count: int,
-    deep_count: int,
-    min_words: int,
-    dry_run: bool
+    keyword: str, min_stars: int, brief_count: int, deep_count: int, min_words: int, dry_run: bool
 ):
     """
     🔥 GitHub 爆款 - 运行 GitHub 热门项目推荐模板
@@ -102,7 +98,7 @@ async def run_github_template(
         logs.append("\n### 🔍 Step 2: 抓取热门项目\n")
         logs.append(f"- 正在查询 GitHub 「{search_keyword}」 热门项目...\n")
         logs.append(f"- 需要抓取: **{brief_count + deep_count}** 个项目\n")
-        logs.append(f"- 🔄 支持自动关键词切换（项目不足时尝试相近关键词）\n")
+        logs.append("- 🔄 支持自动关键词切换（项目不足时尝试相近关键词）\n")
 
         # 使用 GitHubTemplate 并传递关键词
         template = GitHubTemplate(keyword=search_keyword)
@@ -116,7 +112,7 @@ async def run_github_template(
 
         if result and result.success:
             word_count = len(result.content)
-            logs.append(f"\n### ✅ 生成完成！\n")
+            logs.append("\n### ✅ 生成完成！\n")
             logs.append(f"- **标题**: {result.title}\n")
             logs.append(f"- **字数**: {word_count} 字 {'✅' if word_count >= min_words else '⚠️ 未达标'}\n")
             logs.append(f"- **关键词**: {search_keyword}\n")
@@ -124,12 +120,12 @@ async def run_github_template(
             return "\n".join(logs), result.content
         else:
             error_msg = result.error if result else "未知错误"
-            logs.append(f"\n### ⚠️ 执行完成（有问题）\n")
+            logs.append("\n### ⚠️ 执行完成（有问题）\n")
             logs.append(f"- 错误: {error_msg}\n")
             return "\n".join(logs), ""
 
     except ImportError as e:
-        logs.append(f"\n### ❌ 模块导入失败\n")
+        logs.append("\n### ❌ 模块导入失败\n")
         logs.append(f"- 错误: {str(e)}\n")
         logs.append("- 解决: 运行 `uv sync` 安装依赖\n")
         return "\n".join(logs), ""
@@ -183,12 +179,12 @@ async def run_pain_template(dry_run: bool):
             return "\n".join(logs), result.content
         else:
             error_msg = result.error if result else "未知错误"
-            logs.append(f"\n### ⚠️ 执行完成（有问题）\n")
+            logs.append("\n### ⚠️ 执行完成（有问题）\n")
             logs.append(f"- 错误: {error_msg}\n")
             return "\n".join(logs), ""
 
     except ImportError as e:
-        logs.append(f"\n### ❌ 模块导入失败\n")
+        logs.append("\n### ❌ 模块导入失败\n")
         logs.append(f"- 错误: {str(e)}\n")
         return "\n".join(logs), ""
 
@@ -240,12 +236,12 @@ async def run_news_template(dry_run: bool):
             return "\n".join(logs), result.content
         else:
             error_msg = result.error if result else "未知错误"
-            logs.append(f"\n### ⚠️ 执行完成（有问题）\n")
+            logs.append("\n### ⚠️ 执行完成（有问题）\n")
             logs.append(f"- 错误: {error_msg}\n")
             return "\n".join(logs), ""
 
     except ImportError as e:
-        logs.append(f"\n### ❌ 模块导入失败\n")
+        logs.append("\n### ❌ 模块导入失败\n")
         logs.append(f"- 错误: {str(e)}\n")
         return "\n".join(logs), ""
 
@@ -294,12 +290,12 @@ async def run_xhs_template(keyword: str, dry_run: bool):
             return "\n".join(logs), result.content
         else:
             error_msg = result.error if result else "未知错误"
-            logs.append(f"\n### ⚠️ 执行完成（有问题）\n")
+            logs.append("\n### ⚠️ 执行完成（有问题）\n")
             logs.append(f"- 错误: {error_msg}\n")
             return "\n".join(logs), ""
 
     except ImportError as e:
-        logs.append(f"\n### ❌ 模块导入失败\n")
+        logs.append("\n### ❌ 模块导入失败\n")
         logs.append(f"- 错误: {str(e)}\n")
         return "\n".join(logs), ""
 
@@ -361,12 +357,12 @@ async def run_auto_template(niche: str, dry_run: bool):
             return "\n".join(logs), result.content
         else:
             error_msg = result.error if result else "未知错误"
-            logs.append(f"\n### ⚠️ 执行完成（有问题）\n")
+            logs.append("\n### ⚠️ 执行完成（有问题）\n")
             logs.append(f"- 错误: {error_msg}\n")
             return "\n".join(logs), ""
 
     except ImportError as e:
-        logs.append(f"\n### ❌ 模块导入失败\n")
+        logs.append("\n### ❌ 模块导入失败\n")
         logs.append(f"- 错误: {str(e)}\n")
         return "\n".join(logs), ""
 
@@ -386,8 +382,8 @@ def run_content_check(content: str):
         return "⚠️ **请输入内容** | 粘贴你的文章内容后再检查", ""
 
     try:
-        from src.utils.content_filter import ContentFilter
         from src.config import settings
+        from src.utils.content_filter import ContentFilter
 
         filter_instance = ContentFilter(
             banned_words=settings.content.banned_words,
@@ -413,8 +409,8 @@ def run_content_clean(content: str):
         return "⚠️ **请输入内容** | 粘贴你的文章内容后再清理", ""
 
     try:
-        from src.utils.content_filter import ContentFilter
         from src.config import settings
+        from src.utils.content_filter import ContentFilter
 
         filter_instance = ContentFilter(
             banned_words=settings.content.banned_words,
@@ -435,28 +431,32 @@ def run_content_clean(content: str):
 def get_config_info():
     """获取配置信息 - 显示所有配置项状态"""
     try:
-        from src.config import get_settings, get_config_status
+        from src.config import get_config_status, get_settings
 
         get_settings.cache_clear()
         settings = get_settings()
         status = get_config_status()
 
         # 状态图标
-        gemini_ok = '✅' if status['gemini']['api_key_configured'] else '❌'
-        github_ok = '✅' if status['github']['token_configured'] else '⚪'
-        push_ok = '✅' if status['pushplus']['token_configured'] else '⚪'
+        gemini_ok = "✅" if status["gemini"]["api_key_configured"] else "❌"
+        github_ok = "✅" if status["github"]["token_configured"] else "⚪"
+        push_ok = "✅" if status["pushplus"]["token_configured"] else "⚪"
 
         # 检查其他配置
-        xhs_ok = '⚪'
-        twitter_ok = '⚪'
+        xhs_ok = "⚪"
+        twitter_ok = "⚪"
         try:
-            if hasattr(settings, 'xiaohongshu') and settings.xiaohongshu and getattr(settings.xiaohongshu, 'cookies', ''):
-                xhs_ok = '✅'
+            if (
+                hasattr(settings, "xiaohongshu")
+                and settings.xiaohongshu
+                and getattr(settings.xiaohongshu, "cookies", "")
+            ):
+                xhs_ok = "✅"
         except:
             pass
         try:
-            if hasattr(settings, 'twitter') and settings.twitter and getattr(settings.twitter, 'cookies_path', ''):
-                twitter_ok = '✅'
+            if hasattr(settings, "twitter") and settings.twitter and getattr(settings.twitter, "cookies_path", ""):
+                twitter_ok = "✅"
         except:
             pass
 
@@ -469,64 +469,68 @@ def get_config_info():
             return key[:show_chars] + "****" + key[-show_chars:]
 
         # Gemini 配置
-        gemini_key = getattr(settings.gemini, 'api_key', '') or ''
-        gemini_provider = getattr(settings.gemini, 'provider', 'official')
-        gemini_model = getattr(settings.gemini, 'model', '')
-        gemini_image = getattr(settings.gemini, 'image_model', '') or '未配置'
-        gemini_base = getattr(settings.gemini, 'base_url', '') or '官方API'
+        gemini_key = getattr(settings.gemini, "api_key", "") or ""
+        gemini_provider = getattr(settings.gemini, "provider", "official")
+        gemini_model = getattr(settings.gemini, "model", "")
+        gemini_image = getattr(settings.gemini, "image_model", "") or "未配置"
+        gemini_base = getattr(settings.gemini, "base_url", "") or "官方API"
 
         # GitHub 配置
-        github_key = getattr(settings.github, 'token', '') or ''
-        github_stars = getattr(settings.github, 'min_stars', 200)
-        github_days = getattr(settings.github, 'days_since_update', 30) if hasattr(settings.github, 'days_since_update') else 30
+        github_key = getattr(settings.github, "token", "") or ""
+        github_stars = getattr(settings.github, "min_stars", 200)
+        github_days = (
+            getattr(settings.github, "days_since_update", 30) if hasattr(settings.github, "days_since_update") else 30
+        )
 
         # PushPlus 配置
-        push_key = getattr(settings.push, 'token', '') or ''
-        push_enabled = getattr(settings.push, 'enabled', False)
+        push_key = getattr(settings.push, "token", "") or ""
+        push_enabled = getattr(settings.push, "enabled", False)
 
         # Twitter 配置
-        twitter_path = 'data/cookies.json'
+        twitter_path = "data/cookies.json"
         try:
-            if hasattr(settings, 'twitter') and settings.twitter:
-                twitter_path = getattr(settings.twitter, 'cookies_path', 'data/cookies.json')
+            if hasattr(settings, "twitter") and settings.twitter:
+                twitter_path = getattr(settings.twitter, "cookies_path", "data/cookies.json")
         except:
             pass
 
         # 小红书配置
-        xhs_cookies = ''
-        xhs_keyword = 'AI工具'
-        xhs_style = '种草'
+        xhs_cookies = ""
+        xhs_keyword = "AI工具"
+        xhs_style = "种草"
         try:
-            if hasattr(settings, 'xiaohongshu') and settings.xiaohongshu:
-                xhs_cookies = getattr(settings.xiaohongshu, 'cookies', '') or ''
-                xhs_keyword = getattr(settings.xiaohongshu, 'default_keyword', 'AI工具')
-                xhs_style = getattr(settings.xiaohongshu, 'default_style', '种草')
+            if hasattr(settings, "xiaohongshu") and settings.xiaohongshu:
+                xhs_cookies = getattr(settings.xiaohongshu, "cookies", "") or ""
+                xhs_keyword = getattr(settings.xiaohongshu, "default_keyword", "AI工具")
+                xhs_style = getattr(settings.xiaohongshu, "default_style", "种草")
         except:
             pass
 
         # 公众号配置
-        acc_name = getattr(settings.account, 'name', '')
-        acc_niche = getattr(settings.account, 'niche', '')
-        acc_tone = getattr(settings.account, 'tone', '')
-        acc_min = getattr(settings.account, 'min_length', 1500)
-        acc_max = getattr(settings.account, 'max_length', 2500)
-        acc_title = getattr(settings.account, 'max_title_length', 20) if hasattr(settings.account, 'max_title_length') else 20
+        acc_name = getattr(settings.account, "name", "")
+        acc_niche = getattr(settings.account, "niche", "")
+        acc_tone = getattr(settings.account, "tone", "")
+        acc_min = getattr(settings.account, "min_length", 1500)
+        acc_max = getattr(settings.account, "max_length", 2500)
+        acc_title = (
+            getattr(settings.account, "max_title_length", 20) if hasattr(settings.account, "max_title_length") else 20
+        )
 
         # 存储配置
-        chromadb = 'data/chromadb'
-        output = 'output'
+        chromadb = "data/chromadb"
+        output = "output"
         try:
-            if hasattr(settings, 'storage') and settings.storage:
-                chromadb = getattr(settings.storage, 'chromadb_path', 'data/chromadb')
-                output = getattr(settings.storage, 'output_dir', 'output')
+            if hasattr(settings, "storage") and settings.storage:
+                chromadb = getattr(settings.storage, "chromadb_path", "data/chromadb")
+                output = getattr(settings.storage, "output_dir", "output")
         except:
             pass
 
         # 系统配置
-        log_level = 'INFO'
+        log_level = "INFO"
         try:
-            if hasattr(settings, 'system') and settings.system:
-                log_level = getattr(settings.system, 'log_level', 'INFO')
+            if hasattr(settings, "system") and settings.system:
+                log_level = getattr(settings.system, "log_level", "INFO")
         except:
             pass
 
@@ -536,7 +540,7 @@ def get_config_info():
 |------|------|
 | API Key | {gemini_ok} {mask_key(gemini_key)} |
 | 提供商 | {gemini_provider} |
-| Base URL | {gemini_base[:25]}{'...' if len(str(gemini_base)) > 25 else ''} |
+| Base URL | {gemini_base[:25]}{"..." if len(str(gemini_base)) > 25 else ""} |
 | 文本模型 | {gemini_model} |
 | 图片模型 | {gemini_image} |
 
@@ -544,7 +548,7 @@ def get_config_info():
 | 项目 | 状态 |
 |------|------|
 | Token | {push_ok} {mask_key(push_key)} |
-| 推送 | {'✅ 启用' if push_enabled else '⚪ 禁用'} |
+| 推送 | {"✅ 启用" if push_enabled else "⚪ 禁用"} |
 
 **🐦 Twitter/X**
 | 项目 | 状态 |
@@ -555,7 +559,7 @@ def get_config_info():
 **📕 小红书**
 | 项目 | 状态 |
 |------|------|
-| Cookie | {xhs_ok} {mask_key(xhs_cookies, 6) if xhs_cookies else '未配置'} |
+| Cookie | {xhs_ok} {mask_key(xhs_cookies, 6) if xhs_cookies else "未配置"} |
 | 关键词 | {xhs_keyword} |
 | 风格 | {xhs_style} |
 
@@ -571,7 +575,7 @@ def get_config_info():
 |------|------|
 | 名称 | {acc_name} |
 | 领域 | {acc_niche} |
-| 风格 | {acc_tone[:8]}{'...' if len(str(acc_tone)) > 8 else ''} |
+| 风格 | {acc_tone[:8]}{"..." if len(str(acc_tone)) > 8 else ""} |
 | 字数 | {acc_min}-{acc_max} |
 | 标题 | ≤{acc_title}字 |
 
@@ -604,64 +608,109 @@ def load_current_config():
     """加载当前配置值"""
     try:
         from src.config import get_settings
+
         get_settings.cache_clear()
         settings = get_settings()
 
         return {
             # Gemini AI 配置
-            'gemini_provider': settings.gemini.provider or "official",
-            'gemini_base_url': settings.gemini.base_url or "",
-            'gemini_api_key': settings.gemini.api_key or "",
-            'gemini_model': settings.gemini.model or "gemini-2.0-flash",
-            'gemini_image_model': getattr(settings.gemini, 'image_model', "") or "",
+            "gemini_provider": settings.gemini.provider or "official",
+            "gemini_base_url": settings.gemini.base_url or "",
+            "gemini_api_key": settings.gemini.api_key or "",
+            "gemini_model": settings.gemini.model or "gemini-2.0-flash",
+            "gemini_image_model": getattr(settings.gemini, "image_model", "") or "",
             # GitHub 配置
-            'github_token': settings.github.token or "",
-            'github_min_stars': settings.github.min_stars,
-            'github_days_since_update': getattr(settings.github, 'days_since_update', 30),
+            "github_token": settings.github.token or "",
+            "github_min_stars": settings.github.min_stars,
+            "github_days_since_update": getattr(settings.github, "days_since_update", 30),
             # PushPlus 配置
-            'push_token': settings.push.token or "",
-            'push_enabled': settings.push.enabled,
+            "push_token": settings.push.token or "",
+            "push_enabled": settings.push.enabled,
             # Twitter/X 配置
-            'twitter_cookies_path': getattr(settings, 'twitter', {}).get('cookies_path', 'data/cookies.json') if hasattr(settings, 'twitter') else 'data/cookies.json',
+            "twitter_cookies_path": getattr(settings, "twitter", {}).get("cookies_path", "data/cookies.json")
+            if hasattr(settings, "twitter")
+            else "data/cookies.json",
             # 小红书配置
-            'xhs_cookies': getattr(settings, 'xiaohongshu', {}).get('cookies', '') if hasattr(settings, 'xiaohongshu') else '',
-            'xhs_default_keyword': getattr(settings, 'xiaohongshu', {}).get('default_keyword', 'AI工具') if hasattr(settings, 'xiaohongshu') else 'AI工具',
-            'xhs_default_style': getattr(settings, 'xiaohongshu', {}).get('default_style', '种草') if hasattr(settings, 'xiaohongshu') else '种草',
+            "xhs_cookies": getattr(settings, "xiaohongshu", {}).get("cookies", "")
+            if hasattr(settings, "xiaohongshu")
+            else "",
+            "xhs_default_keyword": getattr(settings, "xiaohongshu", {}).get("default_keyword", "AI工具")
+            if hasattr(settings, "xiaohongshu")
+            else "AI工具",
+            "xhs_default_style": getattr(settings, "xiaohongshu", {}).get("default_style", "种草")
+            if hasattr(settings, "xiaohongshu")
+            else "种草",
             # 公众号设置
-            'account_name': settings.account.name or "AI技术前沿",
-            'account_niche': settings.account.niche or "AI技术",
-            'account_tone': settings.account.tone or "专业且引人入胜",
-            'min_length': settings.account.min_length,
-            'max_length': settings.account.max_length,
-            'max_title_length': getattr(settings.account, 'max_title_length', 20),
+            "account_name": settings.account.name or "AI技术前沿",
+            "account_niche": settings.account.niche or "AI技术",
+            "account_tone": settings.account.tone or "专业且引人入胜",
+            "min_length": settings.account.min_length,
+            "max_length": settings.account.max_length,
+            "max_title_length": getattr(settings.account, "max_title_length", 20),
             # 存储配置
-            'chromadb_path': getattr(settings, 'storage', {}).get('chromadb_path', 'data/chromadb') if hasattr(settings, 'storage') else 'data/chromadb',
-            'output_dir': getattr(settings, 'storage', {}).get('output_dir', 'output') if hasattr(settings, 'storage') else 'output',
+            "chromadb_path": getattr(settings, "storage", {}).get("chromadb_path", "data/chromadb")
+            if hasattr(settings, "storage")
+            else "data/chromadb",
+            "output_dir": getattr(settings, "storage", {}).get("output_dir", "output")
+            if hasattr(settings, "storage")
+            else "output",
             # 系统配置
-            'log_level': getattr(settings, 'system', {}).get('log_level', 'INFO') if hasattr(settings, 'system') else 'INFO',
+            "log_level": getattr(settings, "system", {}).get("log_level", "INFO")
+            if hasattr(settings, "system")
+            else "INFO",
         }
     except Exception:
         return {
-            'gemini_provider': "official", 'gemini_base_url': "", 'gemini_api_key': "",
-            'gemini_model': "gemini-2.0-flash", 'gemini_image_model': "",
-            'github_token': "", 'github_min_stars': 200, 'github_days_since_update': 30,
-            'push_token': "", 'push_enabled': True,
-            'twitter_cookies_path': "data/cookies.json",
-            'xhs_cookies': "", 'xhs_default_keyword': "AI工具", 'xhs_default_style': "种草",
-            'account_name': "AI技术前沿", 'account_niche': "AI技术", 'account_tone': "专业且引人入胜",
-            'min_length': 1500, 'max_length': 2500, 'max_title_length': 20,
-            'chromadb_path': "data/chromadb", 'output_dir': "output", 'log_level': "INFO",
+            "gemini_provider": "official",
+            "gemini_base_url": "",
+            "gemini_api_key": "",
+            "gemini_model": "gemini-2.0-flash",
+            "gemini_image_model": "",
+            "github_token": "",
+            "github_min_stars": 200,
+            "github_days_since_update": 30,
+            "push_token": "",
+            "push_enabled": True,
+            "twitter_cookies_path": "data/cookies.json",
+            "xhs_cookies": "",
+            "xhs_default_keyword": "AI工具",
+            "xhs_default_style": "种草",
+            "account_name": "AI技术前沿",
+            "account_niche": "AI技术",
+            "account_tone": "专业且引人入胜",
+            "min_length": 1500,
+            "max_length": 2500,
+            "max_title_length": 20,
+            "chromadb_path": "data/chromadb",
+            "output_dir": "output",
+            "log_level": "INFO",
         }
 
 
 def save_config(
-    gemini_provider, gemini_base_url, gemini_api_key, gemini_model, gemini_image_model,
-    github_token, github_min_stars, github_days_since_update,
-    push_token, push_enabled,
+    gemini_provider,
+    gemini_base_url,
+    gemini_api_key,
+    gemini_model,
+    gemini_image_model,
+    github_token,
+    github_min_stars,
+    github_days_since_update,
+    push_token,
+    push_enabled,
     twitter_cookies_path,
-    xhs_cookies, xhs_default_keyword, xhs_default_style,
-    account_name, account_niche, account_tone, min_length, max_length, max_title_length,
-    chromadb_path, output_dir, log_level
+    xhs_cookies,
+    xhs_default_keyword,
+    xhs_default_style,
+    account_name,
+    account_niche,
+    account_tone,
+    min_length,
+    max_length,
+    max_title_length,
+    chromadb_path,
+    output_dir,
+    log_level,
 ):
     """保存配置"""
     try:
@@ -672,65 +721,67 @@ def save_config(
 
         if not config_path.exists() and config_example.exists():
             import shutil
+
             shutil.copy(config_example, config_path)
 
         if config_path.exists():
-            with open(config_path, 'r', encoding='utf-8') as f:
+            with open(config_path, encoding="utf-8") as f:
                 config = yaml.safe_load(f) or {}
         else:
             config = {}
 
         # 更新 Gemini 配置
-        config.setdefault('gemini', {})
-        config['gemini']['provider'] = gemini_provider
-        config['gemini']['base_url'] = gemini_base_url
-        config['gemini']['api_key'] = gemini_api_key
-        config['gemini']['model'] = gemini_model
-        config['gemini']['image_model'] = gemini_image_model
+        config.setdefault("gemini", {})
+        config["gemini"]["provider"] = gemini_provider
+        config["gemini"]["base_url"] = gemini_base_url
+        config["gemini"]["api_key"] = gemini_api_key
+        config["gemini"]["model"] = gemini_model
+        config["gemini"]["image_model"] = gemini_image_model
 
         # 更新 GitHub 配置
-        config.setdefault('github', {})
-        config['github']['token'] = github_token
-        config['github']['min_stars'] = int(github_min_stars)
-        config['github']['days_since_update'] = int(github_days_since_update)
+        config.setdefault("github", {})
+        config["github"]["token"] = github_token
+        config["github"]["min_stars"] = int(github_min_stars)
+        config["github"]["days_since_update"] = int(github_days_since_update)
 
         # 更新 PushPlus 配置
-        config.setdefault('pushplus', {})
-        config['pushplus']['token'] = push_token
-        config['pushplus']['enabled'] = push_enabled
+        config.setdefault("pushplus", {})
+        config["pushplus"]["token"] = push_token
+        config["pushplus"]["enabled"] = push_enabled
 
         # 更新 Twitter 配置
-        config.setdefault('twitter', {})
-        config['twitter']['cookies_path'] = twitter_cookies_path
+        config.setdefault("twitter", {})
+        config["twitter"]["cookies_path"] = twitter_cookies_path
 
         # 更新小红书配置
-        config.setdefault('xiaohongshu', {})
-        config['xiaohongshu']['cookies'] = xhs_cookies
-        config['xiaohongshu']['default_keyword'] = xhs_default_keyword
-        config['xiaohongshu']['default_style'] = xhs_default_style
+        config.setdefault("xiaohongshu", {})
+        config["xiaohongshu"]["cookies"] = xhs_cookies
+        config["xiaohongshu"]["default_keyword"] = xhs_default_keyword
+        config["xiaohongshu"]["default_style"] = xhs_default_style
 
         # 更新公众号配置
-        config.setdefault('account', {})
-        config['account']['name'] = account_name
-        config['account']['niche'] = account_niche
-        config['account']['tone'] = account_tone
-        config['account']['min_length'] = int(min_length)
-        config['account']['max_length'] = int(max_length)
-        config['account']['max_title_length'] = int(max_title_length)
+        config.setdefault("account", {})
+        config["account"]["name"] = account_name
+        config["account"]["niche"] = account_niche
+        config["account"]["tone"] = account_tone
+        config["account"]["min_length"] = int(min_length)
+        config["account"]["max_length"] = int(max_length)
+        config["account"]["max_title_length"] = int(max_title_length)
 
         # 更新存储配置
-        config.setdefault('storage', {})
-        config['storage']['chromadb_path'] = chromadb_path
-        config['storage']['output_dir'] = output_dir
+        config.setdefault("storage", {})
+        config["storage"]["chromadb_path"] = chromadb_path
+        config["storage"]["output_dir"] = output_dir
 
         # 更新系统配置
-        config.setdefault('system', {})
-        config['system']['log_level'] = log_level
+        config.setdefault("system", {})
+        config["system"]["log_level"] = log_level
 
-        with open(config_path, 'w', encoding='utf-8') as f:
+        with open(config_path, "w", encoding="utf-8") as f:
             yaml.dump(config, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
 
         from src.config import get_settings
+
         get_settings.cache_clear()
 
         return "✅ **配置已保存！** 部分设置需重启生效。"

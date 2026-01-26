@@ -5,7 +5,9 @@
 """
 
 import asyncio
+
 import gradio as gr
+
 from ..handlers import run_news_template
 
 
@@ -32,10 +34,7 @@ def create_news_tab():
                 | GitHub | 开源趋势 |
                 | 小红书 | 生活热点 |
                 """)
-                news_dry_run = gr.Checkbox(
-                    label="🧪 试运行模式（不推送）",
-                    value=True
-                )
+                news_dry_run = gr.Checkbox(label="🧪 试运行模式（不推送）", value=True)
                 news_run_btn = gr.Button("📰 生成快报", variant="primary", size="lg")
 
             with gr.Column(scale=2):
@@ -48,5 +47,5 @@ def create_news_tab():
         news_run_btn.click(
             fn=lambda d: asyncio.run(run_news_template(d)),
             inputs=[news_dry_run],
-            outputs=[news_log_output, news_article_output]
+            outputs=[news_log_output, news_article_output],
         )

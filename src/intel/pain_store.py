@@ -22,20 +22,18 @@ GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
 Author: Pangu-Immortal
 """
 
-import json
 import hashlib
-from pathlib import Path
+import json
 from datetime import datetime
-from typing import Optional
-from dataclasses import dataclass, field, asdict
+from pathlib import Path
 
-from sqlalchemy import create_engine, Column, String, Integer, Text, DateTime, Float, JSON
-from sqlalchemy.orm import sessionmaker, declarative_base
 from rich.console import Console
 from rich.table import Table
+from sqlalchemy import JSON, Column, DateTime, Float, Integer, String, Text, create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 from src.config import ROOT_DIR
-from src.intel.utils import get_chromadb_client, generate_content_id
+from src.intel.utils import get_chromadb_client
 
 # 终端输出
 console = Console()
@@ -51,12 +49,14 @@ DB_PATH = ROOT_DIR / "data" / "pain_points.db"
 # 数据模型定义
 # ═══════════════════════════════════════════════════════════════════════════════
 
+
 class PainPointModel(Base):
     """
     痛点数据表
 
     存储所有采集的用户痛点，支持标签、分类、合并等功能
     """
+
     __tablename__ = "pain_points"
 
     # 主键：基于内容的唯一 ID
@@ -120,9 +120,21 @@ class PainPointModel(Base):
 
 # 产品标签
 PRODUCT_TAGS = [
-    "ChatGPT", "Claude", "Gemini", "DeepSeek", "Cursor", "Windsurf",
-    "Copilot", "Perplexity", "Midjourney", "DALL-E", "Stable Diffusion",
-    "LangChain", "LlamaIndex", "OpenAI API", "Anthropic API"
+    "ChatGPT",
+    "Claude",
+    "Gemini",
+    "DeepSeek",
+    "Cursor",
+    "Windsurf",
+    "Copilot",
+    "Perplexity",
+    "Midjourney",
+    "DALL-E",
+    "Stable Diffusion",
+    "LangChain",
+    "LlamaIndex",
+    "OpenAI API",
+    "Anthropic API",
 ]
 
 # 问题类型标签
@@ -147,6 +159,7 @@ SEVERITY_KEYWORDS = {
 # ═══════════════════════════════════════════════════════════════════════════════
 # 痛点存储类
 # ═══════════════════════════════════════════════════════════════════════════════
+
 
 class PainStore:
     """
@@ -181,8 +194,8 @@ class PainStore:
         # 创建引擎和会话
         self.engine = create_engine(f"sqlite:///{self.db_path}", echo=False)
         Base.metadata.create_all(self.engine)
-        Session = sessionmaker(bind=self.engine)
-        self.session = Session()
+        session_factory = sessionmaker(bind=self.engine)
+        self.session = session_factory()
 
         # 统计现有数据
         count = self.session.query(PainPointModel).filter(PainPointModel.is_primary == 1).count()
@@ -193,10 +206,9 @@ class PainStore:
         try:
             client = get_chromadb_client()
             self.vector_collection = client.get_or_create_collection(
-                name="pain_points_vectors",
-                metadata={"description": "痛点向量存储，用于语义相似度检索"}
+                name="pain_points_vectors", metadata={"description": "痛点向量存储，用于语义相似度检索"}
             )
-            console.print(f"[green]✅ ChromaDB 向量索引连接成功[/green]")
+            console.print("[green]✅ ChromaDB 向量索引连接成功[/green]")
         except Exception as e:
             console.print(f"[yellow]⚠️ ChromaDB 初始化失败，将禁用相似度检索: {e}[/yellow]")
             self.vector_collection = None
@@ -259,7 +271,7 @@ class PainStore:
                 return product
         return None
 
-    def find_similar(self, content: str, threshold: float = None) -> Optional[PainPointModel]:
+    def find_similar(self, content: str, threshold: float = None) -> PainPointModel | None:
         """
         查找相似痛点
 
@@ -280,9 +292,7 @@ class PainStore:
         try:
             # 向量相似度搜索
             results = self.vector_collection.query(
-                query_texts=[content],
-                n_results=1,
-                include=["distances", "metadatas"]
+                query_texts=[content], n_results=1, include=["distances", "metadatas"]
             )
 
             if results and results["distances"] and results["distances"][0]:
@@ -292,10 +302,11 @@ class PainStore:
 
                 if similarity >= threshold:
                     pain_id = results["ids"][0][0]
-                    pain = self.session.query(PainPointModel).filter(
-                        PainPointModel.id == pain_id,
-                        PainPointModel.is_primary == 1
-                    ).first()
+                    pain = (
+                        self.session.query(PainPointModel)
+                        .filter(PainPointModel.id == pain_id, PainPointModel.is_primary == 1)
+                        .first()
+                    )
 
                     if pain:
                         console.print(f"[yellow]🔍 发现相似痛点 (相似度: {similarity:.1%})[/yellow]")
@@ -456,12 +467,14 @@ class PainStore:
             self.vector_collection.upsert(
                 ids=[pain.id],
                 documents=[pain.content],
-                metadatas=[{
-                    "source": pain.source,
-                    "platform": pain.platform or "",
-                    "category": pain.category or "",
-                    "severity": pain.severity or "",
-                }]
+                metadatas=[
+                    {
+                        "source": pain.source,
+                        "platform": pain.platform or "",
+                        "category": pain.category or "",
+                        "severity": pain.severity or "",
+                    }
+                ],
             )
         except Exception as e:
             console.print(f"[dim]⚠️ 向量存储失败: {e}[/dim]")
@@ -485,32 +498,46 @@ class PainStore:
 
     def get_by_platform(self, platform: str, limit: int = 50) -> list[PainPointModel]:
         """按产品获取痛点"""
-        return self.session.query(PainPointModel).filter(
-            PainPointModel.platform == platform,
-            PainPointModel.is_primary == 1
-        ).order_by(PainPointModel.frequency.desc()).limit(limit).all()
+        return (
+            self.session.query(PainPointModel)
+            .filter(PainPointModel.platform == platform, PainPointModel.is_primary == 1)
+            .order_by(PainPointModel.frequency.desc())
+            .limit(limit)
+            .all()
+        )
 
     def get_by_category(self, category: str, limit: int = 50) -> list[PainPointModel]:
         """按分类获取痛点"""
-        return self.session.query(PainPointModel).filter(
-            PainPointModel.category == category,
-            PainPointModel.is_primary == 1
-        ).order_by(PainPointModel.frequency.desc()).limit(limit).all()
+        return (
+            self.session.query(PainPointModel)
+            .filter(PainPointModel.category == category, PainPointModel.is_primary == 1)
+            .order_by(PainPointModel.frequency.desc())
+            .limit(limit)
+            .all()
+        )
 
     def get_top_pains(self, limit: int = 20) -> list[PainPointModel]:
         """获取高频痛点"""
-        return self.session.query(PainPointModel).filter(
-            PainPointModel.is_primary == 1
-        ).order_by(PainPointModel.frequency.desc()).limit(limit).all()
+        return (
+            self.session.query(PainPointModel)
+            .filter(PainPointModel.is_primary == 1)
+            .order_by(PainPointModel.frequency.desc())
+            .limit(limit)
+            .all()
+        )
 
     def get_recent_pains(self, days: int = 7, limit: int = 50) -> list[PainPointModel]:
         """获取最近的痛点"""
         from datetime import timedelta
+
         cutoff = datetime.now() - timedelta(days=days)
-        return self.session.query(PainPointModel).filter(
-            PainPointModel.created_at >= cutoff,
-            PainPointModel.is_primary == 1
-        ).order_by(PainPointModel.created_at.desc()).limit(limit).all()
+        return (
+            self.session.query(PainPointModel)
+            .filter(PainPointModel.created_at >= cutoff, PainPointModel.is_primary == 1)
+            .order_by(PainPointModel.created_at.desc())
+            .limit(limit)
+            .all()
+        )
 
     def get_stats(self) -> dict:
         """获取统计信息"""
@@ -518,32 +545,33 @@ class PainStore:
 
         # 按产品统计
         from sqlalchemy import func
-        platform_stats = self.session.query(
-            PainPointModel.platform,
-            func.count(PainPointModel.id),
-            func.sum(PainPointModel.frequency)
-        ).filter(
-            PainPointModel.is_primary == 1,
-            PainPointModel.platform.isnot(None)
-        ).group_by(PainPointModel.platform).all()
+
+        platform_stats = (
+            self.session.query(
+                PainPointModel.platform, func.count(PainPointModel.id), func.sum(PainPointModel.frequency)
+            )
+            .filter(PainPointModel.is_primary == 1, PainPointModel.platform.isnot(None))
+            .group_by(PainPointModel.platform)
+            .all()
+        )
 
         # 按分类统计
-        category_stats = self.session.query(
-            PainPointModel.category,
-            func.count(PainPointModel.id),
-            func.sum(PainPointModel.frequency)
-        ).filter(
-            PainPointModel.is_primary == 1,
-            PainPointModel.category.isnot(None)
-        ).group_by(PainPointModel.category).all()
+        category_stats = (
+            self.session.query(
+                PainPointModel.category, func.count(PainPointModel.id), func.sum(PainPointModel.frequency)
+            )
+            .filter(PainPointModel.is_primary == 1, PainPointModel.category.isnot(None))
+            .group_by(PainPointModel.category)
+            .all()
+        )
 
         # 按严重程度统计
-        severity_stats = self.session.query(
-            PainPointModel.severity,
-            func.count(PainPointModel.id)
-        ).filter(
-            PainPointModel.is_primary == 1
-        ).group_by(PainPointModel.severity).all()
+        severity_stats = (
+            self.session.query(PainPointModel.severity, func.count(PainPointModel.id))
+            .filter(PainPointModel.is_primary == 1)
+            .group_by(PainPointModel.severity)
+            .all()
+        )
 
         return {
             "total_pains": total,
@@ -592,7 +620,7 @@ class PainStore:
         data = {
             "exported_at": datetime.now().isoformat(),
             "total": len(pains),
-            "pain_points": [p.to_dict() for p in pains]
+            "pain_points": [p.to_dict() for p in pains],
         }
 
         with open(output_path, "w", encoding="utf-8") as f:
@@ -609,6 +637,7 @@ class PainStore:
 # ═══════════════════════════════════════════════════════════════════════════════
 # 测试入口
 # ═══════════════════════════════════════════════════════════════════════════════
+
 
 def main():
     """测试痛点存储"""

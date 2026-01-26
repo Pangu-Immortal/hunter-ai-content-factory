@@ -5,7 +5,9 @@
 """
 
 import asyncio
+
 import gradio as gr
+
 from ..handlers import run_pain_template
 
 
@@ -30,10 +32,7 @@ def create_pain_tab():
 
                 **痛点分类**: 性能/准确性/稳定性/功能/体验/API
                 """)
-                pain_dry_run = gr.Checkbox(
-                    label="🧪 试运行模式（不推送）",
-                    value=True
-                )
+                pain_dry_run = gr.Checkbox(label="🧪 试运行模式（不推送）", value=True)
                 pain_run_btn = gr.Button("💊 开始诊断", variant="primary", size="lg")
 
             with gr.Column(scale=2):
@@ -46,5 +45,5 @@ def create_pain_tab():
         pain_run_btn.click(
             fn=lambda d: asyncio.run(run_pain_template(d)),
             inputs=[pain_dry_run],
-            outputs=[pain_log_output, pain_article_output]
+            outputs=[pain_log_output, pain_article_output],
         )

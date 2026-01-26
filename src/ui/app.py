@@ -6,18 +6,18 @@
 
 import gradio as gr
 
-from .components import create_header, create_footer
+from .components import create_footer, create_header
 from .components.footer import create_divider
 from .constants import CUSTOM_CSS
 from .tabs import (
-    create_github_tab,
-    create_pain_tab,
-    create_news_tab,
-    create_xhs_tab,
     create_auto_tab,
     create_check_tab,
-    create_settings_tab,
+    create_github_tab,
     create_intro_tabs,
+    create_news_tab,
+    create_pain_tab,
+    create_settings_tab,
+    create_xhs_tab,
 )
 
 
@@ -30,7 +30,6 @@ def create_app():
 
     # Gradio 6.x: CSS 必须在 gr.Blocks() 中传递才能生效
     with gr.Blocks(title="摆渡人AI系统", css=CUSTOM_CSS) as app:
-
         # ═══════════════════════════════════════════════════════════════════
         # 顶部标题
         # ═══════════════════════════════════════════════════════════════════
@@ -39,14 +38,14 @@ def create_app():
         # ═══════════════════════════════════════════════════════════════════
         # 上部功能区 - 7 个核心功能 Tab
         # ═══════════════════════════════════════════════════════════════════
-        with gr.Tabs() as top_tabs:
-            create_github_tab()      # 🔥 GitHub 爆款
-            create_pain_tab()        # 💊 痛点诊断
-            create_news_tab()        # 📰 热点快报
-            create_xhs_tab()         # 📕 小红书种草
-            create_auto_tab()        # 🚀 全自动生产
-            create_check_tab()       # 🔍 内容审核
-            create_settings_tab()    # ⚙️ 设置
+        with gr.Tabs():
+            create_github_tab()  # 🔥 GitHub 爆款
+            create_pain_tab()  # 💊 痛点诊断
+            create_news_tab()  # 📰 热点快报
+            create_xhs_tab()  # 📕 小红书种草
+            create_auto_tab()  # 🚀 全自动生产
+            create_check_tab()  # 🔍 内容审核
+            create_settings_tab()  # ⚙️ 设置
 
         # ═══════════════════════════════════════════════════════════════════
         # 分隔线

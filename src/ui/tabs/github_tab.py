@@ -5,7 +5,9 @@
 """
 
 import asyncio
+
 import gradio as gr
+
 from ..handlers import run_github_template
 
 
@@ -25,7 +27,7 @@ def create_github_tab():
                     label="🔍 搜索关键词",
                     value="AI",
                     placeholder="输入关键词，如: AI、LLM、RAG、Agent、机器学习...",
-                    info="筛选 GitHub 项目的品类/功能/技术方向"
+                    info="筛选 GitHub 项目的品类/功能/技术方向",
                 )
                 gr.Markdown("""
                 <div style="background: var(--tip-yellow-bg, rgba(255, 200, 0, 0.15)); padding: 8px 12px; border-radius: 6px; margin: 5px 0; font-size: 12px; border: 1px solid var(--tip-yellow-border, rgba(255, 200, 0, 0.4)); color: var(--tip-yellow-text, #ffd700);">
@@ -40,25 +42,37 @@ def create_github_tab():
                 """)
                 github_min_stars_input = gr.Slider(
                     label="🌟 最小 Stars 数",
-                    minimum=50, maximum=5000, value=200, step=50,
-                    info="过滤低于此 Stars 数的项目"
+                    minimum=50,
+                    maximum=5000,
+                    value=200,
+                    step=50,
+                    info="过滤低于此 Stars 数的项目",
                 )
 
                 gr.Markdown("### 📝 文章结构")
                 github_brief_count = gr.Slider(
                     label="📋 项目简介数量",
-                    minimum=2, maximum=10, value=2, step=1,
-                    info="快速介绍的项目数量（最少2个，每个约300-500字）"
+                    minimum=2,
+                    maximum=10,
+                    value=2,
+                    step=1,
+                    info="快速介绍的项目数量（最少2个，每个约300-500字）",
                 )
                 github_deep_count = gr.Slider(
                     label="🔬 深度解读数量",
-                    minimum=1, maximum=5, value=1, step=1,
-                    info="详细分析的项目数量（最少1个，每个约1500-2000字）"
+                    minimum=1,
+                    maximum=5,
+                    value=1,
+                    step=1,
+                    info="详细分析的项目数量（最少1个，每个约1500-2000字）",
                 )
                 github_min_words = gr.Slider(
                     label="📏 文章最小字数",
-                    minimum=1500, maximum=8000, value=3500, step=500,
-                    info="生成文章的最低字数要求"
+                    minimum=1500,
+                    maximum=8000,
+                    value=3500,
+                    step=500,
+                    info="生成文章的最低字数要求",
                 )
                 gr.Markdown("""
                 <div style="background: var(--tip-cyan-bg, rgba(0, 255, 255, 0.1)); padding: 8px 12px; border-radius: 6px; margin: 5px 0; font-size: 12px; border: 1px solid var(--tip-cyan-border, rgba(0, 255, 255, 0.3)); color: var(--tip-cyan-text, #00ffff);">
@@ -70,10 +84,7 @@ def create_github_tab():
                 </div>
                 """)
 
-                github_dry_run = gr.Checkbox(
-                    label="🧪 试运行模式（不推送）",
-                    value=True
-                )
+                github_dry_run = gr.Checkbox(label="🧪 试运行模式（不推送）", value=True)
                 github_run_btn = gr.Button("🔥 开始生成", variant="primary", size="lg")
 
             with gr.Column(scale=2):
@@ -85,6 +96,13 @@ def create_github_tab():
 
         github_run_btn.click(
             fn=lambda k, s, b, d, w, r: asyncio.run(run_github_template(k, s, b, d, w, r)),
-            inputs=[github_keyword_input, github_min_stars_input, github_brief_count, github_deep_count, github_min_words, github_dry_run],
-            outputs=[github_log_output, github_article_output]
+            inputs=[
+                github_keyword_input,
+                github_min_stars_input,
+                github_brief_count,
+                github_deep_count,
+                github_min_words,
+                github_dry_run,
+            ],
+            outputs=[github_log_output, github_article_output],
         )

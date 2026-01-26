@@ -15,10 +15,10 @@ GitHub: https://github.com/Pangu-Immortal/hunter-ai-content-factory
 Author: Pangu-Immortal
 """
 
-from src.templates import BaseTemplate, TemplateResult, register_template
-from src.intel.utils import get_output_path, get_today_str, push_to_wechat
-from src.config import settings
 from rich.console import Console
+
+from src.intel.utils import get_output_path, get_today_str
+from src.templates import BaseTemplate, TemplateResult, register_template
 
 console = Console()
 

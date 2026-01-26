@@ -5,7 +5,9 @@
 """
 
 import asyncio
+
 import gradio as gr
+
 from ..handlers import run_auto_template
 
 
@@ -27,7 +29,7 @@ def create_auto_tab():
                     label="📌 细分领域",
                     placeholder="AI技术、Python开发...",
                     value="AI技术",
-                    info="AI 会围绕此领域生成内容"
+                    info="AI 会围绕此领域生成内容",
                 )
                 gr.Markdown("""
                 **文章结构**：
@@ -35,10 +37,7 @@ def create_auto_tab():
                 - 🔧 魔法修补（解释为什么 AI 会犯错 + 解决方案）
                 - 🎁 咒语交付（可直接复制的 Prompt/指令）
                 """)
-                auto_dry_run = gr.Checkbox(
-                    label="🧪 试运行模式（不推送）",
-                    value=True
-                )
+                auto_dry_run = gr.Checkbox(label="🧪 试运行模式（不推送）", value=True)
                 auto_run_btn = gr.Button("🚀 全自动运行", variant="primary", size="lg")
 
             with gr.Column(scale=2):
@@ -51,5 +50,5 @@ def create_auto_tab():
         auto_run_btn.click(
             fn=lambda n, d: asyncio.run(run_auto_template(n, d)),
             inputs=[auto_niche, auto_dry_run],
-            outputs=[auto_log_output, auto_article_output]
+            outputs=[auto_log_output, auto_article_output],
         )

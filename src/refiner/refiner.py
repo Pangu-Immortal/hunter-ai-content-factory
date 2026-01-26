@@ -13,8 +13,8 @@ Hunter AI 内容工厂 - 内容精炼模块
 """
 
 import json
-from pathlib import Path
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from rich.console import Console
 
@@ -32,14 +32,15 @@ PROMPTS_DIR = Path(__file__).parent / "prompts"
 @dataclass
 class RefinerOutput:
     """精炼器输出"""
-    title: str = ""                                             # 优化后的标题
-    refined_content: str = ""                                   # 精炼后的内容
-    cover_prompt: str = ""                                      # 封面图 Prompt
-    layout_notes: str = ""                                      # 排版说明
-    keywords: list[str] = field(default_factory=list)          # 提取的关键词
-    refining_details: dict = field(default_factory=dict)       # 精炼详情
-    filter_result: FilterResult = None                          # 违禁词检查结果
-    auto_cleaned: bool = False                                  # 是否经过自动清理
+
+    title: str = ""  # 优化后的标题
+    refined_content: str = ""  # 精炼后的内容
+    cover_prompt: str = ""  # 封面图 Prompt
+    layout_notes: str = ""  # 排版说明
+    keywords: list[str] = field(default_factory=list)  # 提取的关键词
+    refining_details: dict = field(default_factory=dict)  # 精炼详情
+    filter_result: FilterResult = None  # 违禁词检查结果
+    auto_cleaned: bool = False  # 是否经过自动清理
 
 
 class ContentRefiner:
@@ -76,10 +77,7 @@ class ContentRefiner:
         console.print(f"[green]✅ 内容过滤器已加载 ({len(settings.content.banned_words)} 个违禁词)[/green]")
 
     def refine(
-        self,
-        raw_content: str,
-        target_style: str = "深度、专业且易读",
-        layout_requirements: str = "微信公众号"
+        self, raw_content: str, target_style: str = "深度、专业且易读", layout_requirements: str = "微信公众号"
     ) -> RefinerOutput:
         """
         精炼内容
@@ -191,10 +189,7 @@ class ContentRefiner:
 
         except json.JSONDecodeError as e:
             console.print(f"[yellow]⚠️ JSON 解析失败，返回原始响应: {e}[/yellow]")
-            return RefinerOutput(
-                refined_content=response.text,
-                layout_notes="JSON 解析失败，返回原始内容"
-            )
+            return RefinerOutput(refined_content=response.text, layout_notes="JSON 解析失败，返回原始内容")
 
         except Exception as e:
             console.print(f"[red]❌ 精炼失败: {e}[/red]")
@@ -242,7 +237,7 @@ class ContentRefiner:
             raise FileNotFoundError(f"文件不存在: {path}")
 
         # 读取文件
-        with open(path, 'r', encoding='utf-8') as f:
+        with open(path, encoding="utf-8") as f:
             content = f.read()
 
         # 精炼
@@ -251,7 +246,7 @@ class ContentRefiner:
         # 保存结果
         if output_path:
             out_path = Path(output_path)
-            with open(out_path, 'w', encoding='utf-8') as f:
+            with open(out_path, "w", encoding="utf-8") as f:
                 f.write(result.refined_content)
             console.print(f"[green]✅ 精炼结果已保存: {out_path}[/green]")
 

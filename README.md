@@ -13,6 +13,7 @@
 [![访问量](https://visitor-badge.laobi.icu/badge?page_id=Pangu-Immortal.hunter-ai-content-factory&left_color=%23e91e63&right_color=%23f48fb1)](https://github.com/Pangu-Immortal/hunter-ai-content-factory)
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Pangu-Immortal/hunter-ai-content-factory?quickstart=1)
+[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/yugu88/hunter-ai-content-factory)
 
 ![萌萌计数器](https://moe-counter.glitch.me/get/@hunter-ai-qq?theme=rule34)
 

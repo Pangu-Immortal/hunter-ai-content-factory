@@ -175,9 +175,32 @@ echo    ✅ 依赖已安装
 echo.
 echo [5/6] 检查浏览器驱动...
 
-:: 检查是否已安装 Playwright 浏览器（静默安装）
-"%UV_EXE%" run --python 3.12 --python-preference only-managed playwright install chromium >nul 2>&1
-echo    ✅ 浏览器驱动就绪
+:: 检查 Playwright 浏览器是否已安装（通过检查缓存目录）
+set "PLAYWRIGHT_BROWSERS=%LOCALAPPDATA%\ms-playwright"
+if exist "%PLAYWRIGHT_BROWSERS%\chromium-*" (
+    echo    ✅ 浏览器驱动已安装
+    goto :start_gradio
+)
+
+:: 首次安装 - 显示下载进度
+echo    ⏳ 首次运行，正在下载浏览器驱动...
+echo       （Chromium 约 150MB，请耐心等待 3-10 分钟）
+echo       （如果长时间无响应，请检查网络连接或防火墙设置）
+echo.
+
+"%UV_EXE%" run --python 3.12 --python-preference only-managed playwright install chromium
+
+if %errorlevel% neq 0 (
+    echo.
+    echo    ⚠️ 浏览器驱动安装失败，但不影响基本功能
+    echo       小红书采集功能将不可用
+    echo       如需使用，请手动运行: uv run playwright install chromium
+    echo.
+) else (
+    echo    ✅ 浏览器驱动安装完成
+)
+
+:start_gradio
 
 :: ─────────────────────────────────────────────────────────────────────────────
 :: Step 6: 启动 Gradio

@@ -1,7 +1,7 @@
 # Hunter AI 内容工厂
 
 <p align="center">
-  <b>🌟 如果觉得有帮助，请点击 <a href="https://github.com/Pangu-Immortal/hunter-ai-content-factory/stargazers">Star</a>  支持一下，关注不迷路！🌟</b>
+  <b>🌟 如果觉得有帮助，请点击 <a href="https://github.com/Pangu-Immortal/hunter-ai-content-factory/stargazers">Star</a> 关注不迷路！🌟</b>
 </p>
 
 <div align="center">
@@ -28,7 +28,7 @@
 </div>
 
 <p align="center">
-  <b>🌟 如果觉得有帮助，请点击 <a href="https://github.com/Pangu-Immortal/hunter-ai-content-factory/stargazers">Star</a>  支持一下，关注不迷路！🌟</b>
+  <b>🌟 如果觉得有帮助，请点击 <a href="https://github.com/Pangu-Immortal/hunter-ai-content-factory/stargazers">Star</a> 关注不迷路！🌟</b>
 </p>
 
 ---
@@ -76,7 +76,7 @@
 ### 🌐 在线体验（无需安装）
 
 <p align="center">
-  <b>🌟 如果觉得有帮助，请点击 <a href="https://github.com/Pangu-Immortal/hunter-ai-content-factory/stargazers">Star</a>  支持一下，关注不迷路！🌟</b>
+  <b>🌟 如果觉得有帮助，请点击 <a href="https://github.com/Pangu-Immortal/hunter-ai-content-factory/stargazers">Star</a> 关注不迷路！🌟</b>
 </p>
 
 

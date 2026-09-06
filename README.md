@@ -15,6 +15,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![CI](https://img.shields.io/github/actions/workflow/status/Pangu-Immortal/hunter-ai-content-factory/ci.yml?style=flat-square&label=CI)](https://github.com/Pangu-Immortal/hunter-ai-content-factory/actions)
 [![QQ群](https://img.shields.io/badge/QQ群-794834282-12B7F5?style=flat-square&logo=tencentqq)](https://qm.qq.com/q/794834282)
+[![Telegram](https://img.shields.io/badge/Telegram-流量算法%26商业逻辑-26A5E4?style=flat-square&logo=telegram&logoColor=white)](https://t.me/+MH0wU421vyQwYzBl)
 [![访问量](https://visitor-badge.laobi.icu/badge?page_id=Pangu-Immortal.hunter-ai-content-factory&left_color=%23e91e63&right_color=%23f48fb1)](https://github.com/Pangu-Immortal/hunter-ai-content-factory)
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Pangu-Immortal/hunter-ai-content-factory?quickstart=1)
@@ -29,7 +30,7 @@
 </div>
 
 <p align="center">
-  <b>🌟 如果觉得有帮助，请点击 <a href="https://github.com/Pangu-Immortal/hunter-ai-content-factory/stargazers">Star</a> 关注不迷路！🌟</b>
+  <b>💬 正在起号？<a href="https://t.me/+MH0wU421vyQwYzBl">点此加入交流群「流量算法&商业逻辑」</a>，获取免费流量、快速起号！</b>
 </p>
 
 ---
@@ -117,6 +118,28 @@ run.bat
 ### 配置 API Key
 
 启动后在 Web UI 的「⚙️ 配置」中填入 [Gemini API Key](https://aistudio.google.com/apikey)，点击保存即可。
+
+---
+
+## 🎯 起号交流群 · 流量算法&商业逻辑
+
+<p align="center">
+<a href="https://t.me/+MH0wU421vyQwYzBl">
+  <img src="https://img.shields.io/badge/Telegram-点击加入交流群-26A5E4?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram 交流群">
+</a>
+</p>
+
+> **先确立商业模式，再做流量。** 这群只聊可落地的起号方法论，拒绝玄学，拒绝空谈。
+
+| 你在群里能拿到什么 | 具体聊什么 |
+|:---|:---|
+| 🧭 **十字对标法定位** | 横轴选赛道 × 纵轴立人设，交叉点就是最适合你的账号方向；疯狂对标涨粉最快的博主，做有效模仿而不是瞎原创 |
+| 🔥 **爆款内容四要素** | 踩中用户需求 · 激发情绪共鸣 · 给足实用价值 · 顺应平台算法；选题四件套（干货型 / 人设型 / 揭秘型 / 避坑型）直接套用 |
+| 🪝 **引流漏斗搭建** | 笔记埋钩子 → 评论区截流 → 私信承接 → 群聊沉淀，把临时流量变成长期私域资产；再挖长尾关键词，让搜索流量持续找上门 |
+| 💰 **商业闭环设计** | 从昵称 / 头像 / 简介的人设细节，到私域信任培养、交易与复购的完整变现路径 |
+
+**适合谁**：正在起号、涨粉卡壳、有内容没流量、想系统做自媒体 IP 的你。
+**进群你能带走**：免费流量打法 + 快速起号 SOP + 一群同行的人。
 
 ---
 
@@ -301,5 +324,7 @@ API 限流，配置 `github.token` 提高配额（60→5000 次/小时）
 **如果这个项目对你有帮助，请点个 ⭐ Star 支持一下！**
 
 [![QQ群](https://img.shields.io/badge/QQ群-794834282-12B7F5?style=for-the-badge&logo=tencentqq&logoColor=white)](https://qm.qq.com/q/794834282)
+
+[![Telegram](https://img.shields.io/badge/Telegram-流量算法%26商业逻辑-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/+MH0wU421vyQwYzBl)
 
 </div>
